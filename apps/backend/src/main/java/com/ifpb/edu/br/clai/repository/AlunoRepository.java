@@ -6,4 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 @Repository
-public interface AlunoRepository extends JpaRepository<Aluno, UUID> {}
+public interface AlunoRepository extends JpaRepository<Aluno, UUID> {
+
+    boolean existsByAlunoMatricula(@Param("matricula") String alunoMatricula);
+
+    boolean existsByAlunoMatriculaAndIdNot(@Param("matricula") String alunoMatricula, @Param("id") UUID id);
+  
+}
