@@ -46,6 +46,20 @@ public class AlunoService {
         }
     }
 
+    private void validarMatriculaUnica(String matricula, UUID id) {
+        boolean matriculaJaExiste;
+        
+        if (id == null) {
+            matriculaJaExiste = alunoRepository.existsByAlunoMatricula(matricula);
+        } else {
+            matriculaJaExiste = alunoRepository.existsByAlunoMatriculaAndIdNot(matricula, id);
+        }
+
+        if (matriculaJaExiste) {
+            throw new BusinessRuleException("Já existe um aluno cadastrado com a matrícula " + matricula + ".");
+        }
+    }
+
     private Aluno buscarOuFalhar(UUID id) {
         return alunoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + id));
@@ -53,6 +67,7 @@ public class AlunoService {
 
     public AlunoRequestDto createAluno(AlunoRequestDto dto) {
         validarRegraMaioridade(dto);
+        validarMatriculaUnica(dto.alunoMatricula(), null); 
 
         Aluno aluno = new Aluno();
         AlunoMapper.requestToEntity(dto, aluno);
@@ -77,6 +92,8 @@ public class AlunoService {
         Aluno aluno = buscarOuFalhar(id);
 
         validarRegraMaioridade(dto);
+        validarMatriculaUnica(dto.alunoMatricula(), id);
+
         AlunoMapper.requestToEntity(dto, aluno);
 
         Aluno alunoAtualizado = alunoRepository.save(aluno);
@@ -87,5 +104,4 @@ public class AlunoService {
         Aluno aluno = buscarOuFalhar(id);
         alunoRepository.delete(aluno);
     }
-
 }
