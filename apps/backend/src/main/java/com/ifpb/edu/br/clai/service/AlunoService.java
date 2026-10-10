@@ -1,8 +1,9 @@
 package com.ifpb.edu.br.clai.service;
 
-import com.ifpb.edu.br.clai.dto.AlunoDto;
+import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
 import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
+import com.ifpb.edu.br.clai.mapper.AlunoMapper;
 import com.ifpb.edu.br.clai.model.Aluno;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
@@ -21,40 +22,7 @@ public class AlunoService {
         this.alunoRepository = alunoRepository;
     }
 
-    private void copiarDtoParaEntidade(AlunoDto dto, Aluno aluno) {
-        aluno.setAlunoNome(dto.alunoNome());
-        aluno.setAlunoNascimento(dto.alunoNascimento());
-        aluno.setAlunoTelefone(dto.alunoTelefone());
-        aluno.setAlunoEmail(dto.alunoEmail());
-        aluno.setAlunoMatricula(dto.alunoMatricula());
-        aluno.setAlunoCurso(dto.alunoCurso());
-        aluno.setPeriodoIngresso(dto.periodoIngresso());
-        aluno.setPeriodoAluno(dto.periodoAluno());
-
-        aluno.setNomeResponsavel(dto.nomeResponsavel());
-        aluno.setGrauParentesco(dto.grauParentesco());
-        aluno.setResponsavelTelefone(dto.responsavelTelefone());
-        aluno.setResponsavelEmail(dto.responsavelEmail());
-    }
-
-    private AlunoDto copiarEntidadeParaDto(Aluno aluno) {
-        return new AlunoDto(
-                aluno.getAlunoNome(),
-                aluno.getAlunoNascimento(),
-                aluno.getAlunoTelefone(),
-                aluno.getAlunoEmail(),
-                aluno.getNomeResponsavel(),
-                aluno.getGrauParentesco(),
-                aluno.getResponsavelTelefone(),
-                aluno.getResponsavelEmail(),
-                aluno.getAlunoMatricula(),
-                aluno.getAlunoCurso(),
-                aluno.getPeriodoIngresso(),
-                aluno.getPeriodoAluno()
-        );
-    }
-
-    private void validarRegraMaioridade(AlunoDto dto) {
+    private void validarRegraMaioridade(AlunoRequestDto dto) {
         if (dto.alunoNascimento() == null) {
             throw new BusinessRuleException("A data de nascimento é obrigatória.");
         }
@@ -83,35 +51,37 @@ public class AlunoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + id));
     }
 
-    public AlunoDto createAluno(AlunoDto dto) {
+    public AlunoRequestDto createAluno(AlunoRequestDto dto) {
         validarRegraMaioridade(dto);
 
         Aluno aluno = new Aluno();
-        copiarDtoParaEntidade(dto, aluno);
+        AlunoMapper.requestToEntity(dto, aluno);
         Aluno alunoGuardado = alunoRepository.save(aluno);
 
-        return copiarEntidadeParaDto(alunoGuardado);
+        return AlunoMapper.entityToResponse(alunoGuardado);
     }
 
-    public List<AlunoDto> getAllAlunos() {
+    // futuramente vamos criar um response dto
+    public List<AlunoRequestDto> getAllAlunos() {
         return alunoRepository.findAll().stream()
-                .map(this::copiarEntidadeParaDto)
+                .map(AlunoMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
 
-    public AlunoDto getAlunoById(UUID id) {
+    public AlunoRequestDto getAlunoById(UUID id) {
         Aluno aluno = buscarOuFalhar(id);
-        return copiarEntidadeParaDto(aluno);
+        return AlunoMapper.entityToResponse(aluno);
     }
 
-    public AlunoDto updateAluno(UUID id, AlunoDto dto) {
+    public AlunoRequestDto updateAluno(UUID id, AlunoRequestDto dto) {
         Aluno aluno = buscarOuFalhar(id);
 
         validarRegraMaioridade(dto);
-        copiarDtoParaEntidade(dto, aluno);
+        //copiarDtoParaEntidade
+        AlunoMapper.requestToEntity(dto, aluno);
 
         Aluno alunoAtualizado = alunoRepository.save(aluno);
-        return copiarEntidadeParaDto(alunoAtualizado);
+        return AlunoMapper.entityToResponse(alunoAtualizado);
     }
 
     public void deleteAluno(UUID id) {
