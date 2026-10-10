@@ -1,4 +1,4 @@
-package com.ifpb.edu.br.clai.dto;
+package main.java.com.ifpb.edu.br.clai.dto;
 
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
