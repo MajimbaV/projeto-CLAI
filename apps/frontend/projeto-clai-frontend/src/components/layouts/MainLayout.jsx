@@ -12,7 +12,7 @@ function MainLayout({ children }) {
           <div className="breadcrumb">Início &gt; Alunos</div>
           <div className="header-right">
             <span className="logo-clai">CLAI</span>
-            <image src={DividerImg} alt="Divisor" className="divider" />
+            <img src={DividerImg} alt="Divisor" className="divider" />
             <img src={BellImg} alt="Notificação" />
             <div className="user-logo">C</div>
           </div>
