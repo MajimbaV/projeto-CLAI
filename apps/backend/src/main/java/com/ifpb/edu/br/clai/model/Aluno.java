@@ -29,16 +29,16 @@ public class Aluno {
     @Column(name = "al_email", length = 60)
     private String alunoEmail;
 
-    @Column(name = "rs_nome", nullable = false, length = 100)
+    @Column(name = "rs_nome", length = 100)
     private String nomeResponsavel;
 
-    @Column(name = "rs_parentesco", nullable = false)
+    @Column(name = "rs_parentesco", length = 30)
     private String grauParentesco;
 
-    @Column(name = "rs_telefone", nullable = false)
+    @Column(name = "rs_telefone", length = 25)
     private String responsavelTelefone;
 
-    @Column(name = "rs_email", nullable = false)
+    @Column(name = "rs_email", length = 60)
     private String responsavelEmail;
 
     @Column(name = "al_matricula",nullable = false, length = 100)
