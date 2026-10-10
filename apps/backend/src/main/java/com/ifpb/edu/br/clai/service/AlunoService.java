@@ -56,8 +56,9 @@ public class AlunoService {
 
         Aluno aluno = new Aluno();
         AlunoMapper.requestToEntity(dto, aluno);
-        
-        return alunoRepository.save(aluno); 
+        Aluno alunoGuardado = alunoRepository.save(aluno);
+
+        return AlunoMapper.entityToResponse(alunoGuardado);
     }
 
     // futuramente vamos criar um response dto
@@ -77,8 +78,9 @@ public class AlunoService {
 
         validarRegraMaioridade(dto);
         AlunoMapper.requestToEntity(dto, aluno);
-        
-        return alunoRepository.save(aluno);
+
+        Aluno alunoAtualizado = alunoRepository.save(aluno);
+        return AlunoMapper.entityToResponse(alunoAtualizado);
     }
 
     public void deleteAluno(UUID id) {
