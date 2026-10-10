@@ -4,7 +4,8 @@ import { useState } from "react";
 import "./AlunoList.css";
 import Search from "../../../assets/Search.png";
 import ArrowDown from "../../../assets/Chevron-down.png";
-
+import ChevronLeft from "../../../assets/ChevronLeft.png";
+import ChevronRight from "../../../assets/ChevronRight.png";
 function AlunoList({
   alunos,
   isLoading,
@@ -31,6 +32,10 @@ function AlunoList({
   function handleAdd() {
     onAdd();
   }
+
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 5;
+  const [termoBusca, setTermoBusca] = useState("");
 
   // Se estiver carregando, mostra só isso e para
   if (isLoading) {
@@ -60,13 +65,32 @@ function AlunoList({
   }
 
   const alunosFiltrados = alunos.filter((aluno) => {
+    let passaTab = true;
     if (tabAtiva === "ativos") {
-      return aluno.ativo;
+      passaTab = aluno.ativo;
     } else if (tabAtiva === "arquivados") {
-      return !aluno.ativo;
+      passaTab = !aluno.ativo;
     }
-    return true; // "todos"
+
+    // filtro de busca
+    const passaBusca =
+      aluno.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
+      aluno.matricula.includes(termoBusca);
+
+    // Retorna apenas se corresponder à aba ativa E ao texto da pesquisa
+    return passaTab && passaBusca;
   });
+
+  // Calcula os alunos que vão aparecer na página atual
+  const indiceUltimoItem = paginaAtual * itensPorPagina;
+  const indicePrimeiroItem = indiceUltimoItem - itensPorPagina;
+  const alunosPaginados = alunosFiltrados.slice(
+    indicePrimeiroItem,
+    indiceUltimoItem,
+  );
+
+  // Calcula o número total de páginas necessárias
+  const totalPaginas = Math.ceil(alunosFiltrados.length / itensPorPagina);
 
   const totalAlunos = alunos.length;
   const totalAtivos = alunos.filter((a) => a.ativo).length;
@@ -83,20 +107,29 @@ function AlunoList({
       <div className="aluno-card">
         <div className="filters">
           <button
-            onClick={() => setTabAtiva("todos")}
-            className={tabAtiva === "todos" ? "btn-ativo" : false}
+            onClick={() => {
+              setTabAtiva("todos");
+              setPaginaAtual(1);
+            }}
+            className={tabAtiva === "todos" ? "btn-ativo" : ""}
           >
             Todos os alunos <span className="badge">{totalAlunos}</span>
           </button>
           <button
-            onClick={() => setTabAtiva("ativos")}
-            className={tabAtiva === "ativos" ? "btn-ativo" : false}
+            onClick={() => {
+              setTabAtiva("ativos");
+              setPaginaAtual(1);
+            }}
+            className={tabAtiva === "ativos" ? "btn-ativo" : ""}
           >
             Ativos <span className="badge">{totalAtivos}</span>
           </button>
           <button
-            onClick={() => setTabAtiva("arquivados")}
-            className={tabAtiva === "arquivados" ? "btn-ativo" : false}
+            onClick={() => {
+              setTabAtiva("arquivados");
+              setPaginaAtual(1);
+            }}
+            className={tabAtiva === "arquivados" ? "btn-ativo" : ""}
           >
             Arquivados <span className="badge">{totalArquivado}</span>
           </button>
@@ -108,6 +141,11 @@ function AlunoList({
               type="text"
               placeholder="Buscar por nome ou matrícula..."
               className="search-input"
+              value={termoBusca}
+              onChange={(e) => {
+                setTermoBusca(e.target.value);
+                setPaginaAtual(1); // Reseta para a página 1 ao pesquisar
+              }}
             />
           </div>
           <div className="toolbar-right">
@@ -135,7 +173,7 @@ function AlunoList({
             </tr>
           </thead>
           <tbody>
-            {alunosFiltrados.map((aluno) => (
+            {alunosPaginados.map((aluno) => (
               <tr key={aluno.id}>
                 <td onClick={() => handleView(aluno)}>
                   <div className="aluno-info">
@@ -165,6 +203,46 @@ function AlunoList({
             ))}
           </tbody>
         </table>
+
+        <div className="table-footer">
+          <span className="footer-info">
+            Mostrando {alunosFiltrados.length > 0 ? indicePrimeiroItem + 1 : 0}-
+            {Math.min(indiceUltimoItem, alunosFiltrados.length)} de{" "}
+            {alunosFiltrados.length} alunos
+          </span>
+
+          <div className="pagination">
+            <button
+              className="page-btn"
+              onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 1))}
+              disabled={paginaAtual === 1}
+            >
+              <img src={ChevronLeft} alt="Anterior" />
+            </button>
+
+            {Array.from({ length: totalPaginas }, (_, index) => {
+              const numeroPagina = index + 1;
+              return (
+                <button
+                  key={numeroPagina}
+                  className={`page-btn ${paginaAtual === numeroPagina ? "active" : ""}`}
+                  onClick={() => setPaginaAtual(numeroPagina)}
+                >
+                  {numeroPagina}
+                </button>
+              );
+            })}
+            <button
+              className="page-btn"
+              onClick={() =>
+                setPaginaAtual((prev) => Math.min(prev + 1, totalPaginas))
+              }
+              disabled={paginaAtual === totalPaginas || totalPaginas === 0}
+            >
+              <img src={ChevronRight} alt="Seguinte" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
