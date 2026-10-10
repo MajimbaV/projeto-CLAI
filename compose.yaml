@@ -1,13 +1,41 @@
 services:
   postgres:
-    image: 'cgr.dev/chainguard/postgres:latest'
+    image: postgres:17.11-alpine
+    restart: unless-stopped
     environment:
-      - 'POSTGRES_DB=${DB_NAME}'
-      - 'POSTGRES_USER=${DB_USER}'
-      - 'POSTGRES_PASSWORD=${DB_PASSWORD}'
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - clai-network
+
+  api:
+    build:
+      context: ./apps/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_DOCKER_COMPOSE_ENABLED: "false"
+    networks:
+      - clai-network
+
 volumes:
   postgres_data:
+
+networks:
+  clai-network:
