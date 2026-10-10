@@ -2,6 +2,7 @@
 import IFPBlogo from "../../assets/IFPBlogo.png";
 import React, { useState } from "react";
 import "./Sidebar.css";
+import DividerImg from "../../assets/Divider.png";
 
 function Sidebar() {
   //mudar aqui o usuário para o nome do usuário logado, que será passado como props de integração com o backend
@@ -31,8 +32,11 @@ function Sidebar() {
         </ul>
       </div>
       <div className="sidebar-footer">
-        <div className="user-logo">{coordenador[0]}</div>
-        <h3 className="user-name">{coordenador}</h3>
+        <img src={DividerImg} alt="Divider" className="sidebar-divider"></img>
+        <div className="userbox">
+          <div className="user-logo">{coordenador[0]}</div>
+          <h3 className="user-name">{coordenador}</h3>
+        </div>
       </div>
     </div>
   );
