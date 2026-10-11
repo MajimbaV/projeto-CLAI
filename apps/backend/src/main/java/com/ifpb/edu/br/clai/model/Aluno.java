@@ -41,7 +41,7 @@ public class Aluno {
     @Column(name = "rs_email", length = 60)
     private String responsavelEmail;
 
-    @Column(name = "al_matricula",nullable = false, length = 100)
+    @Column(name = "al_matricula",nullable = false, unique = true, length = 100)
     private String alunoMatricula;
 
     @Column(name="al_curso", nullable = false, length = 100)
