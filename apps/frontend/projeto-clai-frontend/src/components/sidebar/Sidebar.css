@@ -80,7 +80,7 @@ li {
   background-color: white;
   color: #00523d;
   border: 0.5px solid transparent;
-  padding: 10px 50px;
+  padding: 10px 70px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -105,7 +105,22 @@ li {
   font-size: 0.675em;
   margin-top: auto;
   display: flex;
+  flex-direction: column;
+}
+
+.userbox {
+  display: flex;
   flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-divider {
+  width: 200px;
+  height: 1px;
+  background-color: #ffffff;
+  margin-bottom: 10px;
+  align-self: center;
 }
 
 .user-logo {
