@@ -1,6 +1,7 @@
 package com.ifpb.edu.br.clai.service;
 
 import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
+import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
 import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.AlunoMapper;
@@ -65,7 +66,7 @@ public class AlunoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + id));
     }
 
-    public AlunoRequestDto createAluno(AlunoRequestDto dto) {
+    public AlunoResponseDto createAluno(AlunoRequestDto dto) {
         validarRegraMaioridade(dto);
         validarMatriculaUnica(dto.alunoMatricula(), null); 
 
@@ -76,19 +77,18 @@ public class AlunoService {
         return AlunoMapper.entityToResponse(alunoGuardado);
     }
 
-    // futuramente vamos criar um response dto
-    public List<AlunoRequestDto> getAllAlunos() {
+    public List<AlunoResponseDto> getAllAlunos() {
         return alunoRepository.findAll().stream()
                 .map(AlunoMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
 
-    public AlunoRequestDto getAlunoById(UUID id) {
+    public AlunoResponseDto getAlunoById(UUID id) {
         Aluno aluno = buscarOuFalhar(id);
         return AlunoMapper.entityToResponse(aluno);
     }
 
-    public AlunoRequestDto updateAluno(UUID id, AlunoRequestDto dto) {
+    public AlunoResponseDto updateAluno(UUID id, AlunoRequestDto dto) {
         Aluno aluno = buscarOuFalhar(id);
 
         validarRegraMaioridade(dto);

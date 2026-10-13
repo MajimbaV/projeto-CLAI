@@ -1,6 +1,7 @@
 package com.ifpb.edu.br.clai.mapper;
 
 import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
+import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
 import com.ifpb.edu.br.clai.model.Aluno;
 
 public class AlunoMapper {
@@ -19,9 +20,9 @@ public class AlunoMapper {
         aluno.setResponsavelEmail(request.responsavelEmail());
     }
 
-    // futuro metodo para o AlunoResponseDto
-    public static AlunoRequestDto entityToResponse(Aluno aluno) {
-        return new AlunoRequestDto(
+    public static AlunoResponseDto entityToResponse(Aluno aluno) {
+        return new AlunoResponseDto(
+                aluno.getId(),
                 aluno.getAlunoNome(),
                 aluno.getAlunoNascimento(),
                 aluno.getAlunoTelefone(),
