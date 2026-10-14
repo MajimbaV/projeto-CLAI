@@ -1,6 +1,6 @@
 import Sidebar from "../sidebar/Sidebar";
 import "./MainLayout.css";
-import BellImg from "../../assets/bell.png";
+import BellImg from "../../assets/Bell.png";
 import DividerImg from "../../assets/Divider.png";
 
 function MainLayout({ children }) {
