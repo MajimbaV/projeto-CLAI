@@ -32,8 +32,23 @@ function AlunoForm() {
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    const payload = {...formData}
+
+    if(!menorDeIdade) {
+      payload.nomeResponsavel = null;
+      payload.grauParentesco = null;
+      payload.responsavelTelefone = null;
+      payload.responsavelEmail = null;
+    }
+
     if (onSubmit) {
-      onSubmit(formData);
+      onSubmit(payload, {
+        onSuccess: () => {
+          alert("Aluno cadastrado com sucesso!"); // Substuituir por uma notificação mais elegante no futuro e outras ações, como redirecionamento ou reset do formulário
+        }
+      });
+
     }
   }
 
