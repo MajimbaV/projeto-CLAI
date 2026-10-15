@@ -104,4 +104,10 @@ public class AlunoService {
         Aluno aluno = buscarOuFalhar(id);
         alunoRepository.delete(aluno);
     }
+
+    public AlunoResponseDto getAlunoByMatricula(String matricula) {
+        Aluno aluno = alunoRepository.findByAlunoMatricula(matricula)
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com a matrícula: " + matricula));
+        return AlunoMapper.entityToResponse(aluno);
+    }
 }
