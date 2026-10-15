@@ -5,15 +5,13 @@ import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
 import com.ifpb.edu.br.clai.service.AlunoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173") //Alterar isso quando fizer deploy
 @RequestMapping("/alunos")
 public class AlunoController {
     private final AlunoService alunoService;
