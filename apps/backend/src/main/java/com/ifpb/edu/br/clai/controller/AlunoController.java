@@ -5,13 +5,11 @@ import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
 import com.ifpb.edu.br.clai.service.AlunoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/alunos")
@@ -33,5 +31,11 @@ public class AlunoController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AlunoResponseDto> updateAluno(@PathVariable("id") UUID id, @Valid @RequestBody AlunoRequestDto dto) {
+        AlunoResponseDto response = alunoService.updateAluno(id, dto);
+        return ResponseEntity.ok(response);
     }
 }
