@@ -33,6 +33,26 @@ services:
       SPRING_DOCKER_COMPOSE_ENABLED: "false"
     networks:
       - clai-network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+
+  frontend:
+    build:
+      context: ./apps/frontend/projeto-clai-frontend
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"
+    networks:
+      - clai-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
 
 volumes:
   postgres_data:
