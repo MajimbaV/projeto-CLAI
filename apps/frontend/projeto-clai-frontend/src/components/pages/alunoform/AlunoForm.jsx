@@ -1,9 +1,10 @@
 import { useState } from "react";
 import "./AlunoForm.css";
+import { useCreateAluno } from "../../../hooks/useCreateAluno";
 // desabilitando os warns do ESlint
 /* eslint-disable no-unused-vars */
 
-function AlunoForm({ onSubmit, isLoading, error = {} }) {
+function AlunoForm() {
   // estado local dos dados:
   const [formData, setFormData] = useState({
     alunoNome: "",
@@ -20,6 +21,8 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
     periodoAluno: "",
   });
 
+  const {mutate: onSubmit, isPending, error} = useCreateAluno();
+
   function handleChangeForm(e) {
     const { name, value } = e.target;
     setFormData(function (prev) {
@@ -29,8 +32,23 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    const payload = {...formData}
+
+    if(!menorDeIdade) {
+      payload.nomeResponsavel = null;
+      payload.grauParentesco = null;
+      payload.responsavelTelefone = null;
+      payload.responsavelEmail = null;
+    }
+
     if (onSubmit) {
-      onSubmit(formData);
+      onSubmit(payload, {
+        onSuccess: () => {
+          alert("Aluno cadastrado com sucesso!"); // Substuituir por uma notificação mais elegante no futuro e outras ações, como redirecionamento ou reset do formulário
+        }
+      });
+
     }
   }
 
@@ -51,6 +69,8 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
 
   // Verifica se o aluno é menor para opcionalmente exibir o responsável
   const menorDeIdade = eMenorIdade(formData.alunoNascimento);
+  const errorResponse = error?.response?.data || {}
+  const invalidFields = errorResponse.invalidFields || {}
 
   return (
     <div className="aluno-form-body">
@@ -61,9 +81,9 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
 
       <form className="aluno-form" onSubmit={handleSubmit}>
         {/* Alerta de erro da API */}
-        {error.detail && (
+        {errorResponse.detail && (
           <div className="error-banner">
-            <p>Erro: {error.detail}</p>
+            <p>Erro: {errorResponse.detail}</p>
           </div>
         )}
 
@@ -84,10 +104,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                 placeholder="Ex.: Ana Beatriz Souza"
                 value={formData.alunoNome}
                 onChange={handleChangeForm}
-                disabled={isLoading}
+                disabled={isPending}
               />
-              {error.alunoNome && (
-                <span className="error-message">{error.alunoNome}</span>
+              {invalidFields.alunoNome && (
+                <span className="error-message">{invalidFields.alunoNome}</span>
               )}
             </div>
 
@@ -99,10 +119,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                 name="alunoNascimento"
                 value={formData.alunoNascimento}
                 onChange={handleChangeForm}
-                disabled={isLoading}
+                disabled={isPending}
               />
-              {error.alunoNascimento && (
-                <span className="error-message">{error.alunoNascimento}</span>
+              {invalidFields.alunoNascimento && (
+                <span className="error-message">{invalidFields.alunoNascimento}</span>
               )}
             </div>
           </div>
@@ -119,10 +139,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                 placeholder="(00) 00000-0000"
                 value={formData.alunoTelefone}
                 onChange={handleChangeForm}
-                disabled={isLoading}
+                disabled={isPending}
               />
-              {error.alunoTelefone && (
-                <span className="error-message">{error.alunoTelefone}</span>
+              {invalidFields.alunoTelefone && (
+                <span className="error-message">{invalidFields.alunoTelefone}</span>
               )}
             </div>
 
@@ -135,10 +155,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                 placeholder="Ex.: aluno@email.com"
                 value={formData.alunoEmail}
                 onChange={handleChangeForm}
-                disabled={isLoading}
+                disabled={isPending}
               />
-              {error.alunoEmail && (
-                <span className="error-message">{error.alunoEmail}</span>
+              {invalidFields.alunoEmail && (
+                <span className="error-message">{invalidFields.alunoEmail}</span>
               )}
             </div>
           </div>
@@ -160,10 +180,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                   placeholder="Ex.: Maria Souza"
                   value={formData.nomeResponsavel}
                   onChange={handleChangeForm}
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
-                {error.nomeResponsavel && (
-                  <span className="error-message">{error.nomeResponsavel}</span>
+                {invalidFields.nomeResponsavel && (
+                  <span className="error-message">{invalidFields.nomeResponsavel}</span>
                 )}
               </div>
               <div className="input-group">
@@ -175,10 +195,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                   placeholder="Ex.: Mãe, Pai..."
                   value={formData.grauParentesco}
                   onChange={handleChangeForm}
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
-                {error.grauParentesco && (
-                  <span className="error-message">{error.grauParentesco}</span>
+                {invalidFields.grauParentesco && (
+                  <span className="error-message">{invalidFields.grauParentesco}</span>
                 )}
               </div>
             </div>
@@ -194,11 +214,11 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                   placeholder="(00) 00000-0000"
                   value={formData.responsavelTelefone}
                   onChange={handleChangeForm}
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
-                {error.responsavelTelefone && (
+                {invalidFields.responsavelTelefone && (
                   <span className="error-message">
-                    {error.responsavelTelefone}
+                    {invalidFields.responsavelTelefone}
                   </span>
                 )}
               </div>
@@ -211,11 +231,11 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                   placeholder="Ex.: responsavel@email.com"
                   value={formData.responsavelEmail}
                   onChange={handleChangeForm}
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
-                {error.responsavelEmail && (
+                {invalidFields.responsavelEmail && (
                   <span className="error-message">
-                    {error.responsavelEmail}
+                    {invalidFields.responsavelEmail}
                   </span>
                 )}
               </div>
@@ -239,10 +259,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                 placeholder="Ex.: 202601001"
                 value={formData.alunoMatricula}
                 onChange={handleChangeForm}
-                disabled={isLoading}
+                disabled={isPending}
               />
-              {error.alunoMatricula && (
-                <span className="error-message">{error.alunoMatricula}</span>
+              {invalidFields.alunoMatricula && (
+                <span className="error-message">{invalidFields.alunoMatricula}</span>
               )}
             </div>
             <div className="input-group">
@@ -254,10 +274,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                 placeholder="Ex.: Engenharia de Computação"
                 value={formData.alunoCurso}
                 onChange={handleChangeForm}
-                disabled={isLoading}
+                disabled={isPending}
               />
-              {error.alunoCurso && (
-                <span className="error-message">{error.alunoCurso}</span>
+              {invalidFields.alunoCurso && (
+                <span className="error-message">{invalidFields.alunoCurso}</span>
               )}
             </div>
           </div>
@@ -272,10 +292,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                 placeholder="Ex.: 2026.1"
                 value={formData.periodoIngresso}
                 onChange={handleChangeForm}
-                disabled={isLoading}
+                disabled={isPending}
               />
-              {error.periodoIngresso && (
-                <span className="error-message">{error.periodoIngresso}</span>
+              {invalidFields.periodoIngresso && (
+                <span className="error-message">{invalidFields.periodoIngresso}</span>
               )}
             </div>
             <div className="input-group">
@@ -287,10 +307,10 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
                 placeholder="Ex.: 2026.2"
                 value={formData.periodoAluno}
                 onChange={handleChangeForm}
-                disabled={isLoading}
+                disabled={isPending}
               />
-              {error.periodoAluno && (
-                <span className="error-message">{error.periodoAluno}</span>
+              {invalidFields.periodoAluno && (
+                <span className="error-message">{invalidFields.periodoAluno}</span>
               )}
             </div>
           </div>
@@ -303,11 +323,11 @@ function AlunoForm({ onSubmit, isLoading, error = {} }) {
             O identificador do aluno será gerado automaticamente ao salvar.
           </span>
           <div className="buttons-group">
-            <button type="button" className="btn-cancel" disabled={isLoading}>
+            <button type="button" className="btn-cancel" disabled={isPending}>
               Cancelar
             </button>
-            <button type="submit" className="btn-submit" disabled={isLoading}>
-              {isLoading ? "Salvando..." : "Cadastrar aluno"}
+            <button type="submit" className="btn-submit" disabled={isPending}>
+              {isPending ? "Salvando..." : "Cadastrar aluno"}
             </button>
           </div>
         </div>

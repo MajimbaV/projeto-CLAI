@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173") //Alterar isso quando fizer deploy
 @RequestMapping("/alunos")
 public class AlunoController {
     private final AlunoService alunoService;
