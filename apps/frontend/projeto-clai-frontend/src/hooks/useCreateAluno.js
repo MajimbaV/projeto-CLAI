@@ -6,8 +6,9 @@ export function useCreateAluno() {
 
     return useMutation({
         mutationFn: postAluno,
-        onSuccess: () => {
-            queryCliente.invalidateQueries('alunos');
+        onSuccess: (data) => {
+            queryCliente.invalidateQueries({queryKey: ['alunos']});
+            console.log('Aluno criado com sucesso!', data);
         },
         onError: (error) => {
             console.error('Erro ao criar aluno:', error.response?.data);
