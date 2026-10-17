@@ -4,16 +4,26 @@ import { useState } from "react";
 import "./AlunoList.css";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import ChevronRight from "../../../assets/ChevronRight.png";
+import { useGetAlunos } from "../../../hooks/useGetAlunos";
 
 function AlunoList({
-  alunos,
-  isLoading,
-  erro,
   onDelete,
   onEdit,
   onView,
   onAdd,
 }) {
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 1;
+
+  const { data, isLoading, error} = useGetAlunos(paginaAtual, itensPorPagina);
+
+  const alunos = data?.content || [];
+  const quantidadeAlunos = data?.numberOfElements || 0;
+  const totalPaginas = data?.totalPages || 0;
+  const totalAlunosNoBanco = data?.totalElements || 0;
+
+
+  
 
   function handleDelete(aluno) {
     onDelete(aluno);
@@ -31,9 +41,6 @@ function AlunoList({
     onAdd();
   }
 
-  const [paginaAtual, setPaginaAtual] = useState(1);
-  const itensPorPagina = 5;
-
   // Se estiver carregando, mostra só isso e para
   if (isLoading) {
     return (
@@ -44,10 +51,10 @@ function AlunoList({
   }
 
   // Se houver erro, mostra só o erro e para
-  if (erro) {
+  if (error) {
     return (
       <div className="aluno-list-body">
-        <p>Erro: {erro.detail || erro}</p>
+        <p>Erro: {error.detail || error}</p>
       </div>
     );
   }
@@ -60,18 +67,6 @@ function AlunoList({
       </div>
     );
   }
-
-
-  // Calcula os alunos que vão aparecer na página atual
-  const indiceUltimoItem = paginaAtual * itensPorPagina;
-  const indicePrimeiroItem = indiceUltimoItem - itensPorPagina;
-  const alunosPaginados = alunos.slice(
-    indicePrimeiroItem,
-    indiceUltimoItem,
-  );
-
-  // Calcula o número total de páginas necessárias
-  const totalPaginas = Math.ceil(alunos.length / itensPorPagina);
 
   return (
     <div className="aluno-list-body">
@@ -92,7 +87,7 @@ function AlunoList({
             </tr>
           </thead>
           <tbody>
-            {alunosPaginados.map((aluno) => (
+            {alunos.map((aluno) => (
               <tr key={aluno.id}>
                 <td onClick={() => handleView(aluno)}>
                   <div className="aluno-info">
@@ -116,9 +111,8 @@ function AlunoList({
 
         <div className="table-footer">
           <span className="footer-info">
-            Mostrando {alunos.length > 0 ? indicePrimeiroItem + 1 : 0}-
-            {Math.min(indiceUltimoItem, alunos.length)} de{" "}
-            {alunos.length} alunos
+            Mostrando {quantidadeAlunos} de{" "}
+            {totalAlunosNoBanco} alunos
           </span>
 
           <div className="pagination">
