@@ -10,7 +10,7 @@ export async function getAlunos() {
     return response.data;
 }
 
-export async function getAlunoByMaticula(matricula) {
+export async function getAlunoByMatricula(matricula) {
     const response = await api.get(`/alunos/matricula/${matricula}`);
     return response.data;
 }
