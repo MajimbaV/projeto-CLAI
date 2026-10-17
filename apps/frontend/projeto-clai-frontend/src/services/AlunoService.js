@@ -5,8 +5,14 @@ export async function postAluno(data) {
     return response.data;
 }
 
-export async function getAlunos() {
-    const response = await api.get('/alunos');
+export async function getAlunos(page = 0, size = 10, sort = 'alunoNome,asc') {
+    const response = await api.get('/alunos', {
+        params: {
+            page,
+            size,
+            sort
+        }
+    });
     return response.data;
 }
 
