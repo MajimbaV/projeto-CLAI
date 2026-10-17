@@ -7,9 +7,11 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -23,8 +25,9 @@ public class AlunoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AlunoResponseDto>> getAllAlunos() {
-        return ResponseEntity.ok(alunoService.getAllAlunos());
+    public ResponseEntity<Page<AlunoResponseDto>> getAllAlunos(
+            @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        return ResponseEntity.ok(alunoService.getAllAlunos(pageable));
     }
 
     @GetMapping("/matricula/{matricula}")
