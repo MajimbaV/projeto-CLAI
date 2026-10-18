@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./AlunoForm.css";
+import { useNavigate } from "react-router-dom";
 
 const TEXTOS_POR_MODO = {
   create: {
@@ -32,6 +33,7 @@ const FORM_DATA_VAZIO = {
   periodoAluno: "",
 };
 
+
 function normalizarDefaultValues(valores) {
   const normalizado = {};
 
@@ -50,6 +52,9 @@ function AlunoForm({
   defaultValues,
   mode = "create",
 }) {
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState(() =>
   normalizarDefaultValues(defaultValues),
 );
