@@ -1,0 +1,211 @@
+.aluno-view-body {
+  width: 100%;
+  margin: 0;
+  color: #111827;
+}
+
+.aluno-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.aluno-view-header > div {
+  min-width: 0;
+}
+
+.aluno-view-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #00523d;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.aluno-view-back:hover {
+  color: #003f2f;
+}
+
+.aluno-view-back img {
+  width: 14px;
+  height: 14px;
+}
+
+.aluno-view-title {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 450;
+}
+
+.aluno-view-subtitle {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.aluno-view-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 9px 16px;
+  background-color: #00523d;
+  color: #ffffff;
+  border: 1px solid #00523d;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.aluno-view-edit:hover {
+  background-color: #00402e;
+}
+
+.aluno-view-edit img {
+  width: 15px;
+  height: 15px;
+  filter: brightness(0) invert(1);
+}
+
+.aluno-view-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 24px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.aluno-view-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.aluno-view-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  background-color: #e5f2ed;
+  color: #00523d;
+  border-radius: 50%;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.aluno-view-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.aluno-view-profile-info h2 {
+  margin: 0 0 6px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.aluno-view-profile-info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.aluno-view-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.aluno-view-status.ativo {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.aluno-view-status.arquivado {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.aluno-view-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.aluno-view-divider {
+  width: 100%;
+  height: 1px;
+  margin: 24px 0;
+  background-color: #e5e7eb;
+}
+
+.aluno-view-section-title {
+  margin: 0 0 20px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.aluno-view-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 32px;
+}
+
+.aluno-view-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+}
+
+.aluno-view-field span {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.aluno-view-field p {
+  margin: 0;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.aluno-view-body > p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.aluno-view-body > .aluno-view-back {
+  margin-top: 12px;
+}
