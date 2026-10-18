@@ -21,7 +21,7 @@ function AlunoForm() {
     periodoAluno: "",
   });
 
-  const {mutate: onSubmit, isPending, error} = useCreateAluno();
+  const { mutate: onSubmit, isPending, error } = useCreateAluno();
 
   function handleChangeForm(e) {
     const { name, value } = e.target;
@@ -33,9 +33,9 @@ function AlunoForm() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    const payload = {...formData}
+    const payload = { ...formData };
 
-    if(!menorDeIdade) {
+    if (!menorDeIdade) {
       payload.nomeResponsavel = null;
       payload.grauParentesco = null;
       payload.responsavelTelefone = null;
@@ -46,9 +46,8 @@ function AlunoForm() {
       onSubmit(payload, {
         onSuccess: () => {
           alert("Aluno cadastrado com sucesso!"); // Substuituir por uma notificação mais elegante no futuro e outras ações, como redirecionamento ou reset do formulário
-        }
+        },
       });
-
     }
   }
 
@@ -69,8 +68,8 @@ function AlunoForm() {
 
   // Verifica se o aluno é menor para opcionalmente exibir o responsável
   const menorDeIdade = eMenorIdade(formData.alunoNascimento);
-  const errorResponse = error?.response?.data || {}
-  const invalidFields = errorResponse.invalidFields || {}
+  const errorResponse = error?.response?.data || {};
+  const invalidFields = errorResponse.invalidFields || {};
 
   return (
     <div className="aluno-form-body">
@@ -122,7 +121,9 @@ function AlunoForm() {
                 disabled={isPending}
               />
               {invalidFields.alunoNascimento && (
-                <span className="error-message">{invalidFields.alunoNascimento}</span>
+                <span className="error-message">
+                  {invalidFields.alunoNascimento}
+                </span>
               )}
             </div>
           </div>
@@ -142,7 +143,9 @@ function AlunoForm() {
                 disabled={isPending}
               />
               {invalidFields.alunoTelefone && (
-                <span className="error-message">{invalidFields.alunoTelefone}</span>
+                <span className="error-message">
+                  {invalidFields.alunoTelefone}
+                </span>
               )}
             </div>
 
@@ -158,7 +161,9 @@ function AlunoForm() {
                 disabled={isPending}
               />
               {invalidFields.alunoEmail && (
-                <span className="error-message">{invalidFields.alunoEmail}</span>
+                <span className="error-message">
+                  {invalidFields.alunoEmail}
+                </span>
               )}
             </div>
           </div>
@@ -183,7 +188,9 @@ function AlunoForm() {
                   disabled={isPending}
                 />
                 {invalidFields.nomeResponsavel && (
-                  <span className="error-message">{invalidFields.nomeResponsavel}</span>
+                  <span className="error-message">
+                    {invalidFields.nomeResponsavel}
+                  </span>
                 )}
               </div>
               <div className="input-group">
@@ -198,7 +205,9 @@ function AlunoForm() {
                   disabled={isPending}
                 />
                 {invalidFields.grauParentesco && (
-                  <span className="error-message">{invalidFields.grauParentesco}</span>
+                  <span className="error-message">
+                    {invalidFields.grauParentesco}
+                  </span>
                 )}
               </div>
             </div>
@@ -262,7 +271,9 @@ function AlunoForm() {
                 disabled={isPending}
               />
               {invalidFields.alunoMatricula && (
-                <span className="error-message">{invalidFields.alunoMatricula}</span>
+                <span className="error-message">
+                  {invalidFields.alunoMatricula}
+                </span>
               )}
             </div>
             <div className="input-group">
@@ -277,7 +288,9 @@ function AlunoForm() {
                 disabled={isPending}
               />
               {invalidFields.alunoCurso && (
-                <span className="error-message">{invalidFields.alunoCurso}</span>
+                <span className="error-message">
+                  {invalidFields.alunoCurso}
+                </span>
               )}
             </div>
           </div>
@@ -295,7 +308,9 @@ function AlunoForm() {
                 disabled={isPending}
               />
               {invalidFields.periodoIngresso && (
-                <span className="error-message">{invalidFields.periodoIngresso}</span>
+                <span className="error-message">
+                  {invalidFields.periodoIngresso}
+                </span>
               )}
             </div>
             <div className="input-group">
@@ -310,7 +325,9 @@ function AlunoForm() {
                 disabled={isPending}
               />
               {invalidFields.periodoAluno && (
-                <span className="error-message">{invalidFields.periodoAluno}</span>
+                <span className="error-message">
+                  {invalidFields.periodoAluno}
+                </span>
               )}
             </div>
           </div>
