@@ -7,6 +7,8 @@ import AlunoViewPage from "./components/pages/alunoview/AlunoViewPage";
 // qnd tiver a página de edição coloca o import acima e adicionar nos route path: <Route path="alunos/:matricula/editar" element={<AlunoEditar />} />
 // Qualquer coisa vê depois como fazer essa integração com a página de edição (Para Sofia)
 function App() {
+  
+
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
