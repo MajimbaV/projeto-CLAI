@@ -3,12 +3,11 @@ import IFPBlogo from "../../assets/IFPBlogo.png";
 import React, { useState } from "react";
 import "./Sidebar.css";
 import DividerImg from "../../assets/Divider.png";
+import { NavLink } from "react-router-dom";
 
 function Sidebar() {
   //mudar aqui o usuário para o nome do usuário logado, que será passado como props de integração com o backend
   const [coordenador] = useState("Coordenador");
-  //depois integrar as rotas do front aqui
-  function switchPageAlunos() {}
 
   return (
     <div className="sidebar">
@@ -25,9 +24,9 @@ function Sidebar() {
         <div className="sidebar-content-title">Alunos</div>
         <ul>
           <li>
-            <button className="sidebar-button" onClick={switchPageAlunos}>
+            <NavLink to="/alunos" className="sidebar-button">
               Alunos
-            </button>
+            </NavLink>
           </li>
         </ul>
       </div>
