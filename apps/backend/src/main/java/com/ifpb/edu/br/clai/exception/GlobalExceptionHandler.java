@@ -2,6 +2,7 @@ package com.ifpb.edu.br.clai.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,7 +19,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setTitle("Recurso não encontrado");
-        // futaramente a gente troca para o endereço da documentação em swagger
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/not-found"));
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
@@ -28,7 +28,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleBusinessRule(BusinessRuleException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
         problemDetail.setTitle("Violação de regra de negócio");
-        // futaramente a gente troca para o endereço da documentação em swagger
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/business-rule"));
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
@@ -38,7 +37,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Falha na validação dos campos.");
         problemDetail.setTitle("Dados inválidos");
-        // futaramente a gente troca para o endereço da documentação em swagger
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/invalid-data"));
 
         Map<String, String> errors = new HashMap<>();
@@ -47,6 +45,25 @@ public class GlobalExceptionHandler {
         );
 
         problemDetail.setProperty("invalidFields", errors);
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(FieldValidationException.class)
+    public ProblemDetail handleFieldValidation(FieldValidationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Falha na validação dos campos condicionais.");
+        problemDetail.setTitle("Dados inválidos");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/invalid-data"));
+        problemDetail.setProperty("invalidFields", ex.getInvalidFields());
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Formato de payload ou data inválido. Assegure-se de que a data obedece o formato AAAA-MM-DD.");
+        problemDetail.setTitle("Erro de Formato / Sintaxe");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/bad-request"));
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }

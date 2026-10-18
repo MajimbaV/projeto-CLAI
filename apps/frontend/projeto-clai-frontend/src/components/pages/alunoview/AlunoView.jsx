@@ -1,9 +1,14 @@
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import EditImg from "../../../assets/Edit.png";
+import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
 
 import "./AlunoView.css";
 
-function AlunoView({ aluno, isLoading, erro, onBack, onEdit }) {
+function AlunoView({ matriculaAluno, onBack, onEdit }) {
+
+  const { data: aluno, isLoading, error } = useGetAlunoByMatricula(matriculaAluno);
+
+
   if (isLoading) {
     return (
       <div className="aluno-view-body">
@@ -12,10 +17,10 @@ function AlunoView({ aluno, isLoading, erro, onBack, onEdit }) {
     );
   }
 
-  if (erro) {
+  if (error) {
     return (
       <div className="aluno-view-body">
-        <p>Erro: {erro.detail || erro}</p>
+        <p>Erro: {error.detail || error}</p>
       </div>
     );
   }

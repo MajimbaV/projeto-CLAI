@@ -6,6 +6,8 @@ import EditAlunoPage from "./components/pages/alunoform/EditAlunoPage";
 import AlunoViewPage from "./components/pages/alunoview/AlunoViewPage";
 
 function App() {
+  
+
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>

@@ -172,13 +172,13 @@ function AlunoForm({
           <div className="form-row">
             <div className="input-group">
               <label htmlFor="alunoTelefone">
-                Telefone do aluno (opcional)
+                Telefone do aluno
               </label>
               <input
                 type="text"
                 id="alunoTelefone"
                 name="alunoTelefone"
-                placeholder="(00) 00000-0000"
+                placeholder="DDD000000000 (Apenas os Números)"
                 value={formData.alunoTelefone}
                 onChange={handleChangeForm}
                 disabled={isPending}
@@ -191,7 +191,7 @@ function AlunoForm({
             </div>
 
             <div className="input-group">
-              <label htmlFor="alunoEmail">E-mail do aluno (opcional)</label>
+              <label htmlFor="alunoEmail">E-mail do aluno</label>
               <input
                 type="email"
                 id="alunoEmail"
@@ -385,11 +385,7 @@ function AlunoForm({
           <span className="footer-note">{textos.footerNote}</span>
 
           <div className="buttons-group">
-            <button
-              type="button"
-              className="btn-cancel"
-              disabled={isPending}
-            >
+            <button type="button" className="btn-cancel" disabled={isPending} onClick={() => navigate(-1)}>
               Cancelar
             </button>
 
