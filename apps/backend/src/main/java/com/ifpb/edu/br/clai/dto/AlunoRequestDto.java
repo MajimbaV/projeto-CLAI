@@ -1,5 +1,6 @@
 package com.ifpb.edu.br.clai.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
@@ -10,11 +11,13 @@ public record AlunoRequestDto(
 
         @NotNull(message = "A data de nascimento é obrigatória")
         @Past(message = "A data de nascimento deve ser uma data passada")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate alunoNascimento,
 
+        @Pattern(regexp = "^\\d+$", message = "O telefone deve conter apenas números")
         String alunoTelefone,
 
-        @Email(message = "Formato de e-mail inválido")
+        @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Formato de e-mail inválido. O domínio e extensão são obrigatórios")
         @Size(max = 60, message = "O e-mail deve ter no máximo 60 caracteres")
         String alunoEmail,
 
@@ -23,13 +26,15 @@ public record AlunoRequestDto(
 
         String grauParentesco,
 
+        @Pattern(regexp = "^\\d+$", message = "O telefone do responsável deve conter apenas números")
         String responsavelTelefone,
 
-        @Email(message = "Formato de e-mail do responsável inválido")
+        @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Formato de e-mail do responsável inválido. O domínio e extensão são obrigatórios")
         @Size(max = 60, message = "O e-mail do responsável deve ter no máximo 60 caracteres")
         String responsavelEmail,
 
         @NotBlank(message = "A matrícula do aluno é obrigatória")
+        @Pattern(regexp = "^\\d+$", message = "A matrícula deve conter apenas números")
         @Size(min = 5, max = 100, message = "A matrícula deve ter entre 5 e 100 caracteres")
         String alunoMatricula,
 
@@ -38,8 +43,10 @@ public record AlunoRequestDto(
         String alunoCurso,
 
         @NotBlank(message = "O período de ingresso é obrigatório")
+        @Pattern(regexp = "^\\d{4}\\.\\d$", message = "O período de ingresso deve estar no formato AAAA.S (ex: 2026.2)")
         String periodoIngresso,
 
         @NotBlank(message = "O período letivo é obrigatório")
+        @Pattern(regexp = "^\\d{4}\\.\\d$", message = "O período letivo deve estar no formato AAAA.S (ex: 2026.2)")
         String periodoAluno
 ) {}
