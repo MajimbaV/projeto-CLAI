@@ -1,24 +1,30 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "./components/layouts/MainLayout";
 import Alunos from "./components/pages/alunolist/Alunos";
-import AlunoCriar from "./components/pages/alunoform/AlunoForm";
+import CreateAlunoPage from "./components/pages/alunoform/CreateAlunoPage";
+import EditAlunoPage from "./components/pages/alunoform/EditAlunoPage";
 import AlunoViewPage from "./components/pages/alunoview/AlunoViewPage";
-// import AlunoEditar from "./pages/AlunoEditar";
-// qnd tiver a página de edição coloca o import acima e adicionar nos route path: <Route path="alunos/:matricula/editar" element={<AlunoEditar />} />
-// Qualquer coisa vê depois como fazer essa integração com a página de edição (Para Sofia)
+
 function App() {
   
 
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<Navigate to="/alunos" replace />} />
+  <Route index element={<Navigate to="/alunos" replace />} />
 
-        <Route path="alunos" element={<Alunos />} />
-        <Route path="alunos/:matricula" element={<AlunoViewPage />} />
+  <Route path="alunos" element={<Alunos />} />
+  <Route path="alunos/novo" element={<CreateAlunoPage />} />
+  <Route path="alunos/:matricula/editar" element={<EditAlunoPage />} />
+  <Route path="alunos/:matricula" element={<AlunoViewPage />} />
+</Route><Route path="/" element={<MainLayout />}>
+  <Route index element={<Navigate to="/alunos" replace />} />
 
-        <Route path="alunos/novo" element={<AlunoCriar />} />
-      </Route>
+  <Route path="alunos" element={<Alunos />} />
+  <Route path="alunos/novo" element={<CreateAlunoPage />} />
+  <Route path="alunos/:matricula/editar" element={<EditAlunoPage />} />
+  <Route path="alunos/:matricula" element={<AlunoViewPage />} />
+</Route>
     </Routes>
   );
 }

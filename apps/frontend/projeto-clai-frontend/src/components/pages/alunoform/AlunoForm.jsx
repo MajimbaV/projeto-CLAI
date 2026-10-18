@@ -1,37 +1,87 @@
 import { useState } from "react";
 import "./AlunoForm.css";
-import { useCreateAluno } from "../../../hooks/useCreateAluno";
-import { useNavigate } from "react-router-dom";
-// desabilitando os warns do ESlint
-/* eslint-disable no-unused-vars */
 
-function AlunoForm() {
-  // estado local dos dados:
-  const [formData, setFormData] = useState({
-    alunoNome: "",
-    alunoNascimento: "",
-    alunoTelefone: "",
-    alunoEmail: "",
-    nomeResponsavel: "",
-    grauParentesco: "",
-    responsavelTelefone: "",
-    responsavelEmail: "",
-    alunoMatricula: "",
-    alunoCurso: "",
-    periodoIngresso: "",
-    periodoAluno: "",
-  });
+const TEXTOS_POR_MODO = {
+  create: {
+    title: "Adicionar aluno",
+    submitLabel: "Cadastrar aluno",
+    pendingLabel: "Salvando...",
+    footerNote:
+      "O identificador do aluno será gerado automaticamente ao salvar.",
+  },
+  edit: {
+    title: "Editar aluno",
+    submitLabel: "Salvar alterações",
+    pendingLabel: "Salvando alterações...",
+    footerNote: "As alterações serão aplicadas ao aluno selecionado.",
+  },
+};
 
-  const { mutate: onSubmit, isPending, error } = useCreateAluno();
+const FORM_DATA_VAZIO = {
+  alunoNome: "",
+  alunoNascimento: "",
+  alunoTelefone: "",
+  alunoEmail: "",
+  nomeResponsavel: "",
+  grauParentesco: "",
+  responsavelTelefone: "",
+  responsavelEmail: "",
+  alunoMatricula: "",
+  alunoCurso: "",
+  periodoIngresso: "",
+  periodoAluno: "",
+};
 
-  const navigate = useNavigate();
+function normalizarDefaultValues(valores) {
+  const normalizado = {};
+
+  for (const chave of Object.keys(FORM_DATA_VAZIO)) {
+    normalizado[chave] = valores?.[chave] ?? "";
+  }
+
+  return normalizado;
+}
+
+function AlunoForm({
+  onSubmit,
+  isPending,
+  isLoading,
+  error,
+  defaultValues,
+  mode = "create",
+}) {
+  const [formData, setFormData] = useState(() =>
+  normalizarDefaultValues(defaultValues),
+);
+
+  const textos = TEXTOS_POR_MODO[mode] ?? TEXTOS_POR_MODO.create;
 
   function handleChangeForm(e) {
     const { name, value } = e.target;
-    setFormData(function (prev) {
-      return { ...prev, [name]: value };
-    });
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
+
+  function eMenorIdade(dataBirth) {
+    if (!dataBirth) return false;
+
+    const hoje = new Date();
+    const nascimento = new Date(dataBirth);
+
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+      idade--;
+    }
+
+    return idade < 18;
+  }
+
+  const menorDeIdade = eMenorIdade(formData.alunoNascimento);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -46,53 +96,38 @@ function AlunoForm() {
     }
 
     if (onSubmit) {
-      onSubmit(payload, {
-        onSuccess: () => {
-          alert("Aluno cadastrado com sucesso!"); // Substuituir por uma notificação mais elegante no futuro e outras ações, como redirecionamento ou reset do formulário
-          navigate("/alunos");
-        },
-      });
+      onSubmit(payload);
     }
   }
 
-  function eMenorIdade(dataBirth) {
-    if (!dataBirth) return false;
-    const hoje = new Date();
-    const nascimento = new Date(dataBirth);
-
-    let idade = hoje.getFullYear() - nascimento.getFullYear();
-    const mes = hoje.getMonth() - nascimento.getMonth();
-
-    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
-      idade--;
-    }
-
-    return idade < 18;
+  if (isLoading) {
+    return (
+      <div className="aluno-form-body">
+        <p>Carregando dados do aluno...</p>
+      </div>
+    );
   }
 
-  // Verifica se o aluno é menor para opcionalmente exibir o responsável
-  const menorDeIdade = eMenorIdade(formData.alunoNascimento);
   const errorResponse = error?.response?.data || {};
   const invalidFields = errorResponse.invalidFields || {};
 
   return (
     <div className="aluno-form-body">
       <div className="header">
-        <h1 className="header-text">Adicionar aluno</h1>
+        <h1 className="header-text">{textos.title}</h1>
         <span className="header-comment">* Campos obrigatórios</span>
       </div>
 
       <form className="aluno-form" onSubmit={handleSubmit}>
-        {/* Alerta de erro da API */}
         {errorResponse.detail && (
           <div className="error-banner">
             <p>Erro: {errorResponse.detail}</p>
           </div>
         )}
 
-        {/* Área dos dados do aluno */}
         <fieldset className="form-section">
           <legend>Dados do aluno</legend>
+
           <span className="section-desc">
             Informações pessoais e canais de contato do aluno.
           </span>
@@ -110,7 +145,9 @@ function AlunoForm() {
                 disabled={isPending}
               />
               {invalidFields.alunoNome && (
-                <span className="error-message">{invalidFields.alunoNome}</span>
+                <span className="error-message">
+                  {invalidFields.alunoNome}
+                </span>
               )}
             </div>
 
@@ -173,12 +210,11 @@ function AlunoForm() {
           </div>
         </fieldset>
 
-        {/* Fieldset do responsável que será opcional */}
-
         {menorDeIdade && (
           <fieldset className="form-section">
             <legend>Dados do responsável</legend>
             <span>Identificação e contato do responsável pelo aluno.</span>
+
             <div className="form-row">
               <div className="input-group">
                 <label htmlFor="nomeResponsavel">Nome do Responsável</label>
@@ -197,8 +233,9 @@ function AlunoForm() {
                   </span>
                 )}
               </div>
+
               <div className="input-group">
-                <label htmlFor="grauResponsavel">Grau de Parentesco</label>
+                <label htmlFor="grauParentesco">Grau de Parentesco</label>
                 <input
                   type="text"
                   id="grauParentesco"
@@ -215,6 +252,7 @@ function AlunoForm() {
                 )}
               </div>
             </div>
+
             <div className="form-row">
               <div className="input-group">
                 <label htmlFor="responsavelTelefone">
@@ -235,8 +273,11 @@ function AlunoForm() {
                   </span>
                 )}
               </div>
+
               <div className="input-group">
-                <label htmlFor="responsavelEmail">E-Mail do Responsável</label>
+                <label htmlFor="responsavelEmail">
+                  E-mail do Responsável
+                </label>
                 <input
                   type="email"
                   id="responsavelEmail"
@@ -256,12 +297,13 @@ function AlunoForm() {
           </fieldset>
         )}
 
-        {/* fieldset dos dados acadêmicos */}
         <fieldset className="form-section">
           <legend>Dados Acadêmicos</legend>
+
           <span className="section-desc">
             Informações de matrícula, curso e períodos letivos.
           </span>
+
           <div className="form-row">
             <div className="input-group">
               <label htmlFor="alunoMatricula">Matrícula *</label>
@@ -280,6 +322,7 @@ function AlunoForm() {
                 </span>
               )}
             </div>
+
             <div className="input-group">
               <label htmlFor="alunoCurso">Curso *</label>
               <input
@@ -317,6 +360,7 @@ function AlunoForm() {
                 </span>
               )}
             </div>
+
             <div className="input-group">
               <label htmlFor="periodoAluno">Período letivo do aluno *</label>
               <input
@@ -337,18 +381,20 @@ function AlunoForm() {
           </div>
         </fieldset>
 
-        {/* Footer do formulário, e botões claro */}
-
         <div className="form-actions">
-          <span className="footer-note">
-            O identificador do aluno será gerado automaticamente ao salvar.
-          </span>
+          <span className="footer-note">{textos.footerNote}</span>
+
           <div className="buttons-group">
             <button type="button" className="btn-cancel" disabled={isPending} onClick={() => navigate(-1)}>
               Cancelar
             </button>
-            <button type="submit" className="btn-submit" disabled={isPending}>
-              {isPending ? "Salvando..." : "Cadastrar aluno"}
+
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={isPending}
+            >
+              {isPending ? textos.pendingLabel : textos.submitLabel}
             </button>
           </div>
         </div>
@@ -358,3 +404,4 @@ function AlunoForm() {
 }
 
 export default AlunoForm;
+
