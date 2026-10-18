@@ -20,3 +20,8 @@ export async function getAlunoByMatricula(matricula) {
     const response = await api.get(`/alunos/matricula/${matricula}`);
     return response.data;
 }
+
+export async function putAluno(id, data) {
+    const response = await api.put(`/alunos/${id}`, data);
+    return response.data;
+}
