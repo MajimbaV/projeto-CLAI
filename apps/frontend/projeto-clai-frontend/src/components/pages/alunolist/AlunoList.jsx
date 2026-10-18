@@ -13,7 +13,7 @@ function AlunoList({
   onAdd,
 }) {
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const itensPorPagina = 1;
+  const itensPorPagina = 5;
 
   const { data, isLoading, error} = useGetAlunos(paginaAtual, itensPorPagina);
 
