@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./AlunoForm.css";
 import { useCreateAluno } from "../../../hooks/useCreateAluno";
+import { useNavigate } from "react-router-dom";
 // desabilitando os warns do ESlint
 /* eslint-disable no-unused-vars */
 
@@ -22,6 +23,8 @@ function AlunoForm() {
   });
 
   const { mutate: onSubmit, isPending, error } = useCreateAluno();
+
+  const navigate = useNavigate();
 
   function handleChangeForm(e) {
     const { name, value } = e.target;
@@ -46,6 +49,7 @@ function AlunoForm() {
       onSubmit(payload, {
         onSuccess: () => {
           alert("Aluno cadastrado com sucesso!"); // Substuituir por uma notificação mais elegante no futuro e outras ações, como redirecionamento ou reset do formulário
+          navigate("/alunos");
         },
       });
     }
@@ -340,7 +344,7 @@ function AlunoForm() {
             O identificador do aluno será gerado automaticamente ao salvar.
           </span>
           <div className="buttons-group">
-            <button type="button" className="btn-cancel" disabled={isPending}>
+            <button type="button" className="btn-cancel" disabled={isPending} onClick={() => navigate(-1)}>
               Cancelar
             </button>
             <button type="submit" className="btn-submit" disabled={isPending}>

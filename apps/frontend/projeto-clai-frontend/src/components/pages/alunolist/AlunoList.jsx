@@ -45,6 +45,9 @@ function AlunoList({
   if (isLoading) {
     return (
       <div className="aluno-list-body">
+        <div className="header">
+          <h1 className="header-text">Alunos</h1>
+        </div>
         <p>Carregando...</p>
       </div>
     );
@@ -54,6 +57,9 @@ function AlunoList({
   if (error) {
     return (
       <div className="aluno-list-body">
+        <div className="header">
+          <h1 className="header-text">Alunos</h1>
+        </div>
         <p>Erro: {error.detail || error}</p>
       </div>
     );
@@ -63,6 +69,12 @@ function AlunoList({
   if (!alunos || alunos.length === 0) {
     return (
       <div className="aluno-list-body">
+        <div className="header">
+          <h1 className="header-text">Alunos</h1>
+          <button onClick={handleAdd} className="btn-add">
+          + Adicionar Aluno
+          </button>
+        </div>
         <p>Nenhum aluno encontrado.</p>
       </div>
     );
