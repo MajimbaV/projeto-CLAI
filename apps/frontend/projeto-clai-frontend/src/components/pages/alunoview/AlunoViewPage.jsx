@@ -9,6 +9,7 @@ function AlunoViewPage() {
     <AlunoView
       matriculaAluno={matricula}
       onBack={() => navigate("/alunos")}
+      onEdit={(aluno) => navigate(`/alunos/${encodeURIComponent(aluno.alunoMatricula)}/editar`)}
     />
   );
 }
