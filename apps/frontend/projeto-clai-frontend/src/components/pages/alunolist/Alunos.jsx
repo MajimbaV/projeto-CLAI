@@ -7,7 +7,7 @@ function Alunos() {
   return (
     <AlunoList
       onAdd={() => navigate("/alunos/novo")}
-      onEdit={(aluno) => console.log("Editar:", aluno)}
+      onEdit={(aluno) => navigate(`/alunos/${encodeURIComponent(aluno.alunoMatricula)}/editar`)}
       onView={(aluno) =>
         navigate(`/alunos/${encodeURIComponent(aluno.alunoMatricula)}`)
       }

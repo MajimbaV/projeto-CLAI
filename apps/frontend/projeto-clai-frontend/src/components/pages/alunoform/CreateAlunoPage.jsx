@@ -1,17 +1,16 @@
 import AlunoForm from "./AlunoForm";
+import { useCreateAluno } from "../../../hooks/useCreateAluno";
 
 function CreateAlunoPage() {
-  function handleCreate(payload) {
-    console.log("Novo aluno (mock):", payload);
-  }
+  const { mutate: createAluno, isLoading, error, isPending} = useCreateAluno();
 
   return (
     <AlunoForm
       mode="create"
-      onSubmit={handleCreate}
-      isPending={false}
-      isLoading={false}
-      error={null}
+      onSubmit={createAluno}
+      isPending={isPending}
+      isLoading={isLoading}
+      error={error}
     />
   );
 }
