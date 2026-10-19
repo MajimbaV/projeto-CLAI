@@ -9,12 +9,14 @@ const TEXTOS_POR_MODO = {
     pendingLabel: "Salvando...",
     footerNote:
       "O identificador do aluno será gerado automaticamente ao salvar.",
+    successMessage: "Aluno cadastrado com sucesso!",
   },
   edit: {
     title: "Editar aluno",
     submitLabel: "Salvar alterações",
     pendingLabel: "Salvando alterações...",
     footerNote: "As alterações serão aplicadas ao aluno selecionado.",
+    successMessage: "Aluno atualizado com sucesso!",
   },
 };
 
@@ -52,14 +54,14 @@ function AlunoForm({
   defaultValues,
   mode = "create",
 }) {
-
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState(() =>
   normalizarDefaultValues(defaultValues),
-);
+  );
 
   const textos = TEXTOS_POR_MODO[mode] ?? TEXTOS_POR_MODO.create;
+  
+  const navigate = useNavigate();
+  const previousRedirect = mode === "create" ? "/alunos" : `../alunos/${encodeURIComponent(formData.alunoMatricula)}`;
 
   function handleChangeForm(e) {
     const { name, value } = e.target;
@@ -101,7 +103,13 @@ function AlunoForm({
     }
 
     if (onSubmit) {
-      onSubmit(payload);
+      onSubmit(payload, {
+        onSuccess: () => {
+          alert(textos.successMessage);
+          navigate(previousRedirect);
+        }
+      });
+
     }
   }
 
@@ -390,7 +398,7 @@ function AlunoForm({
           <span className="footer-note">{textos.footerNote}</span>
 
           <div className="buttons-group">
-            <button type="button" className="btn-cancel" disabled={isPending} onClick={() => navigate(-1)}>
+            <button type="button" className="btn-cancel" disabled={isPending} onClick={() => navigate(previousRedirect)}>
               Cancelar
             </button>
 
