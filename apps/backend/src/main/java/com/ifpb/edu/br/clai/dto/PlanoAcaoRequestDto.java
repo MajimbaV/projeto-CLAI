@@ -2,10 +2,7 @@ package com.ifpb.edu.br.clai.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ifpb.edu.br.clai.model.enums.AfirmacaoEnum;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,17 +12,20 @@ public record PlanoAcaoRequestDto(
         @Pattern(regexp = "^\\d+$", message = "A matrícula deve conter apenas números")
         String matricula,
 
-        @NotBlank(message = "Informe se há comorbidade relevante")
+        // CORRIGIDO PARA @NotNull
+        @NotNull(message = "Informe se há comorbidade relevante")
         AfirmacaoEnum comorbidadeRelevante,
 
         List<String> comorbidadeDescricao,
 
-        @NotBlank(message = "Informe se faz uso de medicação")
+        // CORRIGIDO PARA @NotNull
+        @NotNull(message = "Informe se faz uso de medicação")
         AfirmacaoEnum fazUsoMedicacao,
 
         List<String> medicacaoDescricao,
 
-        @NotBlank(message = "Informe se frequenta serviços de apoio")
+        // CORRIGIDO PARA @NotNull
+        @NotNull(message = "Informe se frequenta serviços de apoio")
         AfirmacaoEnum frequentaServicoApoio,
 
         List<String> servicoApoioDescricao,
@@ -47,8 +47,8 @@ public record PlanoAcaoRequestDto(
         @NotBlank(message = "As propostas de intervenção são obrigatórias")
         String propostas,
 
-        @NotBlank(message = "A data do plano é obrigatória")
-        @Past(message = "A data do plano de ação deve ser uma data passada")
+        @NotNull(message = "A data do plano é obrigatória")
+        @PastOrPresent(message = "A data do plano não pode ser uma data futura")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate dataPlano
 ) {}
