@@ -81,5 +81,13 @@ public class PlanoAcaoService {
 
         planoAcaoRepository.delete(planoAcao);
     }
+
+    public Page<PlanoAcaoResponseDto> getPlanosByMatricula(String matricula, Pageable pageable) {
+        alunoRepository.findByAlunoMatricula(matricula)
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com a matrícula: " + matricula));
+
+        return planoAcaoRepository.findByEstudanteAlunoMatricula(matricula, pageable)
+                .map(PlanoAcaoMapper::entityToResponse);
+    }
 }
 
