@@ -12,28 +12,25 @@ public record PlanoAcaoRequestDto(
         @Pattern(regexp = "^\\d+$", message = "A matrícula deve conter apenas números")
         String matricula,
 
-        // CORRIGIDO PARA @NotNull
         @NotNull(message = "Informe se há comorbidade relevante")
         AfirmacaoEnum comorbidadeRelevante,
 
-        List<String> comorbidadeDescricao,
+        List<@NotBlank(message = "A descrição da comorbidade não pode estar vazia") String> comorbidadeDescricao,
 
-        // CORRIGIDO PARA @NotNull
         @NotNull(message = "Informe se faz uso de medicação")
         AfirmacaoEnum fazUsoMedicacao,
 
-        List<String> medicacaoDescricao,
+        List<@NotBlank(message = "A descrição da medicação não pode estar vazia") String> medicacaoDescricao,
 
-        // CORRIGIDO PARA @NotNull
         @NotNull(message = "Informe se frequenta serviços de apoio")
         AfirmacaoEnum frequentaServicoApoio,
 
-        List<String> servicoApoioDescricao,
+        List<@NotBlank(message = "A descrição do serviço de apoio não pode estar vazia") String> servicoApoioDescricao,
 
         @NotNull(message = "Informe se apresentou documentos comprobatórios")
         AfirmacaoEnum apresentouDocumentos,
 
-        List<String> documentosDescricao,
+        List<@NotBlank(message = "A descrição do documento não pode estar vazia") String> documentosDescricao,
 
         @NotBlank(message = "As necessidades específicas são obrigatórias")
         String necessidades,

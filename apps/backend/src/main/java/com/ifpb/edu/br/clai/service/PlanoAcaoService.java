@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,23 +30,35 @@ public class PlanoAcaoService {
         this.alunoRepository = alunoRepository;
     }
 
+    private boolean isListaVazia(List<String> lista) {
+        return lista == null || lista.isEmpty();
+    }
+
     private void validarRegrasAdicionais(PlanoAcaoRequestDto dto) {
         Map<String, String> errors = new HashMap<>();
 
-        if (dto.comorbidadeRelevante() == AfirmacaoEnum.SIM && (dto.comorbidadeDescricao() == null || dto.comorbidadeDescricao().isEmpty())) {
+        if (dto.comorbidadeRelevante() == AfirmacaoEnum.SIM && isListaVazia(dto.comorbidadeDescricao())) {
             errors.put("comorbidadeDescricao", "É necessário descrever as comorbidades quando marcado como SIM.");
+        } else if (dto.comorbidadeRelevante() == AfirmacaoEnum.NAO && !isListaVazia(dto.comorbidadeDescricao())) {
+            errors.put("comorbidadeDescricao", "A lista de comorbidades deve estar vazia quando marcado como NAO.");
         }
 
-        if (dto.fazUsoMedicacao() == AfirmacaoEnum.SIM && (dto.medicacaoDescricao() == null || dto.medicacaoDescricao().isEmpty())) {
+        if (dto.fazUsoMedicacao() == AfirmacaoEnum.SIM && isListaVazia(dto.medicacaoDescricao())) {
             errors.put("medicacaoDescricao", "É necessário descrever as medicações quando marcado como SIM.");
+        } else if (dto.fazUsoMedicacao() == AfirmacaoEnum.NAO && !isListaVazia(dto.medicacaoDescricao())) {
+            errors.put("medicacaoDescricao", "A lista de medicações deve estar vazia quando marcado como NAO.");
         }
 
-        if (dto.frequentaServicoApoio() == AfirmacaoEnum.SIM && (dto.servicoApoioDescricao() == null || dto.servicoApoioDescricao().isEmpty())) {
+        if (dto.frequentaServicoApoio() == AfirmacaoEnum.SIM && isListaVazia(dto.servicoApoioDescricao())) {
             errors.put("servicoApoioDescricao", "É necessário descrever os serviços de apoio quando marcado como SIM.");
+        } else if (dto.frequentaServicoApoio() == AfirmacaoEnum.NAO && !isListaVazia(dto.servicoApoioDescricao())) {
+            errors.put("servicoApoioDescricao", "A lista de serviços de apoio deve estar vazia quando marcado como NAO.");
         }
 
-        if (dto.apresentouDocumentos() == AfirmacaoEnum.SIM && (dto.documentosDescricao() == null || dto.documentosDescricao().isEmpty())) {
+        if (dto.apresentouDocumentos() == AfirmacaoEnum.SIM && isListaVazia(dto.documentosDescricao())) {
             errors.put("documentosDescricao", "É necessário descrever os documentos apresentados quando marcado como SIM.");
+        } else if (dto.apresentouDocumentos() == AfirmacaoEnum.NAO && !isListaVazia(dto.documentosDescricao())) {
+            errors.put("documentosDescricao", "A lista de documentos deve estar vazia quando marcado como NAO.");
         }
 
         if (!errors.isEmpty()) {
@@ -90,4 +103,3 @@ public class PlanoAcaoService {
                 .map(PlanoAcaoMapper::entityToResponse);
     }
 }
-
