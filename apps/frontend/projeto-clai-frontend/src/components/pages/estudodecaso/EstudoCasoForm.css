@@ -1,0 +1,287 @@
+.estudo-caso-body {
+  width: 100%;
+  margin: 0;
+  color: #111827;
+}
+
+.estudo-caso-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.estudo-caso-title {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 450;
+}
+
+.estudo-caso-subtitle {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.estudo-caso-private-label {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 16px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 12px;
+}
+
+.estudo-caso-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.estudo-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.estudo-section > legend {
+  padding: 0 8px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.estudo-section-description {
+  margin: -6px 0 0;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.estudo-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.estudo-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+  min-width: 0;
+}
+
+.estudo-top-spacing {
+  margin-top: 16px;
+}
+
+.estudo-student-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.estudo-student-summary strong {
+  color: #111827;
+  font-size: 14px;
+}
+
+.estudo-helper-text {
+  margin: -6px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.estudo-guardian-grid {
+  padding-top: 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.estudo-barrier-list,
+.estudo-checklist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.estudo-barrier-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.estudo-barrier-card h3 {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.estudo-barrier-card > .clai-field:last-child {
+  grid-column: 1 / -1;
+  max-width: 260px;
+}
+
+.estudo-checklist-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.estudo-signatures {
+  padding-top: 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.estudo-alert {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.estudo-alert-error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.estudo-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.estudo-footer-note {
+  margin: 0;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.estudo-buttons-group {
+  display: flex;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.estudo-btn-cancel,
+.estudo-btn-submit {
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.estudo-btn-cancel {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.estudo-btn-cancel:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.estudo-btn-submit {
+  border: 1px solid #00523d;
+  background: #00523d;
+  color: #ffffff;
+}
+
+.estudo-btn-submit:hover:not(:disabled) {
+  border-color: #00402e;
+  background: #00402e;
+}
+
+.estudo-btn-cancel:disabled,
+.estudo-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .estudo-caso-header {
+    flex-direction: column;
+  }
+
+  .estudo-caso-form {
+    padding: 16px;
+  }
+
+  .estudo-section {
+    padding: 16px;
+  }
+
+  .estudo-form-grid,
+  .estudo-barrier-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .estudo-barrier-card h3,
+  .estudo-barrier-card > .clai-field:last-child {
+    grid-column: auto;
+  }
+
+  .estudo-barrier-card > .clai-field:last-child {
+    max-width: none;
+  }
+
+  .estudo-form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .estudo-buttons-group {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .estudo-caso-title {
+    font-size: 22px;
+  }
+
+  .estudo-buttons-group {
+    flex-direction: column-reverse;
+  }
+
+  .estudo-btn-cancel,
+  .estudo-btn-submit {
+    width: 100%;
+  }
+}
