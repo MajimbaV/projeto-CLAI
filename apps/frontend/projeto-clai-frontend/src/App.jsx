@@ -5,6 +5,7 @@ import CreateAlunoPage from "./components/pages/alunoform/CreateAlunoPage";
 import EditAlunoPage from "./components/pages/alunoform/EditAlunoPage";
 import AlunoViewPage from "./components/pages/alunoview/AlunoViewPage";
 import EstudoCasoPage from "./components/pages/estudodecaso/EstudoCasoPage";
+import AlunoPlanejamentoPage from "./components/pages/planejamento/AlunoPlanejamentoPage";
 
 function App() {
   return (
@@ -38,6 +39,10 @@ function App() {
       <Route
         path="alunos/:matricula/estudo-caso/novo"
         element={<EstudoCasoPage modo="existente" />}
+      />
+      <Route
+        path="planejamento/alunos/:matricula"
+        element={<AlunoPlanejamentoPage />}
       />
     </Routes>
   );
