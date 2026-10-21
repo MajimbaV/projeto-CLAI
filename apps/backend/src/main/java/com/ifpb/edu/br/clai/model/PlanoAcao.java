@@ -74,4 +74,7 @@ public class PlanoAcao {
 
     @Column(name = "data_plano")
     private LocalDate dataPlano;
+
+    @Column(name = "status")
+    private Boolean statusAtivo = true;
 }

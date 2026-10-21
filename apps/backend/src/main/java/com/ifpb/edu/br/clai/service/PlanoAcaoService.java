@@ -34,9 +34,7 @@ public class PlanoAcaoService {
         return lista == null || lista.isEmpty();
     }
 
-    private void validarRegrasAdicionais(PlanoAcaoRequestDto dto) {
-        Map<String, String> errors = new HashMap<>();
-
+    private void validarRegrasAdicionais(PlanoAcaoRequestDto dto, Map<String, String> errors) {
         if (dto.comorbidadeRelevante() == AfirmacaoEnum.SIM && isListaVazia(dto.comorbidadeDescricao())) {
             errors.put("comorbidadeDescricao", "É necessário descrever as comorbidades quando marcado como SIM.");
         } else if (dto.comorbidadeRelevante() == AfirmacaoEnum.NAO && !isListaVazia(dto.comorbidadeDescricao())) {
@@ -60,24 +58,30 @@ public class PlanoAcaoService {
         } else if (dto.apresentouDocumentos() == AfirmacaoEnum.NAO && !isListaVazia(dto.documentosDescricao())) {
             errors.put("documentosDescricao", "A lista de documentos deve estar vazia quando marcado como NAO.");
         }
-
-        if (!errors.isEmpty()) {
-            throw new FieldValidationException(errors);
-        }
     }
 
     @Transactional
     public PlanoAcaoResponseDto createPlanoAcao(PlanoAcaoRequestDto request) {
-        validarRegrasAdicionais(request);
+        Map<String, String> errors = new HashMap<>();
+
+        if (Boolean.FALSE.equals(request.statusAtivo())) {
+            errors.put("statusAtivo", "Um Plano de Ação não pode ser criado como inativo.");
+        }
+
+        validarRegrasAdicionais(request, errors);
+
+        if (!errors.isEmpty()) {
+            throw new FieldValidationException(errors);
+        }
 
         Aluno aluno = alunoRepository.findByAlunoMatricula(request.matricula())
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com a matrícula: " + request.matricula()));
 
         PlanoAcao planoAcao = new PlanoAcao();
-
         PlanoAcaoMapper.requestToEntity(request, planoAcao);
 
         planoAcao.setEstudante(aluno);
+        planoAcao.setStatusAtivo(true);
 
         PlanoAcao planoAcaoGuardado = planoAcaoRepository.save(planoAcao);
         return PlanoAcaoMapper.entityToResponse(planoAcaoGuardado);
@@ -92,7 +96,8 @@ public class PlanoAcaoService {
         PlanoAcao planoAcao = planoAcaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Plano de Ação não encontrado com o ID: " + id));
 
-        planoAcaoRepository.delete(planoAcao);
+        planoAcao.setStatusAtivo(false);
+        planoAcaoRepository.save(planoAcao);
     }
 
     public Page<PlanoAcaoResponseDto> getPlanosByMatricula(String matricula, Pageable pageable) {

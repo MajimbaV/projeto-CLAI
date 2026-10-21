@@ -47,5 +47,6 @@ public record PlanoAcaoRequestDto(
         @NotNull(message = "A data do plano é obrigatória")
         @PastOrPresent(message = "A data do plano não pode ser uma data futura")
         @JsonFormat(pattern = "yyyy-MM-dd")
-        LocalDate dataPlano
+        LocalDate dataPlano,
+        Boolean statusAtivo
 ) {}

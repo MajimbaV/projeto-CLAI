@@ -20,6 +20,10 @@ public class PlanoAcaoMapper {
         planoAcao.setDemandas(request.demandas());
         planoAcao.setPropostas(request.propostas());
         planoAcao.setDataPlano(request.dataPlano());
+
+        if (request.statusAtivo() != null) {
+            planoAcao.setStatusAtivo(request.statusAtivo());
+        }
     }
 
     public static PlanoAcaoResponseDto entityToResponse(PlanoAcao planoAcao) {
@@ -38,7 +42,8 @@ public class PlanoAcaoMapper {
                 planoAcao.getRelatoDificuldades(),
                 planoAcao.getDemandas(),
                 planoAcao.getPropostas(),
-                planoAcao.getDataPlano()
+                planoAcao.getDataPlano(),
+                planoAcao.getStatusAtivo()
         );
     }
 }

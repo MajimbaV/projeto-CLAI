@@ -20,5 +20,5 @@ public record PlanoAcaoResponseDto(
         String relatoDificuldades,
         String demandas,
         String propostas,
-        LocalDate dataPlano
-) {}
+        LocalDate dataPlano,
+        Boolean statusAtivo) {}
