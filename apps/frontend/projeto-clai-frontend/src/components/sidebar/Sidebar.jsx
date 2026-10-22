@@ -21,11 +21,16 @@ function Sidebar() {
         </div>
       </div>
       <div className="sidebar-content">
-        <div className="sidebar-content-title">Alunos</div>
+        <div className="sidebar-content-title">MENU</div>
         <ul>
           <li>
             <NavLink to="/alunos" className="sidebar-button">
               Alunos
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/planejamento/alunos" className="sidebar-button">
+              Planejamento
             </NavLink>
           </li>
         </ul>
