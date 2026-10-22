@@ -48,6 +48,7 @@ public class EstudoDeCaso {
     @Embedded
     private ChecklistApoios checklistApoios;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusEstudoDeCaso statusEstudoDeCaso;
 }

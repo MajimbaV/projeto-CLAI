@@ -16,22 +16,22 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ChecklistApoiosRequestDto(
-        @NotNull List<@NotNull ApoioAcessibilidade> acessibilidadeAmbiente,
+        List<@NotNull ApoioAcessibilidade> acessibilidadeAmbiente,
         @Size(max = 500) String acessibilidadeAmbienteOutro,
-        @NotNull List<@NotNull ApoioComunicacao> comunicacaoMateriais,
+        List<@NotNull ApoioComunicacao> comunicacaoMateriais,
         @Size(max = 500) String comunicacaoMateriaisOutro,
-        @NotNull List<@NotNull ApoioMetodologia> metodologia,
+        List<@NotNull ApoioMetodologia> metodologia,
         @Size(max = 500) String metodologiaOutro,
-        @NotNull List<@NotNull ApoioAvaliacao> avaliacao,
+        List<@NotNull ApoioAvaliacao> avaliacao,
         @Size(max = 500) String avaliacaoOutro,
-        @NotNull List<@NotNull ApoioCurriculo> curriculo,
+        List<@NotNull ApoioCurriculo> curriculo,
         @Size(max = 500) String curriculoOutro,
-        @NotNull List<@NotNull ApoioInstitucional> apoiosInstitucionais,
+        List<@NotNull ApoioInstitucional> apoiosInstitucionais,
         @Size(max = 500) String apoioInstitucionalOutro,
-        @NotBlank @Size(max = 1500) String apoiosExternosEncaminhamentos,
-        @NotBlank @Size(max = 200) String psicopedagogoResponsavel,
-        @NotBlank @Size(max = 200) String coordenadorResponsavel,
-        @NotNull @PastOrPresent LocalDate data
+        @Size(max = 1500) String apoiosExternosEncaminhamentos,
+        @Size(max = 200) String psicopedagogoResponsavel,
+        @Size(max = 200) String coordenadorResponsavel,
+        @PastOrPresent LocalDate data
 ) {
     @AssertTrue(message = "Os campos de 'Outro' devem conter texto ou ser omitidos")
     public boolean isTextoOutroValido() {

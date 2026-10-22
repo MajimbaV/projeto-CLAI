@@ -7,11 +7,11 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record AnamneseRequestDto(
-        @NotBlank @Size(max = 1000) String historicoEscolar,
-        @NotBlank @Size(max = 1000) String experienciasEscolaresPositivas,
-        @NotBlank @Size(max = 1000) String experienciasEscolaresNegativas,
-        @NotBlank @Size(max = 1000) String adaptacoesRecursosEResultados,
-        @NotBlank @Size(max = 1000) String objetivosConhecimentosConsolidados,
-        @NotNull List<@NotBlank @Size(max = 300) String> areasDisciplinasFacilidade,
-        @NotNull List<@NotBlank @Size(max = 300) String> areasDisciplinasDificuldade
+        @Size(max = 1000) String historicoEscolar,
+        @Size(max = 1000) String experienciasEscolaresPositivas,
+        @Size(max = 1000) String experienciasEscolaresNegativas,
+        @Size(max = 1000) String adaptacoesRecursosEResultados,
+        @Size(max = 1000) String objetivosConhecimentosConsolidados,
+        List<@NotBlank @Size(max = 300) String> areasDisciplinasFacilidade,
+        List<@NotBlank @Size(max = 300) String> areasDisciplinasDificuldade
 ) {}

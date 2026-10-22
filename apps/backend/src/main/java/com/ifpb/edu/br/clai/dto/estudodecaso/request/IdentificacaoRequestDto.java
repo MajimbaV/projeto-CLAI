@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record IdentificacaoRequestDto(
-        @NotNull UUID alunoId,
-        @NotNull List<@NotNull @PastOrPresent LocalDate> datasAnamnese,
-        @NotBlank @Size(max = 60) String nomeProfissional
+        UUID alunoId,
+        List<@NotNull @PastOrPresent LocalDate> datasAnamnese,
+        @Size(max = 60) String nomeProfissional
 ) {}

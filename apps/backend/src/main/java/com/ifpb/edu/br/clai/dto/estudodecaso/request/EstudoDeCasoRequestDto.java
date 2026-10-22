@@ -5,15 +5,15 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 public record EstudoDeCasoRequestDto(
-        @NotNull @Valid IdentificacaoRequestDto identificacao,
-        @NotNull @Valid MotivoDemandaRequestDto motivoDemanda,
-        @NotNull @Valid NecessidadesEspecificasRequestDto necessidadesEspecificas,
-        @NotNull @Valid AnamneseRequestDto anamnese,
-        @NotNull @Valid PerfilEstudanteRequestDto perfilEstudante,
-        @NotNull @Valid ContextoPsicossocialRequestDto contextoPsicossocial,
-        @NotNull @Valid PotencialidadesRequestDto potencialidades,
-        @NotNull @Valid NecessidadesEducacionaisRequestDto necessidadesEducacionais,
-        @NotNull @Valid SintesePsicopedagogicaRequestDto sintesePsicopedagogica,
-        @NotNull @Valid ChecklistApoiosRequestDto checklistApoios,
+        @Valid IdentificacaoRequestDto identificacao,
+        @Valid MotivoDemandaRequestDto motivoDemanda,
+        @Valid NecessidadesEspecificasRequestDto necessidadesEspecificas,
+        @Valid AnamneseRequestDto anamnese,
+        @Valid PerfilEstudanteRequestDto perfilEstudante,
+        @Valid ContextoPsicossocialRequestDto contextoPsicossocial,
+        @Valid PotencialidadesRequestDto potencialidades,
+        @Valid NecessidadesEducacionaisRequestDto necessidadesEducacionais,
+        @Valid SintesePsicopedagogicaRequestDto sintesePsicopedagogica,
+        @Valid ChecklistApoiosRequestDto checklistApoios,
         @NotNull StatusEstudoDeCaso statusEstudoDeCaso
 ) {}

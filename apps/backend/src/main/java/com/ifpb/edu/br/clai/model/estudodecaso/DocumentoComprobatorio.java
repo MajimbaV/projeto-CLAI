@@ -11,12 +11,12 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class DocumentoComprobatorio {
-    @Column(name = "n_documento_descricao", nullable = false, length = 300)
+    @Column(name = "n_documento_descricao", length = 300)
     private String descricao;
 
-    @Column(name = "n_documento_data", nullable = false)
+    @Column(name = "n_documento_data")
     private LocalDate data;
 
-    @Column(name = "n_documento_profissional", nullable = false, length = 150)
+    @Column(name = "n_documento_profissional", length = 150)
     private String profissional;
 }

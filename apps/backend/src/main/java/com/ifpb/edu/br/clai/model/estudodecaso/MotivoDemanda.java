@@ -14,24 +14,24 @@ import lombok.Setter;
 public class MotivoDemanda {
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "m_origem_encaminhamento",nullable = false)
+    @Column(name = "m_origem_encaminhamento")
     private OrigemEncaminhamento origemEncaminhamento;
 
     @Column(name = "m_origem_encaminhamento_outro",length = 100)
     private String outroOrigemEncaminhamento;
 
-    @Column(name = "m_motivo", length = 300, nullable = false)
+    @Column(name = "m_motivo", length = 300)
     private String  motivoPrincipal;
 
-    @Column(name = "m_demanda_estudante", nullable = false)
+    @Column(name = "m_demanda_estudante")
     private String demandaDoEstudante;
 
-    @Column(name = "m_demanda_profissional", nullable = false)
+    @Column(name = "m_demanda_profissional")
     private String demandaDoProfissional;
 
-    @Column(name = "m_demanda_responsavel", nullable = false)
+    @Column(name = "m_demanda_responsavel")
     private String demandaDoResponsavel;
 
-    @Column(name = "m_demanda_equipe", nullable = false)
+    @Column(name = "m_demanda_equipe")
     private String demandaEquipeEscolar;
 }

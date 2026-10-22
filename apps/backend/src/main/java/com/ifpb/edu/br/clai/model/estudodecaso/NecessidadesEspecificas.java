@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class NecessidadesEspecificas {
-    @Column(name = "n_especifica_informada", nullable = false, length = 150)
+    @Column(name = "n_especifica_informada", length = 150)
     private String necessidadeInformada;
 
     @ElementCollection

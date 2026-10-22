@@ -16,7 +16,7 @@ import java.util.List;
 public class Identificacao {
 
     @ManyToOne
-    @JoinColumn(name = "aluno_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "aluno_id", referencedColumnName = "id")
     private Aluno alunoId;
 
     @ElementCollection
@@ -24,6 +24,6 @@ public class Identificacao {
     @Column(name = "ide_data_anamnese", nullable = false)
     private List<LocalDate> datasAnamnese = new ArrayList<>();
 
-    @Column(length = 60, nullable = false)
+    @Column(length = 60)
     private String ide_nome_profissional;
 }
