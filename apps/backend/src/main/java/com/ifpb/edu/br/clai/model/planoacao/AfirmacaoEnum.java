@@ -1,4 +1,4 @@
-package com.ifpb.edu.br.clai.model.enums;
+package com.ifpb.edu.br.clai.model.planoacao;
 
 public enum AfirmacaoEnum {
     SIM,
