@@ -8,6 +8,7 @@ import java.util.UUID;
 public record PlanoAcaoResponseDto(
         UUID id,
         String matricula,
+        String alunoNome,
         AfirmacaoEnum comorbidadeRelevante,
         List<String> comorbidadeDescricao,
         AfirmacaoEnum fazUsoMedicacao,
