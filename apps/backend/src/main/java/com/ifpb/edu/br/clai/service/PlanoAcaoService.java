@@ -13,12 +13,15 @@ import com.ifpb.edu.br.clai.repository.PlanoAcaoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.ifpb.edu.br.clai.specification.PlanoAcaoSpecification.*;
 
 @Service
 public class PlanoAcaoService {
@@ -60,6 +63,15 @@ public class PlanoAcaoService {
         }
     }
 
+    public Page<PlanoAcaoResponseDto> getAllPlanoAcao(String nomeAluno, String matriculaAluno, Boolean statusAtivo,Pageable pageable) {
+
+        Specification<PlanoAcao> spec = Specification.where(filtrarPorNome(nomeAluno))
+                .and(filtrarPorMatricula(matriculaAluno).and(filtrarPorStatusAtivo(statusAtivo)));
+
+        return planoAcaoRepository.findAll(spec, pageable)
+                .map(PlanoAcaoMapper::entityToResponse);
+    }
+
     @Transactional
     public PlanoAcaoResponseDto createPlanoAcao(PlanoAcaoRequestDto request) {
         Map<String, String> errors = new HashMap<>();
@@ -85,10 +97,6 @@ public class PlanoAcaoService {
 
         PlanoAcao planoAcaoGuardado = planoAcaoRepository.save(planoAcao);
         return PlanoAcaoMapper.entityToResponse(planoAcaoGuardado);
-    }
-
-    public Page<PlanoAcaoResponseDto> getAllPlanoAcao(Pageable pageable) {
-        return planoAcaoRepository.findAll(pageable).map(PlanoAcaoMapper::entityToResponse);
     }
 
     @Transactional
