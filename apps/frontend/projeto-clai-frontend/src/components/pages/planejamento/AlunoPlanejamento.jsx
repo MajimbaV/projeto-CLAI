@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
+import EditImg from "../../../assets/Edit.png";
 import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
 
 import "./AlunoPlanejamento.css";
@@ -69,6 +70,7 @@ const CAMPOS_METADADOS = new Set([
   "id",
   "_id",
   "estudoCasoId",
+  "idEstudoCaso",
   "titulo",
   "dataCriacao",
   "dataAtualizacao",
@@ -131,6 +133,7 @@ function formatarData(data) {
   }
 
   const [ano, mes, dia] = partes;
+
   return `${dia}/${mes}/${ano}`;
 }
 
@@ -139,9 +142,11 @@ function obterSecoesEstudo(estudo) {
     return [];
   }
 
-  // Aceita estudos que já possuem as seções organizadas.
-  if (Array.isArray(estudo.secoes) && estudo.secoes.length > 0) {
-    return estudo.secoes
+  const secoesOriginais = estudo.secoes || estudo.sections;
+
+  if (Array.isArray(secoesOriginais) && secoesOriginais.length > 0) {
+    return secoesOriginais
+      .filter((secao) => secao && typeof secao === "object")
       .map((secao) => {
         const {
           titulo,
@@ -161,7 +166,6 @@ function obterSecoesEstudo(estudo) {
       .filter((secao) => temConteudo(secao.valor));
   }
 
-  // Também aceita um objeto com os campos diretamente na raiz.
   const chavesReconhecidas = new Set(
     SECOES_ESTUDO_CONFIG.flatMap((secao) => secao.chaves),
   );
@@ -179,7 +183,6 @@ function obterSecoesEstudo(estudo) {
     };
   }).filter(Boolean);
 
-  // Preserva outros campos do formulário que não estejam no mapeamento.
   const outrosCampos = Object.fromEntries(
     Object.entries(estudo).filter(
       ([chave, valor]) =>
@@ -225,8 +228,8 @@ function ValorEstudo({ valor }) {
   }
 
   if (typeof valor === "object") {
-    // Trata o formato comum de campo: { label, valor }.
     const rotulo = valor.label || valor.rotulo || valor.campo || valor.nome;
+
     const valorInterno =
       valor.valor ?? valor.value ?? valor.resposta ?? valor.conteudo;
 
@@ -267,6 +270,7 @@ function AlunoPlanejamento({
   matriculaAluno,
   onBack,
   onNovoEstudoCaso,
+  onEditarEstudoCaso,
   estudosCaso = [],
   isLoadingEstudosCaso = false,
   erroEstudosCaso = null,
@@ -357,7 +361,9 @@ function AlunoPlanejamento({
       return (
         <div className="planejamento-vazio">
           <div className="planejamento-vazio-icone">+</div>
+
           <h3>Nenhum estudo de caso cadastrado</h3>
+
           <p>
             Os estudos de caso deste aluno aparecerão aqui depois de serem
             cadastrados.
@@ -377,11 +383,13 @@ function AlunoPlanejamento({
     return (
       <div className="planejamento-lista-estudos">
         {listaEstudos.map((estudo, index) => {
-          const id =
+          const idEstudo =
             estudo.id ??
             estudo._id ??
             estudo.estudoCasoId ??
-            `${matricula}-${index}`;
+            estudo.idEstudoCaso;
+
+          const id = idEstudo ?? `${matricula}-${index}`;
 
           const titulo = estudo.titulo || `Estudo de caso ${index + 1}`;
 
@@ -389,42 +397,55 @@ function AlunoPlanejamento({
           const secoes = obterSecoesEstudo(estudo);
 
           const dataCriacao = estudo.dataCriacao || estudo.createdAt;
-
           const status = estudo.status || estudo.situacao;
 
           return (
             <article className="planejamento-estudo" key={id}>
-              <button
-                type="button"
-                className="planejamento-estudo-toggle"
-                onClick={() => alternarEstudo(id)}
-                aria-expanded={expandido}
-              >
-                <span className="planejamento-estudo-icone">
-                  <span>EC</span>
-                </span>
-
-                <span className="planejamento-estudo-resumo">
-                  <strong>{titulo}</strong>
-
-                  <span className="planejamento-estudo-metadados">
-                    {dataCriacao
-                      ? `Criado em ${formatarData(dataCriacao)}`
-                      : "Data de criação não informada"}
-
-                    {status ? ` · ${status}` : ""}
-                  </span>
-                </span>
-
-                <span
-                  className={`planejamento-estudo-seta ${
-                    expandido ? "expandido" : ""
-                  }`}
-                  aria-hidden="true"
+              <div className="planejamento-estudo-cabecalho">
+                <button
+                  type="button"
+                  className="planejamento-estudo-toggle"
+                  onClick={() => alternarEstudo(id)}
+                  aria-expanded={expandido}
                 >
-                  ⌄
-                </span>
-              </button>
+                  <span className="planejamento-estudo-icone">
+                    <span>EC</span>
+                  </span>
+
+                  <span className="planejamento-estudo-resumo">
+                    <strong>{titulo}</strong>
+
+                    <span className="planejamento-estudo-metadados">
+                      {dataCriacao
+                        ? `Criado em ${formatarData(dataCriacao)}`
+                        : "Data de criação não informada"}
+
+                      {status ? ` · ${status}` : ""}
+                    </span>
+                  </span>
+
+                  <span
+                    className={`planejamento-estudo-seta ${
+                      expandido ? "expandido" : ""
+                    }`}
+                    aria-hidden="true"
+                  >
+                    ⌄
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className="planejamento-estudo-editar"
+                  title="Editar estudo de caso"
+                  aria-label={`Editar ${titulo}`}
+                  disabled={idEstudo == null || !onEditarEstudoCaso}
+                  onClick={() => onEditarEstudoCaso?.(estudo)}
+                >
+                  <img src={EditImg} alt="" />
+                  <span>Editar</span>
+                </button>
+              </div>
 
               {expandido && (
                 <div className="planejamento-estudo-conteudo">

@@ -44,6 +44,11 @@ function App() {
         path="planejamento/alunos/:matricula"
         element={<AlunoPlanejamentoPage />}
       />
+
+      <Route
+        path="alunos/:matricula/estudo-caso/:id/editar"
+        element={<EstudoCasoPage modo="editar" />}
+      />
     </Routes>
   );
 }

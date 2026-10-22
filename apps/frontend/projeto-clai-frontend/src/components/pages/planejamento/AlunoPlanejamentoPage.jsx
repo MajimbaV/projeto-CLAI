@@ -5,6 +5,24 @@ function AlunoPlanejamentoPage() {
   const { matricula } = useParams();
   const navigate = useNavigate();
 
+  function editarEstudoCaso(estudo) {
+    const idEstudo =
+      estudo.id ?? estudo._id ?? estudo.estudoCasoId ?? estudo.idEstudoCaso;
+
+    if (idEstudo == null) return;
+
+    navigate(
+      `/alunos/${encodeURIComponent(matricula)}/estudo-caso/${encodeURIComponent(
+        idEstudo,
+      )}/editar`,
+      {
+        state: {
+          estudoCaso: estudo,
+        },
+      },
+    );
+  }
+
   return (
     <AlunoPlanejamento
       matriculaAluno={matricula}
@@ -12,6 +30,7 @@ function AlunoPlanejamentoPage() {
       onNovoEstudoCaso={() =>
         navigate(`/alunos/${encodeURIComponent(matricula)}/estudo-caso/novo`)
       }
+      onEditarEstudoCaso={editarEstudoCaso}
     />
   );
 }
