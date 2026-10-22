@@ -67,4 +67,25 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "A operação não pôde ser concluída devido a um conflito de dados.");
+        problemDetail.setTitle("Conflito de Integridade de Dados");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/data-conflict"));
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleAllUncaughtException(Exception ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro interno inesperado no servidor.");
+        problemDetail.setTitle("Erro Interno do Servidor");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/internal-server-error"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        System.err.println("Erro inesperado: " + ex.getMessage());
+
+        return problemDetail;
+    }
 }
