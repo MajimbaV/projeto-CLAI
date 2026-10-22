@@ -8,6 +8,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.net.URI;
 import java.time.Instant;
@@ -75,6 +76,21 @@ public class GlobalExceptionHandler {
         }
 
         problemDetail.setProperty("invalidFields", errors);
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String paramName = ex.getName();
+        String expectedType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "tipo esperado";
+        String message = String.format("O parâmetro '%s' recebeu o valor '%s', que é inválido para o tipo %s.",
+                paramName, ex.getValue(), expectedType);
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        problemDetail.setTitle("Parâmetro com tipo inválido");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/type-mismatch"));
+        problemDetail.setProperty("invalidFields", Map.of(paramName, message));
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }
