@@ -1,5 +1,5 @@
 package com.ifpb.edu.br.clai.dto;
-import com.ifpb.edu.br.clai.model.enums.AfirmacaoEnum;
+import com.ifpb.edu.br.clai.model.planoacao.AfirmacaoEnum;
 
 import java.time.LocalDate;
 import java.util.List;

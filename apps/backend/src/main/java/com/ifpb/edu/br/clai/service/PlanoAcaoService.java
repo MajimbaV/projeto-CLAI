@@ -7,7 +7,7 @@ import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.PlanoAcaoMapper;
 import com.ifpb.edu.br.clai.model.Aluno;
 import com.ifpb.edu.br.clai.model.PlanoAcao;
-import com.ifpb.edu.br.clai.model.enums.AfirmacaoEnum;
+import com.ifpb.edu.br.clai.model.planoacao.AfirmacaoEnum;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import com.ifpb.edu.br.clai.repository.PlanoAcaoRepository;
 import jakarta.transaction.Transactional;
