@@ -30,6 +30,7 @@ public class PlanoAcaoMapper {
         return new PlanoAcaoResponseDto(
                 planoAcao.getId(),
                 planoAcao.getEstudante().getAlunoMatricula(),
+                planoAcao.getEstudante().getAlunoNome(),
                 planoAcao.getComorbidadeRelevante(),
                 planoAcao.getComorbidadeDescricao(),
                 planoAcao.getFazUsoMedicacao(),
