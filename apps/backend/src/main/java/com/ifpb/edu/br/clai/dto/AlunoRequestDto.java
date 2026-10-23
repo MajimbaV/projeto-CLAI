@@ -19,10 +19,11 @@ public record AlunoRequestDto(
         String alunoEmail,
         @Size(max = 100, message = "O nome do responsável deve ter no máximo 100 caracteres")
         String nomeResponsavel,
+        @Size(max = 30, message = "O grau de parentesco deve ter no máximo 30 caracteres")
         String grauParentesco,
-        @Pattern(regexp = "^\\d+$", message = "O telefone do responsável deve conter apenas números")
+        @Pattern(regexp = "^$|^\\d+$", message = "O telefone do responsável deve conter apenas números")
         String responsavelTelefone,
-        @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Formato de e-mail do responsável inválido. O domínio e extensão são obrigatórios")
+        @Pattern(regexp = "^$|^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Formato de e-mail do responsável inválido. O domínio e extensão são obrigatórios")
         @Size(max = 60, message = "O e-mail do responsável deve ter no máximo 60 caracteres")
         String responsavelEmail,
         @NotBlank(message = "A matrícula do aluno é obrigatória")
