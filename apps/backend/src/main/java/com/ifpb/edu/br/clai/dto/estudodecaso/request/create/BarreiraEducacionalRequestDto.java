@@ -1,4 +1,4 @@
-package com.ifpb.edu.br.clai.dto.estudodecaso.request;
+package com.ifpb.edu.br.clai.dto.estudodecaso.request.create;
 
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacional;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.PrioridadeNecessidadeEducacional;

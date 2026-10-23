@@ -1,7 +1,6 @@
-package com.ifpb.edu.br.clai.dto.estudodecaso.request;
+package com.ifpb.edu.br.clai.dto.estudodecaso.request.create;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.ifpb.edu.br.clai.controller;
 
-import com.ifpb.edu.br.clai.dto.estudodecaso.EstudoDeCasoResponseDto;
-import com.ifpb.edu.br.clai.dto.estudodecaso.request.EstudoDeCasoRequestDto;
+import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
+import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoRequestDto;
 import com.ifpb.edu.br.clai.service.EstudoDeCasoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

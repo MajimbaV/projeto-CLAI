@@ -1,12 +1,14 @@
 package com.ifpb.edu.br.clai.mapper;
 
-import com.ifpb.edu.br.clai.dto.estudodecaso.EstudoDeCasoResponseDto;
-import com.ifpb.edu.br.clai.dto.estudodecaso.request.*;
+import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
+import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto.*;
+import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.*;
 import com.ifpb.edu.br.clai.model.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class EstudoDeCasoMapper {
 
@@ -27,7 +29,176 @@ public class EstudoDeCasoMapper {
     }
 
     public static EstudoDeCasoResponseDto entityToResponse(EstudoDeCaso estudoDeCaso) {
-        return new EstudoDeCasoResponseDto(estudoDeCaso.getId(), estudoDeCaso.getStatusEstudoDeCaso());
+        return new EstudoDeCasoResponseDto(
+                estudoDeCaso.getId(),
+                estudoDeCaso.getStatusEstudoDeCaso(),
+                toIdentificacaoResponse(estudoDeCaso.getIdentificacao()),
+                toMotivoDemandaResponse(estudoDeCaso.getMotivoDemanda()),
+                toNecessidadesEspecificasResponse(estudoDeCaso.getNecessidadesEspecificas()),
+                toAnamneseResponse(estudoDeCaso.getAnamnese()),
+                toPerfilEstudanteResponse(estudoDeCaso.getPerfilEstudante()),
+                toContextoPsicossocialResponse(estudoDeCaso.getContextoPsicossocial()),
+                toPotencialidadesResponse(estudoDeCaso.getPotencialidades()),
+                toNecessidadesEducacionaisResponse(estudoDeCaso.getNecessidadesEducacionais()),
+                toSintesePsicopedagogicaResponse(estudoDeCaso.getSintesePsicopedagogica()),
+                toChecklistApoiosResponse(estudoDeCaso.getChecklistApoios())
+        );
+    }
+
+    private static IdentificacaoResponseDto toIdentificacaoResponse(Identificacao identificacao) {
+        if (identificacao == null) return null;
+        Aluno aluno = identificacao.getAlunoId();
+        UUID alunoId = aluno == null ? null : aluno.getId();
+        return new IdentificacaoResponseDto(
+                alunoId,
+                aluno == null ? null : AlunoMapper.entityToResponse(aluno),
+                identificacao.getDatasAnamnese(),
+                identificacao.getIde_nome_profissional()
+        );
+    }
+
+    private static MotivoDemandaResponseDto toMotivoDemandaResponse(MotivoDemanda motivo) {
+        if (motivo == null) return null;
+        return new MotivoDemandaResponseDto(
+                motivo.getOrigemEncaminhamento(),
+                motivo.getOutroOrigemEncaminhamento(),
+                motivo.getMotivoPrincipal(),
+                motivo.getDemandaDoEstudante(),
+                motivo.getDemandaDoProfissional(),
+                motivo.getDemandaDoResponsavel(),
+                motivo.getDemandaEquipeEscolar()
+        );
+    }
+
+    private static NecessidadesEspecificasResponseDto toNecessidadesEspecificasResponse(
+            NecessidadesEspecificas necessidades
+    ) {
+        if (necessidades == null) return null;
+        return new NecessidadesEspecificasResponseDto(
+                necessidades.getNecessidadeInformada(),
+                necessidades.getDiagnosticos(),
+                necessidades.getDocumentos() == null ? null : necessidades.getDocumentos().stream()
+                        .map(EstudoDeCasoMapper::toDocumentoResponse)
+                        .toList(),
+                necessidades.getCondicoesAssociadas(),
+                necessidades.getMedicacoesContinuas(),
+                necessidades.getEncaminhamentosAnteriores(),
+                necessidades.getServicosApoioAtuaisAnteriores()
+        );
+    }
+
+    private static DocumentoComprobatorioResponseDto toDocumentoResponse(DocumentoComprobatorio documento) {
+        if (documento == null) return null;
+        return new DocumentoComprobatorioResponseDto(
+                documento.getDescricao(),
+                documento.getData(),
+                documento.getProfissional()
+        );
+    }
+
+    private static AnamneseResponseDto toAnamneseResponse(Anamnese anamnese) {
+        if (anamnese == null) return null;
+        return new AnamneseResponseDto(
+                anamnese.getHistoricoEscolar(),
+                anamnese.getExperienciasEscolaresPositivas(),
+                anamnese.getExperienciasEscolaresNegativas(),
+                anamnese.getAdaptacoesRecursosEResultados(),
+                anamnese.getObjetivosConhecimentosConsolidados(),
+                anamnese.getAreasDisciplinasFacilidade(),
+                anamnese.getAreasDisciplinasDificuldade()
+        );
+    }
+
+    private static PerfilEstudanteResponseDto toPerfilEstudanteResponse(PerfilEstudante perfil) {
+        if (perfil == null) return null;
+        return new PerfilEstudanteResponseDto(
+                perfil.getComunicacaoCompreensaoOrientacoes(),
+                perfil.getLeituraEscritaLinguagem(),
+                perfil.getRaciocinioLogicoMatematico(),
+                perfil.getAtencaoMemoriaFuncoesExecutivas(),
+                perfil.getOrganizacaoPlanejamentoRealizacaoTarefas(),
+                perfil.getInteracaoSocialParticipacaoSala(),
+                perfil.getAspectosSensoriaisRelevantes(),
+                perfil.getMobilidadeAcessoTecnologiasRecursos(),
+                perfil.getAutonomiaContextoFamiliar(),
+                perfil.getAutonomiaContextoEscolar(),
+                perfil.getEstrategiasQueFavorecemAprendizagem(),
+                perfil.getSituacoesQueDificultamAprendizagem()
+        );
+    }
+
+    private static ContextoPsicossocialResponseDto toContextoPsicossocialResponse(ContextoPsicossocial contexto) {
+        if (contexto == null) return null;
+        return new ContextoPsicossocialResponseDto(
+                contexto.getRelacaoComCursoEExpectativas(),
+                contexto.getRedeApoioFamiliarSocial(),
+                contexto.getConflitosOuFatoresPsicossociais(),
+                contexto.getObservacoesFrequenciaRotinaPermanencia()
+        );
+    }
+
+    private static PotencialidadesResponseDto toPotencialidadesResponse(Potencialidades potencialidades) {
+        if (potencialidades == null) return null;
+        return new PotencialidadesResponseDto(
+                potencialidades.getPotencialidadesAcademicas(),
+                potencialidades.getInteressesHabilidades(),
+                potencialidades.getFormasPreferenciaisAprendizagemEDemonstracao(),
+                potencialidades.getRecursosQueFavorecemDesempenho()
+        );
+    }
+
+    private static NecessidadesEducacionaisResponseDto toNecessidadesEducacionaisResponse(
+            NecessidadesEducacionais necessidades
+    ) {
+        if (necessidades == null) return null;
+        return new NecessidadesEducacionaisResponseDto(
+                necessidades.getBarreiras() == null ? null : necessidades.getBarreiras().stream()
+                        .map(EstudoDeCasoMapper::toBarreiraResponse)
+                        .toList()
+        );
+    }
+
+    private static BarreiraEducacionalResponseDto toBarreiraResponse(BarreiraEducacional barreira) {
+        if (barreira == null) return null;
+        return new BarreiraEducacionalResponseDto(
+                barreira.getDimensao(),
+                barreira.getBarreiraNecessidade(),
+                barreira.getEvidenciasImpactos(),
+                barreira.getPrioridade()
+        );
+    }
+
+    private static SintesePsicopedagogicaResponseDto toSintesePsicopedagogicaResponse(SintesePsicopedagogica sintese) {
+        if (sintese == null) return null;
+        return new SintesePsicopedagogicaResponseDto(
+                sintese.getIdentificacaoNecessidadesEspecificas(),
+                sintese.getAvancosObjetivosConhecimentosAlcancados(),
+                sintese.getDificuldadesBarreirasComRepercussaoEducacional(),
+                sintese.getPotencialidadesECondicoesFacilitadoras(),
+                sintese.getPrincipaisDemandasIdentificadasNoCaso()
+        );
+    }
+
+    private static ChecklistApoiosResponseDto toChecklistApoiosResponse(ChecklistApoios checklist) {
+        if (checklist == null) return null;
+        return new ChecklistApoiosResponseDto(
+                checklist.getAcessibilidadeAmbiente(),
+                checklist.getAcessibilidadeAmbienteOutro(),
+                checklist.getComunicacaoMateriais(),
+                checklist.getComunicacaoMateriaisOutro(),
+                checklist.getMetodologia(),
+                checklist.getMetodologiaOutro(),
+                checklist.getAvaliacao(),
+                checklist.getAvaliacaoOutro(),
+                checklist.getCurriculo(),
+                checklist.getCurriculoOutro(),
+                checklist.getApoiosInstitucionais(),
+                checklist.getApoioInstitucionalOutro(),
+                checklist.getApoiosExternosEncaminhamentos(),
+                checklist.getPsicopedagogoResponsavel(),
+                checklist.getCoordenadorResponsavel(),
+                checklist.getData()
+        );
     }
 
     private static Identificacao toIdentificacao(IdentificacaoRequestDto request, Aluno aluno) {

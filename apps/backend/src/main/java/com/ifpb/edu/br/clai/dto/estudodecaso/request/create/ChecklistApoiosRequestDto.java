@@ -1,4 +1,4 @@
-package com.ifpb.edu.br.clai.dto.estudodecaso.request;
+package com.ifpb.edu.br.clai.dto.estudodecaso.request.create;
 
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.ApoioAcessibilidade;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.ApoioAvaliacao;
@@ -7,7 +7,6 @@ import com.ifpb.edu.br.clai.model.estudodecaso.enums.ApoioCurriculo;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.ApoioInstitucional;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.ApoioMetodologia;
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
