@@ -45,21 +45,18 @@ public class AlunoService {
         int idade = Period.between(dto.alunoNascimento(), LocalDate.now()).getYears();
 
         boolean temNomeResponsavel = dto.nomeResponsavel() != null && !dto.nomeResponsavel().isBlank();
+        boolean temParentescoResponsavel = dto.grauParentesco() != null && !dto.grauParentesco().isBlank();
         boolean temTelefoneResponsavel = dto.responsavelTelefone() != null && !dto.responsavelTelefone().isBlank();
-        boolean temQualquerDadoResponsavel = temNomeResponsavel || temTelefoneResponsavel ||
-                (dto.grauParentesco() != null && !dto.grauParentesco().isBlank()) ||
-                (dto.responsavelEmail() != null && !dto.responsavelEmail().isBlank());
 
         if (idade < 18) {
             if (!temNomeResponsavel) {
                 errors.put("nomeResponsavel", "O nome do responsável é obrigatório para alunos menores de idade.");
             }
+            if (!temParentescoResponsavel) {
+                errors.put("grauParentesco", "O grau de parentesco do responsável é obrigatório para alunos menores de idade.");
+            }
             if (!temTelefoneResponsavel) {
                 errors.put("responsavelTelefone", "O telefone do responsável é obrigatório para alunos menores de idade.");
-            }
-        } else {
-            if (temQualquerDadoResponsavel) {
-                throw new BusinessRuleException("Alunos maiores de idade (" + idade + " anos) não devem conter informações de responsável.");
             }
         }
 
