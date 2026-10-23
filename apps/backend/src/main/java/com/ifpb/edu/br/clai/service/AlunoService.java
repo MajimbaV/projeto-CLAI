@@ -81,7 +81,7 @@ public class AlunoService {
         }
     }
 
-    private Aluno buscarOuFalhar(UUID id) {
+    public Aluno buscarOuFalhar(UUID id) {
         return alunoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + id));
     }

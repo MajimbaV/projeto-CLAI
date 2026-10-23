@@ -3,14 +3,12 @@ package com.ifpb.edu.br.clai.service;
 import com.ifpb.edu.br.clai.dto.estudodecaso.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.*;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
-import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.EstudoDeCasoMapper;
 import com.ifpb.edu.br.clai.model.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.EstudoDeCaso;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacional;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.StatusEstudoDeCaso;
-import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import com.ifpb.edu.br.clai.repository.EstudoDeCasoRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,17 +18,19 @@ import java.util.*;
 public class EstudoDeCasoService {
 
     private final EstudoDeCasoRepository estudoDeCasoRepository;
-    private final AlunoRepository alunoRepository;
+    private final AlunoService alunoService;
 
-    public EstudoDeCasoService(EstudoDeCasoRepository estudoDeCasoRepository, AlunoRepository alunoRepository) {
+    public EstudoDeCasoService(EstudoDeCasoRepository estudoDeCasoRepository, AlunoService alunoService) {
         this.estudoDeCasoRepository = estudoDeCasoRepository;
-        this.alunoRepository = alunoRepository;
+        this.alunoService = alunoService;
     }
 
     public EstudoDeCasoResponseDto createEstudoDeCaso(EstudoDeCasoRequestDto dto) {
         validarRegras(dto);
 
-        Aluno aluno = buscarAluno(dto.identificacao());
+        Aluno aluno = dto.identificacao() != null && dto.identificacao().alunoId() != null
+                ? alunoService.buscarOuFalhar(dto.identificacao().alunoId())
+                : null;
         EstudoDeCaso estudoDeCaso = EstudoDeCasoMapper.requestToEntity(prepararParaMapeamento(dto), aluno);
         EstudoDeCaso estudoDeCasoSalvo = estudoDeCasoRepository.save(estudoDeCaso);
         return EstudoDeCasoMapper.entityToResponse(estudoDeCasoSalvo);
@@ -57,15 +57,6 @@ public class EstudoDeCasoService {
                         null, null, null, null, null, null, null, null),
                 dto.statusEstudoDeCaso()
         );
-    }
-
-    private Aluno buscarAluno(IdentificacaoRequestDto identificacao) {
-        if (identificacao == null || identificacao.alunoId() == null) {
-            return null;
-        }
-        UUID alunoId = identificacao.alunoId();
-        return alunoRepository.findById(alunoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + alunoId));
     }
 
     private void validarRegras(EstudoDeCasoRequestDto dto) {
