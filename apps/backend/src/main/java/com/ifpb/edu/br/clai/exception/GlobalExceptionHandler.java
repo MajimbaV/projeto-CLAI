@@ -6,11 +6,16 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.net.URI;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -61,7 +66,60 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Formato de payload ou data inválido. Assegure-se de que a data obedece o formato AAAA-MM-DD.");
+        InvalidFormatException invalidFormat = findInvalidFormatException(ex);
+        if (invalidFormat != null && invalidFormat.getTargetType() == UUID.class) {
+            String field = formatFieldPath(invalidFormat.getPath());
+            String fieldName = field.isBlank() ? "identificacao.alunoId" : field;
+            ProblemDetail problemDetail = invalidPayloadProblem(
+                    "O campo " + fieldName + " deve conter um UUID válido."
+            );
+            problemDetail.setProperty("invalidFields", Map.of(fieldName, "Informe um UUID válido."));
+            return problemDetail;
+        }
+
+        if (invalidFormat != null && invalidFormat.getTargetType() == LocalDate.class) {
+            String field = formatFieldPath(invalidFormat.getPath());
+            String detail = field.isBlank()
+                    ? "Data inválida. Use o formato AAAA-MM-DD."
+                    : "O campo " + field + " deve conter uma data válida no formato AAAA-MM-DD.";
+            ProblemDetail problemDetail = invalidPayloadProblem(detail);
+            if (!field.isBlank()) {
+                problemDetail.setProperty("invalidFields", Map.of(field, "Use uma data válida no formato AAAA-MM-DD."));
+            }
+            return problemDetail;
+        }
+
+        return invalidPayloadProblem("Formato do JSON ou valor de algum campo inválido.");
+    }
+
+    private InvalidFormatException findInvalidFormatException(Throwable exception) {
+        Throwable cause = exception;
+        while (cause != null) {
+            if (cause instanceof InvalidFormatException invalidFormat) {
+                return invalidFormat;
+            }
+            cause = cause.getCause();
+        }
+        return null;
+    }
+
+    private String formatFieldPath(List<JacksonException.Reference> path) {
+        StringBuilder fieldPath = new StringBuilder();
+        for (JacksonException.Reference reference : path) {
+            if (reference.getPropertyName() != null) {
+                if (!fieldPath.isEmpty()) {
+                    fieldPath.append('.');
+                }
+                fieldPath.append(reference.getPropertyName());
+            } else if (reference.getIndex() >= 0) {
+                fieldPath.append('[').append(reference.getIndex()).append(']');
+            }
+        }
+        return fieldPath.toString();
+    }
+
+    private ProblemDetail invalidPayloadProblem(String detail) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
         problemDetail.setTitle("Erro de Formato / Sintaxe");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/bad-request"));
         problemDetail.setProperty("timestamp", Instant.now());

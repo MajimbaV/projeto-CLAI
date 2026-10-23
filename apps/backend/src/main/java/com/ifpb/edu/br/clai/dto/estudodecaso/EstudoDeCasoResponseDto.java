@@ -1,4 +1,7 @@
 package com.ifpb.edu.br.clai.dto.estudodecaso;
 
-public class EstudoDeCasoResponseDto {
-}
+import com.ifpb.edu.br.clai.model.estudodecaso.enums.StatusEstudoDeCaso;
+
+import java.util.UUID;
+
+public record EstudoDeCasoResponseDto(UUID id, StatusEstudoDeCaso statusEstudoDeCaso) {}
