@@ -1,0 +1,214 @@
+.planejamento-alunos-header-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.planejamento-alunos-card {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.planejamento-tabela-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.planejamento-alunos-table {
+  width: 100%;
+  min-width: 920px;
+  margin-top: 16px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: left;
+}
+
+.planejamento-alunos-table thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.planejamento-alunos-table tbody {
+  display: block;
+  min-height: 340px;
+}
+
+.planejamento-alunos-table tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.planejamento-alunos-table th:first-child,
+.planejamento-alunos-table td:first-child {
+  width: 22%;
+}
+
+.planejamento-alunos-table th:nth-child(2),
+.planejamento-alunos-table td:nth-child(2) {
+  width: 17%;
+}
+
+.planejamento-alunos-table th:nth-child(3),
+.planejamento-alunos-table td:nth-child(3) {
+  width: 43%;
+}
+
+.planejamento-alunos-table th:last-child,
+.planejamento-alunos-table td:last-child {
+  width: 18%;
+}
+
+.planejamento-alunos-table td:last-child {
+  display: table-cell;
+}
+
+.planejamento-aluno-info {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+}
+
+.planejamento-aluno-info:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.planejamento-cronologia {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+
+.planejamento-documento-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  background-color: #ffffff;
+}
+
+.planejamento-documento-ponto {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background-color: #9ca3af;
+}
+
+.planejamento-documento-textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+
+.planejamento-documento-nome {
+  color: #374151;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.planejamento-documento-resumo {
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.planejamento-documento-data {
+  color: #9ca3af;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.planejamento-documento-status.feito {
+  border-color: #bbf7d0;
+  background-color: #f0fdf4;
+}
+
+.planejamento-documento-status.feito .planejamento-documento-ponto {
+  background-color: #16a34a;
+}
+
+.planejamento-documento-status.feito .planejamento-documento-resumo {
+  color: #166534;
+}
+
+.planejamento-documento-status.pendente {
+  background-color: #f9fafb;
+}
+
+.planejamento-documento-status.desconhecido {
+  border-style: dashed;
+  background-color: #ffffff;
+}
+
+.planejamento-alunos-table td:last-child .planejamento-btn-acessar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.planejamento-alunos-table
+  td:last-child
+  .planejamento-btn-acessar:hover:not(:disabled) {
+  border-color: #00523d;
+  background-color: #f0fdf4;
+  color: #00523d;
+}
+
+.planejamento-alunos-table td:last-child .planejamento-btn-acessar:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.planejamento-alunos-body button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .planejamento-alunos-header-acoes {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 560px) {
+  .planejamento-alunos-header-acoes {
+    gap: 8px;
+  }
+
+  .planejamento-alunos-header-acoes .btn-add {
+    padding: 10px 12px;
+  }
+
+  .planejamento-cronologia {
+    grid-template-columns: 1fr;
+  }
+}
