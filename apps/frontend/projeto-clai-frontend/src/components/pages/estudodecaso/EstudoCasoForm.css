@@ -46,25 +46,72 @@
 }
 
 .estudo-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: block;
   min-width: 0;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  overflow: hidden;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
+  background: #ffffff;
 }
 
-.estudo-section > legend {
-  padding: 0 8px;
+.estudo-section-heading {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: normal;
+}
+
+.estudo-section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  border: none;
+  background: #ffffff;
   color: #111827;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.estudo-section-toggle:hover {
+  background: #f9fafb;
+}
+
+.estudo-section-title {
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.5;
+}
+
+.estudo-section-chevron {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #00523d;
+  font-size: 23px;
+  transition: transform 0.2s;
+}
+
+.estudo-section-chevron.expandido {
+  transform: rotate(180deg);
+}
+
+.estudo-section-panel {
+  padding: 0 20px 20px;
+  border-top: 1px solid #e5e7eb;
 }
 
 .estudo-section-description {
-  margin: -6px 0 0;
+  margin: 16px 0;
   color: #9ca3af;
   font-size: 12px;
   line-height: 1.5;
@@ -75,6 +122,11 @@
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+}
+
+.estudo-section-toggle:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -3px;
 }
 
 .estudo-form-grid {
@@ -204,7 +256,9 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .estudo-btn-cancel {
@@ -243,8 +297,12 @@
     padding: 16px;
   }
 
-  .estudo-section {
-    padding: 16px;
+  .estudo-section-toggle {
+    padding: 15px 16px;
+  }
+
+  .estudo-section-panel {
+    padding: 0 16px 16px;
   }
 
   .estudo-form-grid,
