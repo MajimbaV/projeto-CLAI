@@ -42,12 +42,14 @@ li {
   margin-top: -10px;
   margin-left: -5px;
 }
+
 .sidebar-logo {
   width: 50px;
   height: auto;
   align-items: left;
   padding: 3px;
 }
+
 .sidebar-main-text {
   display: flex;
   flex-direction: column;
@@ -78,7 +80,7 @@ li {
 
 .sidebar-content li {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 3px;
   padding: 0;
   box-sizing: border-box;
 }
@@ -86,8 +88,7 @@ li {
 .sidebar-content-title {
   font-size: 11px;
   color: white;
-  align-self: left;
-  margin-left: 50px;
+  margin-left: 24px;
   text-transform: uppercase;
   margin-top: 20px;
 }
@@ -95,31 +96,46 @@ li {
 .sidebar-button {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 12px;
-  background-color: white;
-  color: #00523d;
-  border: 0.5px solid transparent;
-  text-align: center;
+  padding: 11px 14px;
+  background-color: transparent;
+  color: #e5e7eb;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 6px;
+  text-align: left;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 10px;
   white-space: nowrap;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .sidebar-button:hover {
-  background-color: #eef2ff;
-  color: #475ccc;
-  transition: 0.3s;
-  border-color: #475ccc;
-  border-width: 0.5px;
-  border-style: solid;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.sidebar-button.active {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-left-color: #a7f3d0;
+  font-weight: 600;
+}
+
+.sidebar-button:focus-visible {
+  outline: 2px solid #a7f3d0;
+  outline-offset: -2px;
 }
 
 /*footer da sidebar*/
+
 .sidebar-footer {
   padding: 20px;
   color: white;
@@ -157,6 +173,7 @@ li {
   font-weight: bold;
   margin-right: 10px;
 }
+
 .user-name {
   font-size: 0.9em;
   color: white;
