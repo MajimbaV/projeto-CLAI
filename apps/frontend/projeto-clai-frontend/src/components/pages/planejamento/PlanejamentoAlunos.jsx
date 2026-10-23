@@ -57,6 +57,7 @@ function formatarData(data) {
   }
 
   const [ano, mes, dia] = partes;
+
   return `${dia}/${mes}/${ano}`;
 }
 
@@ -189,7 +190,11 @@ function resumirValorDocumento(valor) {
 
 function obterCronologia(fonte, tipoDocumento) {
   if (fonte == null) {
-    return { conhecido: false, quantidade: 0, ultimaData: null };
+    return {
+      conhecido: false,
+      quantidade: 0,
+      ultimaData: null,
+    };
   }
 
   const fonteLista = Array.isArray(fonte)
@@ -225,8 +230,6 @@ function obterCronologia(fonte, tipoDocumento) {
     };
   }
 
-  // Há uma fonte de cronologia disponível, mas esse tipo de documento
-  // não aparece nela.
   return {
     conhecido: true,
     quantidade: 0,
@@ -339,7 +342,6 @@ function PlanejamentoAlunos({
     );
   }
 
-  // Mesmo comportamento do AlunoList durante o carregamento.
   if (isLoading) {
     return (
       <div className="aluno-list-body">
@@ -349,22 +351,11 @@ function PlanejamentoAlunos({
     );
   }
 
-  // Mesmo comportamento do AlunoList quando ocorre um erro.
   if (error) {
     return (
       <div className="aluno-list-body">
         {renderizarCabecalho(false)}
         <p>Erro: {error.detail || error.message || String(error)}</p>
-      </div>
-    );
-  }
-
-  // Sem alunos: cabeçalho e mensagem, sem cartão ou tabela.
-  if (!alunos || alunos.length === 0) {
-    return (
-      <div className="aluno-list-body">
-        {renderizarCabecalho(true)}
-        <p>Nenhum aluno encontrado.</p>
       </div>
     );
   }
@@ -386,105 +377,115 @@ function PlanejamentoAlunos({
             </thead>
 
             <tbody>
-              {alunos.map((aluno, index) => {
-                const matricula = aluno.alunoMatricula || aluno.matricula;
+              {alunos.length > 0 ? (
+                alunos.map((aluno, index) => {
+                  const matricula = aluno.alunoMatricula || aluno.matricula;
 
-                return (
-                  <tr key={aluno.id ?? matricula ?? `${paginaAtual}-${index}`}>
-                    <td>
-                      <button
-                        type="button"
-                        className="aluno-info planejamento-aluno-info"
-                        onClick={() => abrirPlanejamento(aluno)}
-                        disabled={!matricula || !onViewPlanning}
-                      >
-                        <span className="aluno-nome">
-                          {aluno.alunoNome ||
-                            aluno.nome ||
-                            "Nome não informado"}
-                        </span>
+                  return (
+                    <tr
+                      key={aluno.id ?? matricula ?? `${paginaAtual}-${index}`}
+                    >
+                      <td>
+                        <button
+                          type="button"
+                          className="aluno-info planejamento-aluno-info"
+                          onClick={() => abrirPlanejamento(aluno)}
+                          disabled={!matricula || !onViewPlanning}
+                        >
+                          <span className="aluno-nome">
+                            {aluno.alunoNome ||
+                              aluno.nome ||
+                              "Nome não informado"}
+                          </span>
 
-                        <span className="aluno-matricula">
-                          {matricula || "Matrícula não informada"}
-                        </span>
-                      </button>
-                    </td>
+                          <span className="aluno-matricula">
+                            {matricula || "Matrícula não informada"}
+                          </span>
+                        </button>
+                      </td>
 
-                    <td>
-                      {aluno.alunoCurso || aluno.curso || "Não informado"}
-                    </td>
+                      <td>
+                        {aluno.alunoCurso || aluno.curso || "Não informado"}
+                      </td>
 
-                    <td>
-                      <CronologiaDocumentos
-                        aluno={aluno}
-                        matricula={matricula}
-                        cronologiaPorMatricula={cronologiaPorMatricula}
-                      />
-                    </td>
+                      <td>
+                        <CronologiaDocumentos
+                          aluno={aluno}
+                          matricula={matricula}
+                          cronologiaPorMatricula={cronologiaPorMatricula}
+                        />
+                      </td>
 
-                    <td>
-                      <button
-                        type="button"
-                        className="planejamento-btn-acessar"
-                        onClick={() => abrirPlanejamento(aluno)}
-                        disabled={!matricula || !onViewPlanning}
-                      >
-                        Visualizar planejamento
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                      <td>
+                        <button
+                          type="button"
+                          className="planejamento-btn-acessar"
+                          onClick={() => abrirPlanejamento(aluno)}
+                          disabled={!matricula || !onViewPlanning}
+                        >
+                          Visualizar planejamento
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={4}>Nenhum aluno encontrado.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
-        <div className="table-footer">
-          <span className="footer-info">
-            Mostrando {quantidadeAlunos} de {totalAlunos} alunos
-          </span>
+        {alunos.length > 0 && (
+          <div className="table-footer">
+            <span className="footer-info">
+              Mostrando {quantidadeAlunos} de {totalAlunos} alunos
+            </span>
 
-          <div className="pagination">
-            <button
-              type="button"
-              className="page-btn"
-              onClick={() =>
-                setPaginaAtual((pagina) => Math.max(pagina - 1, 1))
-              }
-              disabled={paginaAtual === 1}
-            >
-              <img src={ChevronLeft} alt="Anterior" />
-            </button>
+            <div className="pagination">
+              <button
+                type="button"
+                className="page-btn"
+                onClick={() =>
+                  setPaginaAtual((pagina) => Math.max(pagina - 1, 1))
+                }
+                disabled={paginaAtual === 1}
+              >
+                <img src={ChevronLeft} alt="Anterior" />
+              </button>
 
-            {Array.from({ length: totalPaginas }, (_, index) => {
-              const numeroPagina = index + 1;
+              {Array.from({ length: totalPaginas }, (_, index) => {
+                const numeroPagina = index + 1;
 
-              return (
-                <button
-                  type="button"
-                  key={numeroPagina}
-                  className={`page-btn ${
-                    paginaAtual === numeroPagina ? "active" : ""
-                  }`}
-                  onClick={() => setPaginaAtual(numeroPagina)}
-                >
-                  {numeroPagina}
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    type="button"
+                    key={numeroPagina}
+                    className={`page-btn ${
+                      paginaAtual === numeroPagina ? "active" : ""
+                    }`}
+                    onClick={() => setPaginaAtual(numeroPagina)}
+                  >
+                    {numeroPagina}
+                  </button>
+                );
+              })}
 
-            <button
-              type="button"
-              className="page-btn"
-              onClick={() =>
-                setPaginaAtual((pagina) => Math.min(pagina + 1, totalPaginas))
-              }
-              disabled={paginaAtual === totalPaginas || totalPaginas === 0}
-            >
-              <img src={ChevronRight} alt="Seguinte" />
-            </button>
+              <button
+                type="button"
+                className="page-btn"
+                onClick={() =>
+                  setPaginaAtual((pagina) => Math.min(pagina + 1, totalPaginas))
+                }
+                disabled={paginaAtual === totalPaginas || totalPaginas === 0}
+              >
+                <img src={ChevronRight} alt="Seguinte" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
