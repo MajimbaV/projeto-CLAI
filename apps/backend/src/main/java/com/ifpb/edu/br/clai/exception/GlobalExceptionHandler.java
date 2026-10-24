@@ -1,11 +1,14 @@
 package com.ifpb.edu.br.clai.exception;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
@@ -60,6 +63,39 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Dados inválidos");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/invalid-data"));
         problemDetail.setProperty("invalidFields", ex.getInvalidFields());
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleConstraintViolation(ConstraintViolationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Falha na validação dos parâmetros de consulta.");
+        problemDetail.setTitle("Parâmetros inválidos");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/invalid-parameters"));
+
+        Map<String, String> errors = new HashMap<>();
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            String propertyPath = violation.getPropertyPath().toString();
+            String paramName = propertyPath.contains(".") ? propertyPath.substring(propertyPath.lastIndexOf('.') + 1) : propertyPath;
+            errors.put(paramName, violation.getMessage());
+        }
+
+        problemDetail.setProperty("invalidFields", errors);
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String paramName = ex.getName();
+        String expectedType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "tipo esperado";
+        String message = String.format("O parâmetro '%s' recebeu o valor '%s', que é inválido para o tipo %s.",
+                paramName, ex.getValue(), expectedType);
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        problemDetail.setTitle("Parâmetro com tipo inválido");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/type-mismatch"));
+        problemDetail.setProperty("invalidFields", Map.of(paramName, message));
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }
@@ -123,6 +159,27 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Erro de Formato / Sintaxe");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/bad-request"));
         problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "A operação não pôde ser concluída devido a um conflito de dados.");
+        problemDetail.setTitle("Conflito de Integridade de Dados");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/data-conflict"));
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleAllUncaughtException(Exception ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro interno inesperado no servidor.");
+        problemDetail.setTitle("Erro Interno do Servidor");
+        problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/internal-server-error"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        System.err.println("Erro inesperado: " + ex.getMessage());
+
         return problemDetail;
     }
 }

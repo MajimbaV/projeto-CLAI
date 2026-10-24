@@ -35,7 +35,6 @@ const FORM_DATA_VAZIO = {
   periodoAluno: "",
 };
 
-
 function normalizarDefaultValues(valores) {
   const normalizado = {};
 
@@ -55,13 +54,17 @@ function AlunoForm({
   mode = "create",
 }) {
   const [formData, setFormData] = useState(() =>
-  normalizarDefaultValues(defaultValues),
+    normalizarDefaultValues(defaultValues),
   );
 
   const textos = TEXTOS_POR_MODO[mode] ?? TEXTOS_POR_MODO.create;
-  
+
   const navigate = useNavigate();
-  const previousRedirect = mode === "create" ? "/alunos" : `../alunos/${encodeURIComponent(formData.alunoMatricula)}`;
+
+  const previousRedirect =
+    mode === "create"
+      ? "/alunos"
+      : `../alunos/${encodeURIComponent(formData.alunoMatricula)}`;
 
   function handleChangeForm(e) {
     const { name, value } = e.target;
@@ -72,44 +75,24 @@ function AlunoForm({
     }));
   }
 
-  function eMenorIdade(dataBirth) {
-    if (!dataBirth) return false;
-
-    const hoje = new Date();
-    const nascimento = new Date(dataBirth);
-
-    let idade = hoje.getFullYear() - nascimento.getFullYear();
-    const mes = hoje.getMonth() - nascimento.getMonth();
-
-    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
-      idade--;
-    }
-
-    return idade < 18;
-  }
-
-  const menorDeIdade = eMenorIdade(formData.alunoNascimento);
-
   function handleSubmit(e) {
     e.preventDefault();
 
-    const payload = { ...formData };
-
-    if (!menorDeIdade) {
-      payload.nomeResponsavel = null;
-      payload.grauParentesco = null;
-      payload.responsavelTelefone = null;
-      payload.responsavelEmail = null;
-    }
+    const payload = {
+      ...formData,
+      nomeResponsavel: formData.nomeResponsavel.trim() || null,
+      grauParentesco: formData.grauParentesco.trim() || null,
+      responsavelTelefone: formData.responsavelTelefone.trim() || null,
+      responsavelEmail: formData.responsavelEmail.trim() || null,
+    };
 
     if (onSubmit) {
       onSubmit(payload, {
         onSuccess: () => {
           alert(textos.successMessage);
           navigate(previousRedirect);
-        }
+        },
       });
-
     }
   }
 
@@ -158,9 +141,7 @@ function AlunoForm({
                 disabled={isPending}
               />
               {invalidFields.alunoNome && (
-                <span className="error-message">
-                  {invalidFields.alunoNome}
-                </span>
+                <span className="error-message">{invalidFields.alunoNome}</span>
               )}
             </div>
 
@@ -184,9 +165,7 @@ function AlunoForm({
 
           <div className="form-row">
             <div className="input-group">
-              <label htmlFor="alunoTelefone">
-                Telefone do aluno
-              </label>
+              <label htmlFor="alunoTelefone">Telefone do aluno</label>
               <input
                 type="text"
                 id="alunoTelefone"
@@ -223,95 +202,95 @@ function AlunoForm({
           </div>
         </fieldset>
 
-        {menorDeIdade && (
-          <fieldset className="form-section">
-            <legend>Dados do responsável</legend>
-            <span>Identificação e contato do responsável pelo aluno.</span>
+        <fieldset className="form-section">
+          <legend>Dados do responsável (opcional)</legend>
 
-            <div className="form-row">
-              <div className="input-group">
-                <label htmlFor="nomeResponsavel">Nome do Responsável</label>
-                <input
-                  type="text"
-                  id="nomeResponsavel"
-                  name="nomeResponsavel"
-                  placeholder="Ex.: Maria Souza"
-                  value={formData.nomeResponsavel}
-                  onChange={handleChangeForm}
-                  disabled={isPending}
-                />
-                {invalidFields.nomeResponsavel && (
-                  <span className="error-message">
-                    {invalidFields.nomeResponsavel}
-                  </span>
-                )}
-              </div>
+          <span className="section-desc">
+            O preenchimento desta seção é opcional, independentemente da idade
+            do aluno. Preencha somente as informações disponíveis.
+          </span>
 
-              <div className="input-group">
-                <label htmlFor="grauParentesco">Grau de Parentesco</label>
-                <input
-                  type="text"
-                  id="grauParentesco"
-                  name="grauParentesco"
-                  placeholder="Ex.: Mãe, Pai..."
-                  value={formData.grauParentesco}
-                  onChange={handleChangeForm}
-                  disabled={isPending}
-                />
-                {invalidFields.grauParentesco && (
-                  <span className="error-message">
-                    {invalidFields.grauParentesco}
-                  </span>
-                )}
-              </div>
+          <div className="form-row">
+            <div className="input-group">
+              <label htmlFor="nomeResponsavel">Nome do responsável</label>
+              <input
+                type="text"
+                id="nomeResponsavel"
+                name="nomeResponsavel"
+                placeholder="Ex.: Maria Souza"
+                value={formData.nomeResponsavel}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+              {invalidFields.nomeResponsavel && (
+                <span className="error-message">
+                  {invalidFields.nomeResponsavel}
+                </span>
+              )}
             </div>
 
-            <div className="form-row">
-              <div className="input-group">
-                <label htmlFor="responsavelTelefone">
-                  Telefone do Responsável
-                </label>
-                <input
-                  type="text"
-                  id="responsavelTelefone"
-                  name="responsavelTelefone"
-                  placeholder="(00) 00000-0000"
-                  value={formData.responsavelTelefone}
-                  onChange={handleChangeForm}
-                  disabled={isPending}
-                />
-                {invalidFields.responsavelTelefone && (
-                  <span className="error-message">
-                    {invalidFields.responsavelTelefone}
-                  </span>
-                )}
-              </div>
-
-              <div className="input-group">
-                <label htmlFor="responsavelEmail">
-                  E-mail do Responsável
-                </label>
-                <input
-                  type="email"
-                  id="responsavelEmail"
-                  name="responsavelEmail"
-                  placeholder="Ex.: responsavel@email.com"
-                  value={formData.responsavelEmail}
-                  onChange={handleChangeForm}
-                  disabled={isPending}
-                />
-                {invalidFields.responsavelEmail && (
-                  <span className="error-message">
-                    {invalidFields.responsavelEmail}
-                  </span>
-                )}
-              </div>
+            <div className="input-group">
+              <label htmlFor="grauParentesco">Grau de parentesco</label>
+              <input
+                type="text"
+                id="grauParentesco"
+                name="grauParentesco"
+                placeholder="Ex.: Mãe, Pai..."
+                value={formData.grauParentesco}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+              {invalidFields.grauParentesco && (
+                <span className="error-message">
+                  {invalidFields.grauParentesco}
+                </span>
+              )}
             </div>
-          </fieldset>
-        )}
+          </div>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label htmlFor="responsavelTelefone">
+                Telefone do responsável
+              </label>
+              <input
+                type="text"
+                id="responsavelTelefone"
+                name="responsavelTelefone"
+                placeholder="(00) 00000-0000"
+                value={formData.responsavelTelefone}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+              {invalidFields.responsavelTelefone && (
+                <span className="error-message">
+                  {invalidFields.responsavelTelefone}
+                </span>
+              )}
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="responsavelEmail">E-mail do responsável</label>
+              <input
+                type="email"
+                id="responsavelEmail"
+                name="responsavelEmail"
+                placeholder="Ex.: responsavel@email.com"
+                value={formData.responsavelEmail}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+              {invalidFields.responsavelEmail && (
+                <span className="error-message">
+                  {invalidFields.responsavelEmail}
+                </span>
+              )}
+            </div>
+          </div>
+        </fieldset>
 
         <fieldset className="form-section">
-          <legend>Dados Acadêmicos</legend>
+          <legend>Dados acadêmicos</legend>
 
           <span className="section-desc">
             Informações de matrícula, curso e períodos letivos.
@@ -398,15 +377,16 @@ function AlunoForm({
           <span className="footer-note">{textos.footerNote}</span>
 
           <div className="buttons-group">
-            <button type="button" className="btn-cancel" disabled={isPending} onClick={() => navigate(previousRedirect)}>
+            <button
+              type="button"
+              className="btn-cancel"
+              disabled={isPending}
+              onClick={() => navigate(previousRedirect)}
+            >
               Cancelar
             </button>
 
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={isPending}
-            >
+            <button type="submit" className="btn-submit" disabled={isPending}>
               {isPending ? textos.pendingLabel : textos.submitLabel}
             </button>
           </div>
@@ -417,4 +397,3 @@ function AlunoForm({
 }
 
 export default AlunoForm;
-
