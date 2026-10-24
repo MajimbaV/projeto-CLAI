@@ -31,7 +31,7 @@ public class PlanoAcaoController {
     ResponseEntity<PlanoAcaoResponseDto> createPlanoAcao(@Valid @RequestBody PlanoAcaoRequestDto dto){
         PlanoAcaoResponseDto response = planoAcaoService.createPlanoAcao(dto);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("{/id}").buildAndExpand(response.id()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.id()).toUri();
 
         return ResponseEntity.created(location).body(response);
     }
