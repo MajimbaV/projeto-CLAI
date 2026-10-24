@@ -17,10 +17,27 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
     );
   }
 
-  if (error) {
+if (error) {
+    if (error.response?.status === 404) {
+      return (
+        <div className="aluno-view-body">
+          <p>Aluno não encontrado.</p>
+          <button className="aluno-view-back" onClick={onBack}>
+            <img src={ChevronLeft} alt="" />
+            Voltar para alunos
+          </button>
+        </div>
+      );
+    }
+
+    const mensagemErro = error.response?.data?.detail || error.message || "Erro desconhecido";
     return (
       <div className="aluno-view-body">
-        <p>Erro: {error.detail || error}</p>
+        <p>Erro: {mensagemErro}</p>
+        <button className="aluno-view-back" onClick={onBack}>
+          <img src={ChevronLeft} alt="" />
+          Voltar
+        </button>
       </div>
     );
   }
@@ -28,8 +45,7 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
   if (!aluno) {
     return (
       <div className="aluno-view-body">
-        <p>Aluno não encontrado.</p>
-
+        <p>Dados do aluno não estão disponíveis.</p>
         <button className="aluno-view-back" onClick={onBack}>
           <img src={ChevronLeft} alt="" />
           Voltar para alunos
@@ -37,6 +53,8 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
       </div>
     );
   }
+
+  console.log("Aluno data:", aluno); // Log the aluno data for debugging
 
   const nome = aluno.alunoNome || aluno.nome;
   const matricula = aluno.alunoMatricula || aluno.matricula;
