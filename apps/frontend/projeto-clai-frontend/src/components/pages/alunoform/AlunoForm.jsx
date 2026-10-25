@@ -107,6 +107,22 @@ function AlunoForm({
   const errorResponse = error?.response?.data || {};
   const invalidFields = errorResponse.invalidFields || {};
 
+  let mensagemErro = null;
+
+  if (error) {
+    if (error.response?.status === 404) {
+      mensagemErro = "Falha ao realizar requisição à API";
+    } else {
+      // Tenta pegar o Problem Detail, depois erro genérico do Spring, depois erro nativo do Axios (ex: Network Error)
+      mensagemErro = 
+        errorResponse.detail || 
+        errorResponse.message || 
+        error.message || 
+        "Ocorreu um erro inesperado ao salvar os dados.";
+    }
+  }
+
+
   return (
     <div className="aluno-form-body">
       <div className="header">
@@ -115,9 +131,9 @@ function AlunoForm({
       </div>
 
       <form className="aluno-form" onSubmit={handleSubmit}>
-        {errorResponse.detail && (
+        {(mensagemErro) && (
           <div className="error-banner">
-            <p>Erro: {errorResponse.detail}</p>
+            <p>Erro: {mensagemErro}</p>
           </div>
         )}
 

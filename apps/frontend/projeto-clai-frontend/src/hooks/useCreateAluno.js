@@ -11,7 +11,7 @@ export function useCreateAluno() {
             console.log('Aluno criado com sucesso!', data);
         },
         onError: (error) => {
-            console.error('Erro ao criar aluno:', error.response?.data);
+            console.error('Erro ao criar aluno:', error.response?.data || error.message || error);
         }
     })
 }
