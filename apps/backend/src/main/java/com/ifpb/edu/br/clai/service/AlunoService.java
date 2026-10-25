@@ -45,21 +45,25 @@ public class AlunoService {
         int idade = Period.between(dto.alunoNascimento(), LocalDate.now()).getYears();
 
         boolean temNomeResponsavel = dto.nomeResponsavel() != null && !dto.nomeResponsavel().isBlank();
+        boolean temParentescoResponsavel = dto.grauParentesco() != null && !dto.grauParentesco().isBlank();
         boolean temTelefoneResponsavel = dto.responsavelTelefone() != null && !dto.responsavelTelefone().isBlank();
-        boolean temQualquerDadoResponsavel = temNomeResponsavel || temTelefoneResponsavel ||
-                (dto.grauParentesco() != null && !dto.grauParentesco().isBlank()) ||
-                (dto.responsavelEmail() != null && !dto.responsavelEmail().isBlank());
+        boolean temEmailResponsavel = dto.responsavelEmail() != null && !dto.responsavelEmail().isBlank();
+        boolean temAlgumDadoResponsavel = temNomeResponsavel || temParentescoResponsavel || temTelefoneResponsavel || temEmailResponsavel;
 
-        if (idade < 18) {
+        if (idade < 18 || temAlgumDadoResponsavel) {
+
+            String motivoErro = idade < 18
+                    ? "para alunos menores de idade."
+                    : "quando qualquer dado do responsável é informado.";
+
             if (!temNomeResponsavel) {
-                errors.put("nomeResponsavel", "O nome do responsável é obrigatório para alunos menores de idade.");
+                errors.put("nomeResponsavel", "O nome do responsável é obrigatório " + motivoErro);
+            }
+            if (!temParentescoResponsavel) {
+                errors.put("grauParentesco", "O grau de parentesco do responsável é obrigatório " + motivoErro);
             }
             if (!temTelefoneResponsavel) {
-                errors.put("responsavelTelefone", "O telefone do responsável é obrigatório para alunos menores de idade.");
-            }
-        } else {
-            if (temQualquerDadoResponsavel) {
-                throw new BusinessRuleException("Alunos maiores de idade (" + idade + " anos) não devem conter informações de responsável.");
+                errors.put("responsavelTelefone", "O telefone do responsável é obrigatório " + motivoErro);
             }
         }
 
