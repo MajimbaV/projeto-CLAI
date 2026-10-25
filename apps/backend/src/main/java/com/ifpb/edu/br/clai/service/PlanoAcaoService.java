@@ -2,6 +2,7 @@ package com.ifpb.edu.br.clai.service;
 
 import com.ifpb.edu.br.clai.dto.PlanoAcaoRequestDto;
 import com.ifpb.edu.br.clai.dto.PlanoAcaoResponseDto;
+import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.PlanoAcaoMapper;
@@ -113,6 +114,10 @@ public class PlanoAcaoService {
         }
 
         PlanoAcao planoAcao = buscarOuFalhar(id);
+
+        if (!planoAcao.getEstudante().getAlunoMatricula().equals(request.matricula())) {
+            throw new BusinessRuleException("Não é permitido alterar a matrícula do aluno em um Plano de Ação já existente.");
+        }
 
         PlanoAcaoMapper.requestToEntity(request, planoAcao);
         PlanoAcao planoAcaoAtualizado = planoAcaoRepository.save(planoAcao);
