@@ -63,6 +63,11 @@ public class PlanoAcaoService {
         }
     }
 
+    private PlanoAcao buscarOuFalhar(UUID id) {
+        return planoAcaoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plano não encontrado com o ID: " + id));
+    }
+
     public Page<PlanoAcaoResponseDto> getAllPlanoAcao(String nomeAluno, String matriculaAluno, Boolean statusAtivo,Pageable pageable) {
 
         Specification<PlanoAcao> spec = Specification.where(filtrarPorNome(nomeAluno))
@@ -71,7 +76,6 @@ public class PlanoAcaoService {
         return planoAcaoRepository.findAll(spec, pageable)
                 .map(PlanoAcaoMapper::entityToResponse);
     }
-
     @Transactional
     public PlanoAcaoResponseDto createPlanoAcao(PlanoAcaoRequestDto request) {
         Map<String, String> errors = new HashMap<>();
@@ -97,6 +101,23 @@ public class PlanoAcaoService {
 
         PlanoAcao planoAcaoGuardado = planoAcaoRepository.save(planoAcao);
         return PlanoAcaoMapper.entityToResponse(planoAcaoGuardado);
+    }
+
+    @Transactional
+    public PlanoAcaoResponseDto updatePlanoAcao(UUID id, PlanoAcaoRequestDto request){
+        Map<String, String> errors = new HashMap<>();
+        validarRegrasAdicionais(request, errors);
+
+        if (!errors.isEmpty()) {
+            throw new FieldValidationException(errors);
+        }
+
+        PlanoAcao planoAcao = buscarOuFalhar(id);
+
+        PlanoAcaoMapper.requestToEntity(request, planoAcao);
+        PlanoAcao planoAcaoAtualizado = planoAcaoRepository.save(planoAcao);
+
+        return PlanoAcaoMapper.entityToResponse(planoAcaoAtualizado);
     }
 
     @Transactional
