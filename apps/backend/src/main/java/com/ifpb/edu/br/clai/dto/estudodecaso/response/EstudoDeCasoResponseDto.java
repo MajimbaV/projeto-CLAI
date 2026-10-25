@@ -19,7 +19,8 @@ public record EstudoDeCasoResponseDto(
         PotencialidadesResponseDto potencialidades,
         NecessidadesEducacionaisResponseDto necessidadesEducacionais,
         SintesePsicopedagogicaResponseDto sintesePsicopedagogica,
-        ChecklistApoiosResponseDto checklistApoios
+        ChecklistApoiosResponseDto checklistApoios,
+        SituacaoEstudoDeCaso situacaoEstudoDeCaso
 ) {
     public record IdentificacaoResponseDto(
             UUID alunoId,

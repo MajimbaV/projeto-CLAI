@@ -1,5 +1,6 @@
 package com.ifpb.edu.br.clai.model.estudodecaso;
 
+import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.StatusEstudoDeCaso;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -51,4 +52,8 @@ public class EstudoDeCaso {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusEstudoDeCaso statusEstudoDeCaso;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "situacao", nullable = false)
+    private SituacaoEstudoDeCaso situacaoEstudoDeCaso;
 }

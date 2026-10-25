@@ -5,6 +5,7 @@ import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto.*;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.*;
 import com.ifpb.edu.br.clai.model.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.*;
+import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,10 @@ public class EstudoDeCasoMapper {
         estudoDeCaso.setSintesePsicopedagogica(toSintesePsicopedagogica(request.sintesePsicopedagogica()));
         estudoDeCaso.setChecklistApoios(toChecklistApoios(request.checklistApoios()));
         estudoDeCaso.setStatusEstudoDeCaso(request.statusEstudoDeCaso());
+
+        //Regra de negócio: Inicializado como Válido
+        estudoDeCaso.setSituacaoEstudoDeCaso(SituacaoEstudoDeCaso.VALIDO);
+
         return estudoDeCaso;
     }
 
@@ -41,7 +46,8 @@ public class EstudoDeCasoMapper {
                 toPotencialidadesResponse(estudoDeCaso.getPotencialidades()),
                 toNecessidadesEducacionaisResponse(estudoDeCaso.getNecessidadesEducacionais()),
                 toSintesePsicopedagogicaResponse(estudoDeCaso.getSintesePsicopedagogica()),
-                toChecklistApoiosResponse(estudoDeCaso.getChecklistApoios())
+                toChecklistApoiosResponse(estudoDeCaso.getChecklistApoios()),
+                estudoDeCaso.getSituacaoEstudoDeCaso()
         );
     }
 
