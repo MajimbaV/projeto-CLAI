@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173") //Alterar isso quando fizer deploy
@@ -54,5 +55,11 @@ public class PlanoAcaoController {
         return ResponseEntity.ok(planoAcaoService.getAllPlanoAcao(nomeAluno, matriculaAluno, statusAtivo, pageable));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<PlanoAcaoResponseDto> updatePlanoAcao(@PathVariable("id") UUID id, @Valid @RequestBody PlanoAcaoRequestDto request) {
+        PlanoAcaoResponseDto response = planoAcaoService.updatePlanoAcao(id, request);
+
+        return ResponseEntity.ok(response);
+    }
 
 }

@@ -2,6 +2,7 @@ package com.ifpb.edu.br.clai.service;
 
 import com.ifpb.edu.br.clai.dto.PlanoAcaoRequestDto;
 import com.ifpb.edu.br.clai.dto.PlanoAcaoResponseDto;
+import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.PlanoAcaoMapper;
@@ -63,6 +64,11 @@ public class PlanoAcaoService {
         }
     }
 
+    private PlanoAcao buscarOuFalhar(UUID id) {
+        return planoAcaoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plano não encontrado com o ID: " + id));
+    }
+
     public Page<PlanoAcaoResponseDto> getAllPlanoAcao(String nomeAluno, String matriculaAluno, Boolean statusAtivo,Pageable pageable) {
 
         Specification<PlanoAcao> spec = Specification.where(filtrarPorNome(nomeAluno))
@@ -71,7 +77,6 @@ public class PlanoAcaoService {
         return planoAcaoRepository.findAll(spec, pageable)
                 .map(PlanoAcaoMapper::entityToResponse);
     }
-
     @Transactional
     public PlanoAcaoResponseDto createPlanoAcao(PlanoAcaoRequestDto request) {
         Map<String, String> errors = new HashMap<>();
@@ -97,6 +102,27 @@ public class PlanoAcaoService {
 
         PlanoAcao planoAcaoGuardado = planoAcaoRepository.save(planoAcao);
         return PlanoAcaoMapper.entityToResponse(planoAcaoGuardado);
+    }
+
+    @Transactional
+    public PlanoAcaoResponseDto updatePlanoAcao(UUID id, PlanoAcaoRequestDto request){
+        Map<String, String> errors = new HashMap<>();
+        validarRegrasAdicionais(request, errors);
+
+        if (!errors.isEmpty()) {
+            throw new FieldValidationException(errors);
+        }
+
+        PlanoAcao planoAcao = buscarOuFalhar(id);
+
+        if (!planoAcao.getEstudante().getAlunoMatricula().equals(request.matricula())) {
+            throw new BusinessRuleException("Não é permitido alterar a matrícula do aluno em um Plano de Ação já existente.");
+        }
+
+        PlanoAcaoMapper.requestToEntity(request, planoAcao);
+        PlanoAcao planoAcaoAtualizado = planoAcaoRepository.save(planoAcao);
+
+        return PlanoAcaoMapper.entityToResponse(planoAcaoAtualizado);
     }
 
     @Transactional
