@@ -11,11 +11,11 @@ import com.ifpb.edu.br.clai.model.PlanoAcao;
 import com.ifpb.edu.br.clai.model.planoacao.AfirmacaoEnum;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import com.ifpb.edu.br.clai.repository.PlanoAcaoRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -140,5 +140,11 @@ public class PlanoAcaoService {
 
         return planoAcaoRepository.findByEstudanteAlunoMatricula(matricula, pageable)
                 .map(PlanoAcaoMapper::entityToResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public PlanoAcaoResponseDto getPlanoAcaoById(UUID id) {
+        PlanoAcao planoAcao = buscarOuFalhar(id);
+        return PlanoAcaoMapper.entityToResponse(planoAcao);
     }
 }
