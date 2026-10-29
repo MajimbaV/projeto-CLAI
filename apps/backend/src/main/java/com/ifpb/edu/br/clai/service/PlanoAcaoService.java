@@ -1,14 +1,14 @@
 package com.ifpb.edu.br.clai.service;
 
-import com.ifpb.edu.br.clai.dto.PlanoAcaoRequestDto;
-import com.ifpb.edu.br.clai.dto.PlanoAcaoResponseDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoRequestDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoResponseDto;
 import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.PlanoAcaoMapper;
-import com.ifpb.edu.br.clai.model.Aluno;
-import com.ifpb.edu.br.clai.model.PlanoAcao;
-import com.ifpb.edu.br.clai.model.planoacao.AfirmacaoEnum;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
+import com.ifpb.edu.br.clai.model.planoacao.PlanoAcao;
+import com.ifpb.edu.br.clai.model.planoacao.enums.AfirmacaoEnum;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import com.ifpb.edu.br.clai.repository.PlanoAcaoRepository;
 import org.springframework.data.domain.Page;

@@ -1,11 +1,11 @@
 package com.ifpb.edu.br.clai.service;
 
-import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.*;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.mapper.EstudoDeCasoMapper;
-import com.ifpb.edu.br.clai.model.Aluno;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.EstudoDeCaso;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacional;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;

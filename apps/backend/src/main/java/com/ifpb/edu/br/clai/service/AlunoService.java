@@ -1,12 +1,12 @@
 package com.ifpb.edu.br.clai.service;
 
-import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
-import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoRequestDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
 import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.AlunoMapper;
-import com.ifpb.edu.br.clai.model.Aluno;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;

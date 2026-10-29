@@ -1,7 +1,7 @@
 package com.ifpb.edu.br.clai.controller;
 
-import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
-import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoRequestDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
 import com.ifpb.edu.br.clai.service.AlunoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

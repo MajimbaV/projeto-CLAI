@@ -1,8 +1,8 @@
 package com.ifpb.edu.br.clai.mapper;
 
-import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
-import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
-import com.ifpb.edu.br.clai.model.Aluno;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoRequestDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
 
 public class AlunoMapper {
     public static void requestToEntity(AlunoRequestDto request, Aluno aluno) {

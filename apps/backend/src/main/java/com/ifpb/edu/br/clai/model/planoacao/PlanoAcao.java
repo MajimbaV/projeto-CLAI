@@ -1,6 +1,7 @@
-package com.ifpb.edu.br.clai.model;
+package com.ifpb.edu.br.clai.model.planoacao;
 
-import com.ifpb.edu.br.clai.model.planoacao.AfirmacaoEnum;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
+import com.ifpb.edu.br.clai.model.planoacao.enums.AfirmacaoEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
 package com.ifpb.edu.br.clai.specification;
 
-import com.ifpb.edu.br.clai.model.PlanoAcao;
+import com.ifpb.edu.br.clai.model.planoacao.PlanoAcao;
 import jakarta.persistence.criteria.Expression;
 import org.springframework.data.jpa.domain.Specification;
 

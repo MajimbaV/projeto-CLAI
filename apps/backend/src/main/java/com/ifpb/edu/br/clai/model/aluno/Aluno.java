@@ -1,4 +1,4 @@
-package com.ifpb.edu.br.clai.model;
+package com.ifpb.edu.br.clai.model.aluno;
 
 import jakarta.persistence.*;
 import lombok.Getter;

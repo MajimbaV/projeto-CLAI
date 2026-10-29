@@ -1,4 +1,4 @@
-package com.ifpb.edu.br.clai.dto;
+package com.ifpb.edu.br.clai.dto.aluno;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
