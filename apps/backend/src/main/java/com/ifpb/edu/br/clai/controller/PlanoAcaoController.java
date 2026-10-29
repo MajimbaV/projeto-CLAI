@@ -55,11 +55,17 @@ public class PlanoAcaoController {
         return ResponseEntity.ok(planoAcaoService.getAllPlanoAcao(nomeAluno, matriculaAluno, statusAtivo, pageable));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PlanoAcaoResponseDto> getPlanoAcaoById(@PathVariable("id") UUID id) {
+
+        PlanoAcaoResponseDto response = planoAcaoService.getPlanoAcaoById(id);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<PlanoAcaoResponseDto> updatePlanoAcao(@PathVariable("id") UUID id, @Valid @RequestBody PlanoAcaoRequestDto request) {
         PlanoAcaoResponseDto response = planoAcaoService.updatePlanoAcao(id, request);
 
         return ResponseEntity.ok(response);
     }
-
 }
