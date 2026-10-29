@@ -1,5 +1,6 @@
 package com.ifpb.edu.br.clai.service;
 
+import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.*;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
@@ -11,6 +12,7 @@ import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.StatusEstudoDeCaso;
 import com.ifpb.edu.br.clai.repository.EstudoDeCasoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -32,6 +34,16 @@ public class EstudoDeCasoService {
                 ? alunoService.buscarOuFalhar(dto.identificacao().alunoId())
                 : null;
         EstudoDeCaso estudoDeCaso = EstudoDeCasoMapper.requestToEntity(prepararParaMapeamento(dto), aluno);
+        EstudoDeCaso estudoDeCasoSalvo = estudoDeCasoRepository.save(estudoDeCaso);
+        return EstudoDeCasoMapper.entityToResponse(estudoDeCasoSalvo);
+    }
+
+    @Transactional
+    public EstudoDeCasoResponseDto createEstudoDeCasoCombinado(CadastroCombinadoRequestDto dto){
+        AlunoResponseDto alunoSalvo = alunoService.createAluno(dto.aluno());
+
+        Aluno novoAluno = alunoService.buscarOuFalhar(alunoSalvo.id());
+        EstudoDeCaso estudoDeCaso = EstudoDeCasoMapper.requestToEntity(prepararParaMapeamento(dto.estudoDeCaso()), novoAluno);
         EstudoDeCaso estudoDeCasoSalvo = estudoDeCasoRepository.save(estudoDeCaso);
         return EstudoDeCasoMapper.entityToResponse(estudoDeCasoSalvo);
     }
