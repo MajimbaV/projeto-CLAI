@@ -533,7 +533,7 @@ function CampoTextoLongo({ campo, values, onChange, disabled }) {
 }
 
 export default function EstudoCasoForm({
-  modo = "existente",
+  modo = "novo",
 
   alunos = [],
 
@@ -630,7 +630,8 @@ export default function EstudoCasoForm({
 
     const payloadEstudoCaso = {
       alunoId: idAlunoSelecionado,
-      ...estudoCaso
+      ...estudoCaso,
+      statusEstudoDeCaso: "Incompleto"
     };
 
     if (!onSubmit) {
