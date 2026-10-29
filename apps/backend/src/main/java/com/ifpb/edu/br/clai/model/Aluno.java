@@ -53,4 +53,6 @@ public class Aluno {
     @Column(name="al_periodo_letivo", nullable = false)
     private String periodoAluno;
 
+    @Column(name = "status")
+    private Boolean statusAtivo = true;
 }
