@@ -8,9 +8,11 @@ import FormTextarea from "../../forms/FormTextarea";
 
 import FormCheckboxGroup from "../../forms/FormCheckboxGroup";
 
+import DocumentList from "../../forms/DocumentList";
+
 import "./EstudoCasoForm.css";
 
-import { useCreateAluno } from "../../../hooks/useCreateAluno";
+import { mapearParaEstudoCasoDTO, mapearParaEstudoCasoDTOCombinado } from "../../../utils/estudoCasoMapper";
 
 const DADOS_ALUNO_VAZIOS = {
   alunoNome: "",
@@ -366,9 +368,7 @@ function criarEstudoCasoVazio() {
 
     documentosApresentados: "nao",
 
-    documentosQuais: "",
-
-    documentosDataProfissional: "",
+    documentos: [],
 
     condicaoAssociada: "nao",
 
@@ -447,7 +447,7 @@ function obterMatricula(aluno) {
 }
 
 function obterChaveAluno(aluno) {
-  return obterMatricula(aluno) || String(aluno?.id ?? "");
+  return String(aluno?.id ?? "");
 }
 
 function obterNomeAluno(aluno) {
@@ -549,7 +549,6 @@ export default function EstudoCasoForm({
 
   onCancel,
 }) {
-  const { mutate: createAluno } = useCreateAluno();
 
   const [alunoData, setAlunoData] = useState( alunoInicial ? () => ({ ...alunoInicial }) : () => ({ ...DADOS_ALUNO_VAZIOS }));
 
@@ -607,9 +606,8 @@ export default function EstudoCasoForm({
     }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-
     setFeedback("");
 
     if (!cadastroCombinado && !alunoSelecionado) {
@@ -621,26 +619,13 @@ export default function EstudoCasoForm({
     }
 
     if (cadastroCombinado) {
-      createAluno(alunoData, {
-        onSuccess: (novoAluno) => {
-          setIdAlunoSelecionado(obterChaveAluno(novoAluno));
-        }
-      });
-    }
+      const payloadCombinado = mapearParaEstudoCasoDTOCombinado(estudoCaso, alunoData, "INCOMPLETO");
 
-    const payloadEstudoCaso = {
-      alunoId: idAlunoSelecionado,
-      ...estudoCaso,
-      statusEstudoDeCaso: "Incompleto"
-    };
-
-    if (!onSubmit) {
-      setFeedback(
-        "Formulário pronto para validação. Para gravar os dados, conecte a função onSubmit ao endpoint/hook de criação do estudo de caso.",
-      );
-
+      onSubmit(payloadCombinado);
       return;
     }
+
+    const payloadEstudoCaso = mapearParaEstudoCasoDTO(estudoCaso, alunoSelecionado.id, "INCOMPLETO");
 
     onSubmit(payloadEstudoCaso);
   }
@@ -1014,6 +999,14 @@ export default function EstudoCasoForm({
               />
             )}
           </div>
+
+          {estudoCaso.documentosApresentados === "sim" && (
+              <DocumentList
+                documentos={estudoCaso.documentos}
+                onChange={(novosDocumentos) => handleCasoChange({ target: { name: "documentos", value: novosDocumentos } })}
+              >
+              </DocumentList>
+          )}
 
           {estudoCaso.documentosApresentados === "sim" && (
             <FormField
