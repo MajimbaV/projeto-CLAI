@@ -3,14 +3,13 @@ import EstudoCasoForm from "./EstudoCasoForm";
 import { useGetAlunos } from "../../../hooks/useGetAlunos";
 import { useCreateEstudoCaso } from "../../../hooks/useCreateEstudoCaso";
 
-export default function EstudoCasoPage({
+export default function NewEstudoCasoPage({
   modo = "criar",
 }) {
   const navigate = useNavigate();
 
   const { data, isLoading: isLoadingAlunos, error: errorAlunos } = useGetAlunos();
-  const { mutate: createAluno, isPending, error: errorCreate } = useCreateEstudoCaso();
-
+  const { mutate: createEstudoCaso, isPending, error: errorCreate } = useCreateEstudoCaso();
   const caminhoDeVolta = "/planejamento/alunos";
 
   if (isLoadingAlunos) {
@@ -26,7 +25,7 @@ export default function EstudoCasoPage({
       isLoadingAlunos={isLoadingAlunos}
       isPending={isPending}
       error={errorCreate || errorAlunos}
-      onSubmit={createAluno ? createAluno : undefined}
+      onSubmit={createEstudoCaso}
       onCancel={() => navigate(caminhoDeVolta)}
     />
   );

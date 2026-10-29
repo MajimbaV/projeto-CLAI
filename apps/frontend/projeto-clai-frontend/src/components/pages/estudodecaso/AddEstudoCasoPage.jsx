@@ -3,7 +3,7 @@ import EstudoCasoForm from "./EstudoCasoForm";
 import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
 import { useCreateEstudoCaso } from "../../../hooks/useCreateEstudoCaso";
 
-export default function EstudoCasoPage({
+export default function AddEstudoCasoPage({
   modo = "adicionar",
 }) {
   const navigate = useNavigate();
