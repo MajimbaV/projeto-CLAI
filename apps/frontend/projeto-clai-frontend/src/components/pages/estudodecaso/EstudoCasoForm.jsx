@@ -619,6 +619,17 @@ export default function EstudoCasoForm({
     }
 
     if (cadastroCombinado) {
+      const alunoPayload = {
+        ...alunoData
+      }
+
+      if (!menorDeIdade) {
+        alunoPayload.nomeResponsavel = null
+        alunoPayload.grauParentesco = null
+        alunoPayload.responsavelTelefone = null;
+        alunoPayload.responsavelEmail = null;
+      }
+
       const payloadCombinado = mapearParaEstudoCasoDTOCombinado(estudoCaso, alunoData, "INCOMPLETO");
 
       onSubmit(payloadCombinado);
@@ -836,8 +847,7 @@ export default function EstudoCasoForm({
                 />
               </div>
 
-              {menorDeIdade && (
-                <div className="estudo-form-grid estudo-guardian-grid">
+              <div className="estudo-form-grid estudo-guardian-grid">
                   <FormField
                     name="nomeResponsavel"
                     label="Nome do responsável"
@@ -875,7 +885,6 @@ export default function EstudoCasoForm({
                     error={invalidFields.responsavelEmail}
                   />
                 </div>
-              )}
             </>
           )}
 
@@ -1166,6 +1175,7 @@ export default function EstudoCasoForm({
                   }
                   disabled={isPending}
                   rows={2}
+                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}]`]}
                 />
 
                 <FormTextarea
