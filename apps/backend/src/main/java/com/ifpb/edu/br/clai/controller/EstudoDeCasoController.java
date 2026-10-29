@@ -1,5 +1,6 @@
 package com.ifpb.edu.br.clai.controller;
 
+import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.CadastroCombinadoRequestDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoRequestDto;
 import com.ifpb.edu.br.clai.service.EstudoDeCasoService;
@@ -35,4 +36,20 @@ public class EstudoDeCasoController {
 
         return ResponseEntity.created(location).body(response);
     }
+
+    @PostMapping("/combinado")
+    public ResponseEntity<EstudoDeCasoResponseDto> createEstudoDeCasoCombinado(
+            @Valid @RequestBody CadastroCombinadoRequestDto dto
+    ) {
+        EstudoDeCasoResponseDto response = estudoDeCasoService.createEstudoDeCasoCombinado(dto);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
+    }
+
 }
