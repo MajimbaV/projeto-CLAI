@@ -1,41 +1,13 @@
-
-const stringParaArray = (str) => {
-  if (!str) return [];
-  return String(str).split(',').map(item => item.trim()).filter(item => item !== "");
-};
-
-const extrairListaCondicional = (condicao, valorStr) => {
-return condicao === "sim" ? stringParaArray(valorStr) : [];
-};
-
-/**
- * Converte uma string do formulário para o formato de Enum do Java.
- * Ex: "Libras/intérprete" -> "LIBRAS_INTERPRETE"
- */
-function stringParaEnum(valor) {
-  if (!valor) return null;
-  return valor
-    .trim()
-    .normalize("NFD") // Separa os caracteres dos acentos
-    .replace(/[\u0300-\u036f]/g, "") // Remove os acentos
-    .replace(/[\s/]+/g, "_") // Substitui espaços e barras por underline
-    .toUpperCase();
-}
-
-function adaptarListaParaEnums(lista) {
-  if (!Array.isArray(lista)) return [];
-
-  return lista
-    .filter(item => item && item.toLowerCase() !== "outro") // Remove a opção "Outro" da lista de enums
-    .map(item => stringParaEnum(item));
-}
+import { stringParaArray, stringParaEnum, adaptarListaParaEnums, extrairListaCondicional, formatarParaYYYYMMDD } from "./conversors";
 
 export function mapearParaEstudoCasoDTO(dadosFormulario, alunoId, statusEstudoDeCaso = "INCOMPLETO") {
   return {
     //Identificação
     identificacao:{
       alunoId: alunoId || null,
-      datasAnamnese: stringParaArray(dadosFormulario.dataAtendimentos),
+      datasAnamnese: stringParaArray(dadosFormulario.dataAtendimentos)
+        .map(data => formatarParaYYYYMMDD(data))
+        .filter(Boolean), // Remove datas inválidas
       nomeProfissional: dadosFormulario.profissionalResponsavel || null,
     },
 

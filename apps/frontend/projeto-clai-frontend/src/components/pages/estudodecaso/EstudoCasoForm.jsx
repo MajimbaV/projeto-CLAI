@@ -885,7 +885,7 @@ export default function EstudoCasoForm({
               label="Data(s) do atendimento/anamnese"
               value={estudoCaso.dataAtendimentos}
               onChange={handleCasoChange}
-              placeholder="Informe uma ou mais datas"
+              placeholder="Informe uma ou mais datas (Separadas por vírgula)"
               disabled={isPending}
             />
 
