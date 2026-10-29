@@ -39,7 +39,6 @@ export function mapearParaEstudoCasoDTO(dadosFormulario, alunoId, statusEstudoDe
       nomeProfissional: dadosFormulario.profissionalResponsavel || null,
     },
 
-
     //Motivo Demanda
     motivoDemanda: {
     origemEncaminhamento: dadosFormulario.origemEncaminhamento ? stringParaEnum(dadosFormulario.origemEncaminhamento) : null,
@@ -168,4 +167,15 @@ export function mapearParaEstudoCasoDTO(dadosFormulario, alunoId, statusEstudoDe
 
     statusEstudoDeCaso: statusEstudoDeCaso
   };
+}
+
+export function mapearParaEstudoCasoDTOCombinado(dadosEstudoCaso, dadosAluno, statusEstudoDeCaso = "INCOMPLETO") {
+  const estudoCasoDTO = mapearParaEstudoCasoDTO(dadosEstudoCaso, null, statusEstudoDeCaso);
+
+  return {
+    aluno: {...dadosAluno},
+    estudoDeCaso: {
+      ...estudoCasoDTO,
+    }
+  }
 }
