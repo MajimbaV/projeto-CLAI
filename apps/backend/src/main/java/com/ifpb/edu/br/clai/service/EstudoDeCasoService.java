@@ -40,6 +40,8 @@ public class EstudoDeCasoService {
 
     @Transactional
     public EstudoDeCasoResponseDto createEstudoDeCasoCombinado(CadastroCombinadoRequestDto dto){
+        validarRegras(dto.estudoDeCaso());
+
         AlunoResponseDto alunoSalvo = alunoService.createAluno(dto.aluno());
 
         Aluno novoAluno = alunoService.buscarOuFalhar(alunoSalvo.id());
