@@ -7,7 +7,8 @@ import CreateAlunoPage from "./components/pages/alunoform/CreateAlunoPage";
 import EditAlunoPage from "./components/pages/alunoform/EditAlunoPage";
 import AlunoViewPage from "./components/pages/alunoview/AlunoViewPage";
 
-import EstudoCasoPage from "./components/pages/estudodecaso/EstudoCasoPage";
+import NewEstudoCasoPage from "./components/pages/estudodecaso/NewEstudoCasoPage";
+import AddEstudoCasoPage from "./components/pages/estudodecaso/AddEstudoCasoPage";
 
 import PlanejamentoAlunosPage from "./components/pages/planejamento/PlanejamentoAlunosPage";
 import AlunoPlanejamentoPage from "./components/pages/planejamento/AlunoPlanejamentoPage";
@@ -37,21 +38,17 @@ function App() {
         {/* Rotas de criação de estudo de caso */}
         <Route
           path="planejamento/estudos-de-caso/novo"
-          element={<EstudoCasoPage modo="existente" />}
+          element={<NewEstudoCasoPage modo="criar" />}
         />
         <Route
           path="alunos/:matricula/estudo-caso/novo"
-          element={<EstudoCasoPage modo="existente" />}
-        />
-        <Route
-          path="alunos/novo-com-estudo-de-caso"
-          element={<EstudoCasoPage modo="combinado" />}
+          element={<AddEstudoCasoPage modo="adicionar" />}
         />
 
         {/* Rota de edição de estudo de caso */}
         <Route
           path="alunos/:matricula/estudo-caso/:id/editar"
-          element={<EstudoCasoPage modo="editar" />}
+          element={<AddEstudoCasoPage modo="editar" />}
         />
       </Route>
     </Routes>
