@@ -11,6 +11,7 @@ import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -74,7 +75,7 @@ public class AlunoService {
 
     private void validarMatriculaUnica(String matricula, UUID id) {
         boolean matriculaJaExiste;
-        
+
         if (id == null) {
             matriculaJaExiste = alunoRepository.existsByAlunoMatricula(matricula);
         } else {
@@ -90,12 +91,16 @@ public class AlunoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + id));
     }
 
+    @Transactional
     public AlunoResponseDto createAluno(AlunoRequestDto dto) {
         validarRegrasAdicionais(dto);
         validarMatriculaUnica(dto.alunoMatricula(), null);
 
         Aluno aluno = new Aluno();
         AlunoMapper.requestToEntity(dto, aluno);
+
+        aluno.setStatusAtivo(true);
+
         Aluno alunoGuardado = alunoRepository.save(aluno);
         return AlunoMapper.entityToResponse(alunoGuardado);
     }
@@ -118,11 +123,6 @@ public class AlunoService {
         AlunoMapper.requestToEntity(dto, aluno);
         Aluno alunoAtualizado = alunoRepository.save(aluno);
         return AlunoMapper.entityToResponse(alunoAtualizado);
-    }
-
-    public void deleteAluno(UUID id) {
-        Aluno aluno = buscarOuFalhar(id);
-        alunoRepository.delete(aluno);
     }
 
     public AlunoResponseDto getAlunoByMatricula(String matricula) {

@@ -45,5 +45,6 @@ public record AlunoRequestDto(
                 message = "O período letivo deve estar no formato AAAA.S com semestre 1 ou 2 (ex: 2026.1 ou 2026.2)"
         )
         
-        String periodoAluno
+        String periodoAluno,
+        Boolean statusAtivo
         ) {}

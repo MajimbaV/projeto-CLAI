@@ -18,6 +18,10 @@ public class AlunoMapper {
         aluno.setGrauParentesco(request.grauParentesco());
         aluno.setResponsavelTelefone(request.responsavelTelefone());
         aluno.setResponsavelEmail(request.responsavelEmail());
+
+        if (request.statusAtivo() != null) {
+            aluno.setStatusAtivo(request.statusAtivo());
+        }
     }
 
     public static AlunoResponseDto entityToResponse(Aluno aluno) {
@@ -34,7 +38,8 @@ public class AlunoMapper {
                 aluno.getAlunoMatricula(),
                 aluno.getAlunoCurso(),
                 aluno.getPeriodoIngresso(),
-                aluno.getPeriodoAluno()
+                aluno.getPeriodoAluno(),
+                aluno.getStatusAtivo()
         );
     }
 }

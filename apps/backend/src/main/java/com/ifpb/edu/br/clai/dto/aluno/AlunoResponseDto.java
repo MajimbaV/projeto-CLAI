@@ -16,5 +16,6 @@ public record AlunoResponseDto(
         String alunoMatricula,
         String alunoCurso,
         String periodoIngresso,
-        String periodoAluno
+        String periodoAluno,
+        Boolean statusAtivo
 ) {}
