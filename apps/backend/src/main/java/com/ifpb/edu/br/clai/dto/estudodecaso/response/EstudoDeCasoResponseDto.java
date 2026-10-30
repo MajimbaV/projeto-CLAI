@@ -1,6 +1,6 @@
 package com.ifpb.edu.br.clai.dto.estudodecaso.response;
 
-import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.*;
 
 import java.time.LocalDate;

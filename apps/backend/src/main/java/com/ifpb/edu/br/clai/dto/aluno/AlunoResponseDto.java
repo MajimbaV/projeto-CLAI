@@ -1,4 +1,4 @@
-package com.ifpb.edu.br.clai.dto;
+package com.ifpb.edu.br.clai.dto.aluno;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -16,5 +16,6 @@ public record AlunoResponseDto(
         String alunoMatricula,
         String alunoCurso,
         String periodoIngresso,
-        String periodoAluno
+        String periodoAluno,
+        Boolean statusAtivo
 ) {}
