@@ -478,8 +478,18 @@ function estudanteMenorDeIdade(dataNascimento) {
   return idade < 18;
 }
 
-function FormSection({ title, description, children, defaultOpen = false }) {
-  const [aberta, setAberta] = useState(defaultOpen);
+function FormSection({ title, description, children, defaultOpen = false , hasError }) {
+  const [aberta, setAberta] = useState(defaultOpen || hasError); 
+
+  const [prevHasError, setPrevHasError] = useState(hasError);
+
+  if (hasError !== prevHasError) {
+    setPrevHasError(hasError);
+    
+    if (hasError) {
+      setAberta(true);
+    }
+  }
 
   function alternarSecao() {
     setAberta((atual) => !atual);
@@ -1154,6 +1164,7 @@ export default function EstudoCasoForm({
         <FormSection
           title="8. Barreiras e necessidades educacionais identificadas"
           description="Identifique barreiras observadas ou relatadas e seus impactos no acesso, participação, aprendizagem e avaliação."
+          hasError = {invalidFields && Object.keys(invalidFields).some(key => key.startsWith('necessidadesEducacionais.barreiras'))}
         >
           <div className="estudo-barrier-list">
             {estudoCaso.barreiras.map((barreira, index) => (
@@ -1175,7 +1186,8 @@ export default function EstudoCasoForm({
                   }
                   disabled={isPending}
                   rows={2}
-                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}]`]}
+                  
+                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].barreiraNecessidade`]}
                 />
 
                 <FormTextarea
@@ -1193,6 +1205,8 @@ export default function EstudoCasoForm({
                   }
                   disabled={isPending}
                   rows={2}
+
+                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].evidenciasImpactos`]}
                 />
 
                 <FormSelect
@@ -1211,6 +1225,7 @@ export default function EstudoCasoForm({
                   options={["Alta", "Média", "Baixa"]}
                   disabled={isPending}
                   placeholder="Defina a prioridade"
+                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].prioridade`]}
                 />
               </div>
             ))}
