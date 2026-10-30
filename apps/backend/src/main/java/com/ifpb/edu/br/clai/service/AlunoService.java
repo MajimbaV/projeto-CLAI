@@ -8,6 +8,8 @@ import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.AlunoMapper;
 import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
+import com.ifpb.edu.br.clai.specification.AlunoSpecification;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -91,6 +94,12 @@ public class AlunoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + id));
     }
 
+    public List<Aluno> findAlunosPorFiltros(String nome, String matricula) {
+        Specification<Aluno> spec = Specification.where(AlunoSpecification.filtrarPorNome(nome))
+                .and(AlunoSpecification.filtrarPorMatricula(matricula));
+        return alunoRepository.findAll(spec);
+    }
+
     @Transactional
     public AlunoResponseDto createAluno(AlunoRequestDto dto) {
         validarRegrasAdicionais(dto);
@@ -105,8 +114,17 @@ public class AlunoService {
         return AlunoMapper.entityToResponse(alunoGuardado);
     }
 
-    public Page<AlunoResponseDto> getAllAlunos(Pageable pageable) {
-        return alunoRepository.findAll(pageable)
+    @Transactional(readOnly = true)
+    public Page<AlunoResponseDto> getAllAlunos(String nome, String matricula, String curso, String periodo, Boolean maioridade, Boolean statusAtivo, Pageable pageable) {
+
+        Specification<Aluno> spec = Specification.where(AlunoSpecification.filtrarPorNome(nome))
+                .and(AlunoSpecification.filtrarPorMatricula(matricula))
+                .and(AlunoSpecification.filtrarPorCurso(curso))
+                .and(AlunoSpecification.filtrarPorPeriodo(periodo))
+                .and(AlunoSpecification.filtrarPorMaioridade(maioridade))
+                .and(AlunoSpecification.filtrarPorStatusAtivo(statusAtivo));
+
+        return alunoRepository.findAll(spec, pageable)
                 .map(AlunoMapper::entityToResponse);
     }
 
