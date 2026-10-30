@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import FormField from "../../forms/FormField";
 
@@ -8,7 +8,11 @@ import FormTextarea from "../../forms/FormTextarea";
 
 import FormCheckboxGroup from "../../forms/FormCheckboxGroup";
 
+import DocumentList from "../../forms/DocumentList";
+
 import "./EstudoCasoForm.css";
+
+import { mapearParaEstudoCasoDTO, mapearParaEstudoCasoDTOCombinado } from "../../../utils/estudoCasoMapper";
 
 const DADOS_ALUNO_VAZIOS = {
   alunoNome: "",
@@ -364,9 +368,7 @@ function criarEstudoCasoVazio() {
 
     documentosApresentados: "nao",
 
-    documentosQuais: "",
-
-    documentosDataProfissional: "",
+    documentos: [],
 
     condicaoAssociada: "nao",
 
@@ -445,7 +447,7 @@ function obterMatricula(aluno) {
 }
 
 function obterChaveAluno(aluno) {
-  return obterMatricula(aluno) || String(aluno?.id ?? "");
+  return String(aluno?.id ?? "");
 }
 
 function obterNomeAluno(aluno) {
@@ -476,8 +478,18 @@ function estudanteMenorDeIdade(dataNascimento) {
   return idade < 18;
 }
 
-function FormSection({ title, description, children, defaultOpen = false }) {
-  const [aberta, setAberta] = useState(defaultOpen);
+function FormSection({ title, description, children, defaultOpen = false , hasError }) {
+  const [aberta, setAberta] = useState(defaultOpen || hasError); 
+
+  const [prevHasError, setPrevHasError] = useState(hasError);
+
+  if (hasError !== prevHasError) {
+    setPrevHasError(hasError);
+    
+    if (hasError) {
+      setAberta(true);
+    }
+  }
 
   function alternarSecao() {
     setAberta((atual) => !atual);
@@ -531,13 +543,11 @@ function CampoTextoLongo({ campo, values, onChange, disabled }) {
 }
 
 export default function EstudoCasoForm({
-  modo = "existente",
+  modo = "novo",
 
   alunos = [],
 
   alunoInicial = null,
-
-  matriculaInicial = "",
 
   isLoadingAlunos = false,
 
@@ -549,36 +559,24 @@ export default function EstudoCasoForm({
 
   onCancel,
 }) {
-  const cadastroCombinado = modo === "combinado";
 
-  const [alunoData, setAlunoData] = useState(() => ({ ...DADOS_ALUNO_VAZIOS }));
+  const [alunoData, setAlunoData] = useState( alunoInicial ? () => ({ ...alunoInicial }) : () => ({ ...DADOS_ALUNO_VAZIOS }));
 
   const [estudoCaso, setEstudoCaso] = useState(criarEstudoCasoVazio);
 
-  const [matriculaSelecionada, setMatriculaSelecionada] = useState(
-    matriculaInicial || obterChaveAluno(alunoInicial),
+  const [idAlunoSelecionado, setIdAlunoSelecionado] = useState(
+    obterChaveAluno(alunoInicial)
   );
 
   const [feedback, setFeedback] = useState("");
 
-  const alunosDisponiveis = useMemo(() => {
-    const lista = [...alunos];
+  const [cadastroCombinado, setCadastroCombinado] = useState(false);
 
-    if (
-      alunoInicial &&
-      !lista.some(
-        (aluno) => obterChaveAluno(aluno) === obterChaveAluno(alunoInicial),
-      )
-    ) {
-      lista.push(alunoInicial);
-    }
-
-    return lista;
-  }, [alunos, alunoInicial]);
+  const alunosDisponiveis = [...alunos];
 
   const alunoSelecionado = alunosDisponiveis.find(
-    (aluno) => obterChaveAluno(aluno) === matriculaSelecionada,
-  );
+    (aluno) => obterChaveAluno(aluno) === idAlunoSelecionado,
+  ) || alunoInicial;
 
   const errorResponse = error?.response?.data || {};
 
@@ -618,9 +616,8 @@ export default function EstudoCasoForm({
     }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-
     setFeedback("");
 
     if (!cadastroCombinado && !alunoSelecionado) {
@@ -631,52 +628,27 @@ export default function EstudoCasoForm({
       return;
     }
 
-    const alunoPayload = cadastroCombinado
-      ? {
-          ...alunoData,
+    if (cadastroCombinado) {
+      const alunoPayload = {
+        ...alunoData
+      }
 
-          ...(!menorDeIdade
-            ? {
-                nomeResponsavel: null,
+      if (!menorDeIdade) {
+        alunoPayload.nomeResponsavel = null
+        alunoPayload.grauParentesco = null
+        alunoPayload.responsavelTelefone = null;
+        alunoPayload.responsavelEmail = null;
+      }
 
-                grauParentesco: null,
+      const payloadCombinado = mapearParaEstudoCasoDTOCombinado(estudoCaso, alunoData, "INCOMPLETO");
 
-                responsavelTelefone: null,
-
-                responsavelEmail: null,
-              }
-            : {}),
-        }
-      : {
-          id: alunoSelecionado?.id ?? null,
-
-          matricula: obterMatricula(alunoSelecionado),
-        };
-
-    const payload = {
-      modo: cadastroCombinado ? "combinado" : "estudante_existente",
-
-      aluno: alunoPayload,
-
-      estudoCaso: {
-        ...estudoCaso,
-
-        origemOutro:
-          estudoCaso.origemEncaminhamento === "Outro"
-            ? estudoCaso.origemOutro
-            : "",
-      },
-    };
-
-    if (!onSubmit) {
-      setFeedback(
-        "Formulário pronto para validação. Para gravar os dados, conecte a função onSubmit ao endpoint/hook de criação do estudo de caso.",
-      );
-
+      onSubmit(payloadCombinado);
       return;
     }
 
-    onSubmit(payload);
+    const payloadEstudoCaso = mapearParaEstudoCasoDTO(estudoCaso, alunoSelecionado.id, "INCOMPLETO");
+
+    onSubmit(payloadEstudoCaso);
   }
 
   return (
@@ -684,9 +656,9 @@ export default function EstudoCasoForm({
       <div className="estudo-caso-header">
         <div>
           <h1 className="estudo-caso-title">
-            {cadastroCombinado
-              ? "Cadastrar aluno e estudo de caso"
-              : "Novo estudo de caso"}
+            {modo === "editar"
+              ? "Editar Estudo de Caso"
+              : "Novo Estudo de Caso"}  
           </h1>
 
           <p className="estudo-caso-subtitle">
@@ -712,187 +684,48 @@ export default function EstudoCasoForm({
           </div>
         )}
 
-        {cadastroCombinado && (
-          <FormSection
-            title="Cadastro do estudante"
-            description="Os dados do estudante e o estudo de caso serão enviados juntos pela função de submissão."
-            defaultOpen={cadastroCombinado}
-          >
-            <div className="estudo-form-grid">
-              <FormField
-                name="alunoNome"
-                label="Nome do aluno"
-                value={alunoData.alunoNome}
-                onChange={handleAlunoChange}
-                required
-                disabled={isPending}
-                error={invalidFields.alunoNome}
-              />
-
-              <FormField
-                name="alunoNascimento"
-                label="Data de nascimento"
-                type="date"
-                value={alunoData.alunoNascimento}
-                onChange={handleAlunoChange}
-                required
-                disabled={isPending}
-                error={invalidFields.alunoNascimento}
-              />
-
-              <FormField
-                name="alunoTelefone"
-                label="Telefone do aluno"
-                value={alunoData.alunoTelefone}
-                onChange={handleAlunoChange}
-                placeholder="DDD e número"
-                disabled={isPending}
-                error={invalidFields.alunoTelefone}
-              />
-
-              <FormField
-                name="alunoEmail"
-                label="E-mail do aluno"
-                type="email"
-                value={alunoData.alunoEmail}
-                onChange={handleAlunoChange}
-                placeholder="aluno@email.com"
-                disabled={isPending}
-                error={invalidFields.alunoEmail}
-              />
-
-              <FormField
-                name="alunoMatricula"
-                label="Matrícula"
-                value={alunoData.alunoMatricula}
-                onChange={handleAlunoChange}
-                required
-                disabled={isPending}
-                error={invalidFields.alunoMatricula}
-              />
-
-              <FormField
-                name="alunoCurso"
-                label="Curso/turma"
-                value={alunoData.alunoCurso}
-                onChange={handleAlunoChange}
-                required
-                disabled={isPending}
-                error={invalidFields.alunoCurso}
-              />
-
-              <FormField
-                name="periodoIngresso"
-                label="Período de ingresso"
-                value={alunoData.periodoIngresso}
-                onChange={handleAlunoChange}
-                placeholder="Ex.: 2026.1"
-                required
-                disabled={isPending}
-                error={invalidFields.periodoIngresso}
-              />
-
-              <FormField
-                name="periodoAluno"
-                label="Período letivo"
-                value={alunoData.periodoAluno}
-                onChange={handleAlunoChange}
-                placeholder="Ex.: 2026.2"
-                required
-                disabled={isPending}
-                error={invalidFields.periodoAluno}
-              />
-            </div>
-
-            {menorDeIdade && (
-              <div className="estudo-form-grid estudo-guardian-grid">
-                <FormField
-                  name="nomeResponsavel"
-                  label="Nome do responsável"
-                  value={alunoData.nomeResponsavel}
-                  onChange={handleAlunoChange}
-                  disabled={isPending}
-                  error={invalidFields.nomeResponsavel}
-                />
-
-                <FormField
-                  name="grauParentesco"
-                  label="Grau de parentesco"
-                  value={alunoData.grauParentesco}
-                  onChange={handleAlunoChange}
-                  disabled={isPending}
-                  error={invalidFields.grauParentesco}
-                />
-
-                <FormField
-                  name="responsavelTelefone"
-                  label="Telefone do responsável"
-                  value={alunoData.responsavelTelefone}
-                  onChange={handleAlunoChange}
-                  disabled={isPending}
-                  error={invalidFields.responsavelTelefone}
-                />
-
-                <FormField
-                  name="responsavelEmail"
-                  label="E-mail do responsável"
-                  type="email"
-                  value={alunoData.responsavelEmail}
-                  onChange={handleAlunoChange}
-                  disabled={isPending}
-                  error={invalidFields.responsavelEmail}
-                />
-              </div>
-            )}
-          </FormSection>
-        )}
-
         <FormSection
           title="1. Identificação do(a) estudante"
           description="Os dados acadêmicos são vinculados ao estudante selecionado ou ao cadastro realizado nesta página."
           defaultOpen={!cadastroCombinado}
         >
-          {cadastroCombinado ? (
-            <div className="estudo-student-summary">
-              <strong>{alunoData.alunoNome || "Nome do estudante"}</strong>
-
-              <span>
-                Matrícula: {alunoData.alunoMatricula || "A preencher"} · Curso:{" "}
-                {alunoData.alunoCurso || "A preencher"}
-              </span>
-            </div>
-          ) : (
+          {!alunoInicial && (
             <>
-              <div className="estudo-form-grid">
-                <FormSelect
-                  name="estudanteSelecionado"
-                  label="Estudante já cadastrado"
-                  value={matriculaSelecionada}
-                  onChange={(event) =>
-                    setMatriculaSelecionada(event.target.value)
-                  }
-                  options={alunosDisponiveis.map((aluno) => ({
-                    value: obterChaveAluno(aluno),
-
-                    label: `${obterNomeAluno(aluno) || "Nome não informado"} — ${obterMatricula(aluno) || obterChaveAluno(aluno)}`,
-                  }))}
-                  placeholder={
-                    isLoadingAlunos
-                      ? "Carregando estudantes..."
-                      : "Selecione o estudante"
-                  }
-                  required
-                  disabled={isPending || isLoadingAlunos}
+              <label className="clai-checkbox-option" htmlFor="checkboxCadastroCombinado" key="checkboxCadastroCombinado">
+                <input
+                  id="checkboxCadastroCombinado"
+                  type="checkbox"
+                  name="checkboxCadastroCombinado"
+                  checked={cadastroCombinado}
+                  onChange={() => setCadastroCombinado(!cadastroCombinado)}
                 />
+                <span>Criar Novo Aluno</span>
+              </label>
 
-                <FormField
-                  name="identificacaoCurso"
-                  label="Curso/turma"
-                  value={obterCursoAluno(alunoSelecionado) || ""}
-                  readOnly
-                  placeholder="Preenchido pelo cadastro do aluno"
-                />
-              </div>
+              {!cadastroCombinado && (
+                <div className="estudo-form-grid">
+                  <FormSelect
+                    name="estudanteSelecionado"
+                    label="Selecione o estudante"
+                    value={idAlunoSelecionado}
+                    onChange={(event) =>
+                      setIdAlunoSelecionado(event.target.value)
+                    }
+                    options={alunosDisponiveis.map((aluno) => ({
+                      value: obterChaveAluno(aluno),
+
+                      label: `${obterNomeAluno(aluno) || "Nome não informado"} — ${obterMatricula(aluno) || obterChaveAluno(aluno)}`,
+                    }))}
+                    placeholder={
+                      isLoadingAlunos
+                        ? "Carregando estudantes..."
+                        : "Selecione o estudante"
+                    }
+                    required
+                    disabled={isPending || isLoadingAlunos}
+                  />
+                </div>
+              )}
 
               {!isLoadingAlunos && alunosDisponiveis.length === 0 && (
                 <p className="estudo-helper-text">
@@ -901,7 +734,12 @@ export default function EstudoCasoForm({
                 </p>
               )}
 
-              {alunoSelecionado && (
+
+            </>
+          )}
+
+
+              {alunoSelecionado && !cadastroCombinado && (
                 <div className="estudo-student-summary">
                   <strong>
                     {obterNomeAluno(alunoSelecionado) || "Nome não informado"}
@@ -930,81 +768,143 @@ export default function EstudoCasoForm({
                   </span>
                 </div>
               )}
+
+          {cadastroCombinado && (
+            <>
+              <div className="estudo-form-grid">
+                <FormField
+                  name="alunoNome"
+                  label="Nome do aluno"
+                  value={alunoData.alunoNome}
+                  onChange={handleAlunoChange}
+                  required
+                  disabled={isPending}
+                  error={invalidFields.alunoNome}
+                />
+
+                <FormField
+                  name="alunoNascimento"
+                  label="Data de nascimento"
+                  type="date"
+                  value={alunoData.alunoNascimento}
+                  onChange={handleAlunoChange}
+                  required
+                  disabled={isPending}
+                  error={invalidFields.alunoNascimento}
+                />
+
+                <FormField
+                  name="alunoTelefone"
+                  label="Telefone do aluno"
+                  value={alunoData.alunoTelefone}
+                  onChange={handleAlunoChange}
+                  placeholder="DDD e número"
+                  disabled={isPending}
+                  error={invalidFields.alunoTelefone}
+                />
+
+                <FormField
+                  name="alunoEmail"
+                  label="E-mail do aluno"
+                  type="email"
+                  value={alunoData.alunoEmail}
+                  onChange={handleAlunoChange}
+                  placeholder="aluno@email.com"
+                  disabled={isPending}
+                  error={invalidFields.alunoEmail}
+                />
+
+                <FormField
+                  name="alunoMatricula"
+                  label="Matrícula"
+                  value={alunoData.alunoMatricula}
+                  onChange={handleAlunoChange}
+                  required
+                  disabled={isPending}
+                  error={invalidFields.alunoMatricula}
+                />
+
+                <FormField
+                  name="alunoCurso"
+                  label="Curso/turma"
+                  value={alunoData.alunoCurso}
+                  onChange={handleAlunoChange}
+                  required
+                  disabled={isPending}
+                  error={invalidFields.alunoCurso}
+                />
+
+                <FormField
+                  name="periodoIngresso"
+                  label="Período de ingresso"
+                  value={alunoData.periodoIngresso}
+                  onChange={handleAlunoChange}
+                  placeholder="Ex.: 2026.1"
+                  required
+                  disabled={isPending}
+                  error={invalidFields.periodoIngresso}
+                />
+
+                <FormField
+                  name="periodoAluno"
+                  label="Período letivo"
+                  value={alunoData.periodoAluno}
+                  onChange={handleAlunoChange}
+                  placeholder="Ex.: 2026.2"
+                  required
+                  disabled={isPending}
+                  error={invalidFields.periodoAluno}
+                />
+              </div>
+
+              <div className="estudo-form-grid estudo-guardian-grid">
+                  <FormField
+                    name="nomeResponsavel"
+                    label="Nome do responsável"
+                    value={alunoData.nomeResponsavel}
+                    onChange={handleAlunoChange}
+                    disabled={isPending}
+                    error={invalidFields.nomeResponsavel}
+                  />
+
+                  <FormField
+                    name="grauParentesco"
+                    label="Grau de parentesco"
+                    value={alunoData.grauParentesco}
+                    onChange={handleAlunoChange}
+                    disabled={isPending}
+                    error={invalidFields.grauParentesco}
+                  />
+
+                  <FormField
+                    name="responsavelTelefone"
+                    label="Telefone do responsável"
+                    value={alunoData.responsavelTelefone}
+                    onChange={handleAlunoChange}
+                    disabled={isPending}
+                    error={invalidFields.responsavelTelefone}
+                  />
+
+                  <FormField
+                    name="responsavelEmail"
+                    label="E-mail do responsável"
+                    type="email"
+                    value={alunoData.responsavelEmail}
+                    onChange={handleAlunoChange}
+                    disabled={isPending}
+                    error={invalidFields.responsavelEmail}
+                  />
+                </div>
             </>
           )}
 
           <div className="estudo-form-grid estudo-top-spacing">
-            {!cadastroCombinado && (
-              <>
-                <FormField
-                  name="identificacaoNascimento"
-                  label="Data de nascimento"
-                  value={
-                    alunoSelecionado?.alunoNascimento ??
-                    alunoSelecionado?.dataNascimento ??
-                    ""
-                  }
-                  readOnly
-                  placeholder="Preenchido pelo cadastro do aluno"
-                />
-
-                <FormField
-                  name="identificacaoContato"
-                  label="Telefone/e-mail"
-                  value={[
-                    alunoSelecionado?.alunoTelefone ??
-                      alunoSelecionado?.telefone,
-
-                    alunoSelecionado?.alunoEmail ?? alunoSelecionado?.email,
-                  ]
-
-                    .filter(Boolean)
-
-                    .join(" · ")}
-                  readOnly
-                  placeholder="Não informado no cadastro"
-                />
-
-                <FormField
-                  name="identificacaoResponsavel"
-                  label="Responsável/grau de parentesco"
-                  value={[
-                    alunoSelecionado?.nomeResponsavel,
-
-                    alunoSelecionado?.grauParentesco,
-                  ]
-
-                    .filter(Boolean)
-
-                    .join(" · ")}
-                  readOnly
-                  placeholder="Não informado no cadastro"
-                />
-
-                <FormField
-                  name="identificacaoContatoResponsavel"
-                  label="Telefone/e-mail do responsável"
-                  value={[
-                    alunoSelecionado?.responsavelTelefone,
-
-                    alunoSelecionado?.responsavelEmail,
-                  ]
-
-                    .filter(Boolean)
-
-                    .join(" · ")}
-                  readOnly
-                  placeholder="Não informado no cadastro"
-                />
-              </>
-            )}
-
             <FormField
               name="dataAtendimentos"
               label="Data(s) do atendimento/anamnese"
               value={estudoCaso.dataAtendimentos}
               onChange={handleCasoChange}
-              placeholder="Informe uma ou mais datas"
+              placeholder="Informe uma ou mais datas (Separadas por vírgula)"
               disabled={isPending}
             />
 
@@ -1118,6 +1018,14 @@ export default function EstudoCasoForm({
               />
             )}
           </div>
+
+          {estudoCaso.documentosApresentados === "sim" && (
+              <DocumentList
+                documentos={estudoCaso.documentos}
+                onChange={(novosDocumentos) => handleCasoChange({ target: { name: "documentos", value: novosDocumentos } })}
+              >
+              </DocumentList>
+          )}
 
           {estudoCaso.documentosApresentados === "sim" && (
             <FormField
@@ -1256,6 +1164,7 @@ export default function EstudoCasoForm({
         <FormSection
           title="8. Barreiras e necessidades educacionais identificadas"
           description="Identifique barreiras observadas ou relatadas e seus impactos no acesso, participação, aprendizagem e avaliação."
+          hasError = {invalidFields && Object.keys(invalidFields).some(key => key.startsWith('necessidadesEducacionais.barreiras'))}
         >
           <div className="estudo-barrier-list">
             {estudoCaso.barreiras.map((barreira, index) => (
@@ -1277,6 +1186,8 @@ export default function EstudoCasoForm({
                   }
                   disabled={isPending}
                   rows={2}
+                  
+                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].barreiraNecessidade`]}
                 />
 
                 <FormTextarea
@@ -1294,6 +1205,8 @@ export default function EstudoCasoForm({
                   }
                   disabled={isPending}
                   rows={2}
+
+                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].evidenciasImpactos`]}
                 />
 
                 <FormSelect
@@ -1312,6 +1225,7 @@ export default function EstudoCasoForm({
                   options={["Alta", "Média", "Baixa"]}
                   disabled={isPending}
                   placeholder="Defina a prioridade"
+                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].prioridade`]}
                 />
               </div>
             ))}
