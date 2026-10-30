@@ -70,7 +70,6 @@ public class EstudoDeCasoMapper {
                 motivo.getOutroOrigemEncaminhamento(),
                 motivo.getMotivoPrincipal(),
                 motivo.getDemandaDoEstudante(),
-                motivo.getDemandaDoProfissional(),
                 motivo.getDemandaDoResponsavel(),
                 motivo.getDemandaEquipeEscolar()
         );
@@ -221,7 +220,6 @@ public class EstudoDeCasoMapper {
         motivo.setOutroOrigemEncaminhamento(request.outroOrigemEncaminhamento());
         motivo.setMotivoPrincipal(request.motivoPrincipal());
         motivo.setDemandaDoEstudante(request.demandaDoEstudante());
-        motivo.setDemandaDoProfissional(request.demandaDoProfissional());
         motivo.setDemandaDoResponsavel(request.demandaDoResponsavel());
         motivo.setDemandaEquipeEscolar(request.demandaEquipeEscolar());
         return motivo;

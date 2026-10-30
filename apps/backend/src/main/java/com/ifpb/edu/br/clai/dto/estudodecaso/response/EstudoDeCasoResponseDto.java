@@ -34,7 +34,6 @@ public record EstudoDeCasoResponseDto(
             String outroOrigemEncaminhamento,
             String motivoPrincipal,
             String demandaDoEstudante,
-            String demandaDoProfissional,
             String demandaDoResponsavel,
             String demandaEquipeEscolar
     ) {}
