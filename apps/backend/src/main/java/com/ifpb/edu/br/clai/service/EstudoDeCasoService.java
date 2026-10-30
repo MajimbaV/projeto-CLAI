@@ -9,6 +9,7 @@ import com.ifpb.edu.br.clai.model.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.EstudoDeCaso;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacional;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;
+import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.StatusEstudoDeCaso;
 import com.ifpb.edu.br.clai.repository.EstudoDeCasoRepository;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,10 @@ public class EstudoDeCasoService {
 
         Aluno novoAluno = alunoService.buscarOuFalhar(alunoSalvo.id());
         EstudoDeCaso estudoDeCaso = EstudoDeCasoMapper.requestToEntity(prepararParaMapeamento(dto.estudoDeCaso()), novoAluno);
+
+        //atualiza o estudo atualmente "valido" no db para "arquivado"
+        estudoDeCasoRepository.atualizarSituacao(SituacaoEstudoDeCaso.VALIDO, SituacaoEstudoDeCaso.ARQUIVADO);
+
         EstudoDeCaso estudoDeCasoSalvo = estudoDeCasoRepository.save(estudoDeCaso);
         return EstudoDeCasoMapper.entityToResponse(estudoDeCasoSalvo);
     }

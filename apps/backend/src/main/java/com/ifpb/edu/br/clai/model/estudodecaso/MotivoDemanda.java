@@ -26,9 +26,6 @@ public class MotivoDemanda {
     @Column(name = "m_demanda_estudante")
     private String demandaDoEstudante;
 
-    @Column(name = "m_demanda_profissional")
-    private String demandaDoProfissional;
-
     @Column(name = "m_demanda_responsavel")
     private String demandaDoResponsavel;
 
