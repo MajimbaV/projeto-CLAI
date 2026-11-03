@@ -21,6 +21,21 @@ const TEXTOS_POR_MODO = {
   },
 };
 
+const OPCOES_PARENTESCO = ["Pai", "Mãe", "Irmão", "Irmã", "Outro"];
+
+const OPCOES_CURSO = [
+  "Integrado em Informática",
+  "Integrado em Edificações",
+  "Integrado em Eletromecânica",
+  "Integrado em Meio Ambiente",
+  "Bacharelado em Engenharia de Controle e Automação",
+  "Análise e Desenvolvimento de Sistemas",
+  "Licenciatura em Matemática",
+  "Licenciatura em Química",
+  "Bacharelado em Engenharia Civil",
+  "Tecnologia em Automação Industrial",
+];
+
 const FORM_DATA_VAZIO = {
   alunoNome: "",
   alunoNascimento: "",
@@ -67,6 +82,12 @@ function AlunoForm({
     mode === "create"
       ? "/alunos"
       : `../alunos/${encodeURIComponent(formData.alunoMatricula)}`;
+
+  const responsavelPreenchido = Boolean(
+    formData.nomeResponsavel.trim() ||
+    formData.responsavelTelefone.trim() ||
+    formData.responsavelEmail.trim(),
+  );
 
   function handleChangeForm(e) {
     const { name, value } = e.target;
@@ -156,6 +177,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.alunoNome && (
                 <span className="error-message">{invalidFields.alunoNome}</span>
               )}
@@ -171,6 +193,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.alunoNascimento && (
                 <span className="error-message">
                   {invalidFields.alunoNascimento}
@@ -191,6 +214,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.alunoTelefone && (
                 <span className="error-message">
                   {invalidFields.alunoTelefone}
@@ -209,6 +233,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.alunoEmail && (
                 <span className="error-message">
                   {invalidFields.alunoEmail}
@@ -238,6 +263,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.nomeResponsavel && (
                 <span className="error-message">
                   {invalidFields.nomeResponsavel}
@@ -246,16 +272,29 @@ function AlunoForm({
             </div>
 
             <div className="input-group">
-              <label htmlFor="grauParentesco">Grau de parentesco</label>
-              <input
-                type="text"
+              <label htmlFor="grauParentesco">
+                Grau de parentesco {responsavelPreenchido && "*"}
+              </label>
+
+              <select
                 id="grauParentesco"
                 name="grauParentesco"
-                placeholder="Ex.: Mãe, Pai..."
                 value={formData.grauParentesco}
                 onChange={handleChangeForm}
                 disabled={isPending}
-              />
+                required={responsavelPreenchido}
+              >
+                <option value="" disabled>
+                  Selecione o grau de parentesco...
+                </option>
+
+                {OPCOES_PARENTESCO.map((parentesco) => (
+                  <option key={parentesco} value={parentesco}>
+                    {parentesco}
+                  </option>
+                ))}
+              </select>
+
               {invalidFields.grauParentesco && (
                 <span className="error-message">
                   {invalidFields.grauParentesco}
@@ -269,6 +308,7 @@ function AlunoForm({
               <label htmlFor="responsavelTelefone">
                 Telefone do responsável
               </label>
+
               <input
                 type="text"
                 id="responsavelTelefone"
@@ -278,6 +318,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.responsavelTelefone && (
                 <span className="error-message">
                   {invalidFields.responsavelTelefone}
@@ -287,6 +328,7 @@ function AlunoForm({
 
             <div className="input-group">
               <label htmlFor="responsavelEmail">E-mail do responsável</label>
+
               <input
                 type="email"
                 id="responsavelEmail"
@@ -296,6 +338,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.responsavelEmail && (
                 <span className="error-message">
                   {invalidFields.responsavelEmail}
@@ -324,6 +367,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.alunoMatricula && (
                 <span className="error-message">
                   {invalidFields.alunoMatricula}
@@ -333,15 +377,26 @@ function AlunoForm({
 
             <div className="input-group">
               <label htmlFor="alunoCurso">Curso *</label>
-              <input
-                type="text"
+
+              <select
                 id="alunoCurso"
                 name="alunoCurso"
-                placeholder="Ex.: Engenharia de Computação"
                 value={formData.alunoCurso}
                 onChange={handleChangeForm}
                 disabled={isPending}
-              />
+                required
+              >
+                <option value="" disabled>
+                  Selecione um curso...
+                </option>
+
+                {OPCOES_CURSO.map((curso) => (
+                  <option key={curso} value={curso}>
+                    {curso}
+                  </option>
+                ))}
+              </select>
+
               {invalidFields.alunoCurso && (
                 <span className="error-message">
                   {invalidFields.alunoCurso}
@@ -362,6 +417,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.periodoIngresso && (
                 <span className="error-message">
                   {invalidFields.periodoIngresso}
@@ -380,6 +436,7 @@ function AlunoForm({
                 onChange={handleChangeForm}
                 disabled={isPending}
               />
+
               {invalidFields.periodoAluno && (
                 <span className="error-message">
                   {invalidFields.periodoAluno}

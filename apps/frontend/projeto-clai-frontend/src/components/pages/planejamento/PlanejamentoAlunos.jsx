@@ -296,7 +296,6 @@ function CronologiaDocumentos({ aluno, matricula, cronologiaPorMatricula }) {
 
 function PlanejamentoAlunos({
   onViewPlanning,
-  onAddAluno,
   onNovoEstudoCaso,
   cronologiaPorMatricula,
 }) {
@@ -325,10 +324,6 @@ function PlanejamentoAlunos({
 
         {mostrarAcoes && (
           <div className="planejamento-alunos-header-acoes">
-            <button type="button" className="btn-add" onClick={onAddAluno}>
-              + Adicionar Aluno
-            </button>
-
             <button
               type="button"
               className="btn-add"
