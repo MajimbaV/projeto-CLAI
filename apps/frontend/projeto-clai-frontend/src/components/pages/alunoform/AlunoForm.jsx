@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./AlunoForm.css";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../../../hooks/useToast";
 
 const TEXTOS_POR_MODO = {
   create: {
@@ -60,6 +61,7 @@ function AlunoForm({
   const textos = TEXTOS_POR_MODO[mode] ?? TEXTOS_POR_MODO.create;
 
   const navigate = useNavigate();
+  const { success } = useToast();
 
   const previousRedirect =
     mode === "create"
@@ -89,7 +91,7 @@ function AlunoForm({
     if (onSubmit) {
       onSubmit(payload, {
         onSuccess: () => {
-          alert(textos.successMessage);
+          success(textos.successMessage);
           navigate(previousRedirect);
         },
       });
@@ -113,15 +115,13 @@ function AlunoForm({
     if (error.response?.status === 404) {
       mensagemErro = "Falha ao realizar requisição à API";
     } else {
-      // Tenta pegar o Problem Detail, depois erro genérico do Spring, depois erro nativo do Axios (ex: Network Error)
-      mensagemErro = 
-        errorResponse.detail || 
-        errorResponse.message || 
-        error.message || 
+      mensagemErro =
+        errorResponse.detail ||
+        errorResponse.message ||
+        error.message ||
         "Ocorreu um erro inesperado ao salvar os dados.";
     }
   }
-
 
   return (
     <div className="aluno-form-body">
@@ -131,7 +131,7 @@ function AlunoForm({
       </div>
 
       <form className="aluno-form" onSubmit={handleSubmit}>
-        {(mensagemErro) && (
+        {mensagemErro && (
           <div className="error-banner">
             <p>Erro: {mensagemErro}</p>
           </div>
