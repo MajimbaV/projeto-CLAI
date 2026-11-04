@@ -31,7 +31,7 @@ public final class AlunoSpecification {
     public static Specification<Aluno> filtrarPorMatricula(String matricula) {
         return (root, query, cb) -> {
             if (matricula == null || matricula.isBlank()) return cb.conjunction();
-            return cb.equal(root.get("alunoMatricula"), matricula);
+            return cb.like(root.get("alunoMatricula"), matricula + "%");
         };
     }
 
@@ -49,7 +49,7 @@ public final class AlunoSpecification {
     public static Specification<Aluno> filtrarPorPeriodo(String periodo) {
         return (root, query, cb) -> {
             if (periodo == null || periodo.isBlank()) return cb.conjunction();
-            return cb.equal(root.get("periodoAluno"), periodo);
+            return cb.like(root.get("periodoAluno"), periodo + "%");
         };
     }
 
