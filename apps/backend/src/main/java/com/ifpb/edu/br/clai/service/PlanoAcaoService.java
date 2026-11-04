@@ -66,6 +66,12 @@ public class PlanoAcaoService {
         }
     }
 
+    private List<PlanoAcao> getPlanosEntidadeByMatricula(String matricula) {
+        List<Aluno> aluno = alunoService.findAlunosPorFiltros(null, matricula, null);
+        Specification<PlanoAcao> spec = PlanoAcaoSpecification.filtrarPorEstudantes(aluno);
+        return planoAcaoRepository.findAll(spec);
+    }
+
     private PlanoAcao buscarOuFalhar(UUID id) {
         return planoAcaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Plano não encontrado com o ID: " + id));
@@ -76,7 +82,7 @@ public class PlanoAcaoService {
         Specification<PlanoAcao> spec = Specification.where(PlanoAcaoSpecification.filtrarPorStatusAtivo(statusAtivo));
 
         if ((nomeAluno != null && !nomeAluno.isBlank()) || (matriculaAluno != null && !matriculaAluno.isBlank())) {
-            List<Aluno> alunosFiltrados = alunoService.findAlunosPorFiltros(nomeAluno, matriculaAluno);
+            List<Aluno> alunosFiltrados = alunoService.findAlunosPorFiltros(nomeAluno, matriculaAluno, statusAtivo);
             spec = spec.and(PlanoAcaoSpecification.filtrarPorEstudantes(alunosFiltrados));
         }
 
@@ -138,6 +144,19 @@ public class PlanoAcaoService {
 
         planoAcao.setStatusAtivo(false);
         planoAcaoRepository.save(planoAcao);
+    }
+
+    @Transactional
+    public void inativarPlanosPorMatricula(String matricula) {
+
+        List<PlanoAcao> planos = getPlanosEntidadeByMatricula(matricula);
+
+        if (planos != null && !planos.isEmpty()) {
+            for (PlanoAcao plano : planos) {
+                plano.setStatusAtivo(false);
+            }
+            planoAcaoRepository.saveAll(planos);
+        }
     }
 
     public Page<PlanoAcaoResponseDto> getPlanosByMatricula(String matricula, Pageable pageable) {
