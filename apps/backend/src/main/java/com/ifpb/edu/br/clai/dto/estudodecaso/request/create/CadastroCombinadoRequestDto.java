@@ -1,6 +1,6 @@
 package com.ifpb.edu.br.clai.dto.estudodecaso.request.create;
 
-import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoRequestDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 

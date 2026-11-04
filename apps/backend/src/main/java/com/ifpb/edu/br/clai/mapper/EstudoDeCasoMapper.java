@@ -3,7 +3,7 @@ package com.ifpb.edu.br.clai.mapper;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto.*;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.*;
-import com.ifpb.edu.br.clai.model.Aluno;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.*;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 

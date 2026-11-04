@@ -1,7 +1,7 @@
 package com.ifpb.edu.br.clai.controller;
 
-import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
-import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoRequestDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
 import com.ifpb.edu.br.clai.service.AlunoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +26,18 @@ public class AlunoController {
 
     @GetMapping
     public ResponseEntity<Page<AlunoResponseDto>> getAllAlunos(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String matricula,
+            @RequestParam(required = false) String curso,
+            @RequestParam(required = false) String periodo,
+            @RequestParam(required = false) Boolean maioridade,
+            @RequestParam(required = false) Boolean statusAtivo,
             @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return ResponseEntity.ok(alunoService.getAllAlunos(pageable));
+
+        Page<AlunoResponseDto> alunos = alunoService.getAllAlunos(
+                nome, matricula, curso, periodo, maioridade, statusAtivo, pageable);
+
+        return ResponseEntity.ok(alunos);
     }
 
     @GetMapping("/matricula/{matricula}")

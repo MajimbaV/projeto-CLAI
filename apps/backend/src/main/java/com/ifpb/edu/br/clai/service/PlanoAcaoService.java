@@ -1,16 +1,17 @@
 package com.ifpb.edu.br.clai.service;
 
-import com.ifpb.edu.br.clai.dto.PlanoAcaoRequestDto;
-import com.ifpb.edu.br.clai.dto.PlanoAcaoResponseDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoRequestDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoResponseDto;
 import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.PlanoAcaoMapper;
-import com.ifpb.edu.br.clai.model.Aluno;
-import com.ifpb.edu.br.clai.model.PlanoAcao;
-import com.ifpb.edu.br.clai.model.planoacao.AfirmacaoEnum;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
+import com.ifpb.edu.br.clai.model.planoacao.PlanoAcao;
+import com.ifpb.edu.br.clai.model.planoacao.enums.AfirmacaoEnum;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import com.ifpb.edu.br.clai.repository.PlanoAcaoRepository;
+import com.ifpb.edu.br.clai.specification.PlanoAcaoSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,16 +23,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.ifpb.edu.br.clai.specification.PlanoAcaoSpecification.*;
 
 @Service
 public class PlanoAcaoService {
     private final PlanoAcaoRepository planoAcaoRepository;
     private final AlunoRepository alunoRepository;
+    private final AlunoService alunoService;
 
-    public PlanoAcaoService(PlanoAcaoRepository planoAcaoRepository, AlunoRepository alunoRepository){
+    public PlanoAcaoService(PlanoAcaoRepository planoAcaoRepository, AlunoRepository alunoRepository, AlunoService alunoService){
         this.planoAcaoRepository = planoAcaoRepository;
         this.alunoRepository = alunoRepository;
+        this.alunoService = alunoService;
     }
 
     private boolean isListaVazia(List<String> lista) {
@@ -69,10 +71,14 @@ public class PlanoAcaoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Plano não encontrado com o ID: " + id));
     }
 
-    public Page<PlanoAcaoResponseDto> getAllPlanoAcao(String nomeAluno, String matriculaAluno, Boolean statusAtivo,Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<PlanoAcaoResponseDto> getAllPlanoAcao(String nomeAluno, String matriculaAluno, Boolean statusAtivo, Pageable pageable) {
+        Specification<PlanoAcao> spec = Specification.where(PlanoAcaoSpecification.filtrarPorStatusAtivo(statusAtivo));
 
-        Specification<PlanoAcao> spec = Specification.where(filtrarPorNome(nomeAluno))
-                .and(filtrarPorMatricula(matriculaAluno).and(filtrarPorStatusAtivo(statusAtivo)));
+        if ((nomeAluno != null && !nomeAluno.isBlank()) || (matriculaAluno != null && !matriculaAluno.isBlank())) {
+            List<Aluno> alunosFiltrados = alunoService.findAlunosPorFiltros(nomeAluno, matriculaAluno);
+            spec = spec.and(PlanoAcaoSpecification.filtrarPorEstudantes(alunosFiltrados));
+        }
 
         return planoAcaoRepository.findAll(spec, pageable)
                 .map(PlanoAcaoMapper::entityToResponse);
