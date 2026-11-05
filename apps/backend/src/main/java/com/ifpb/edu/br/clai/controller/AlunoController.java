@@ -2,6 +2,7 @@ package com.ifpb.edu.br.clai.controller;
 
 import com.ifpb.edu.br.clai.dto.aluno.AlunoRequestDto;
 import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
+import com.ifpb.edu.br.clai.service.AlunoOrquestrador;
 import com.ifpb.edu.br.clai.service.AlunoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,11 @@ import java.util.UUID;
 @RequestMapping("/alunos")
 public class AlunoController {
     private final AlunoService alunoService;
+    private final AlunoOrquestrador alunoOrquestrador;
 
-    public AlunoController(AlunoService alunoService) {
+    public AlunoController(AlunoService alunoService, AlunoOrquestrador alunoOrquestrador) {
         this.alunoService = alunoService;
+        this.alunoOrquestrador = alunoOrquestrador;
     }
 
     @GetMapping
@@ -64,4 +67,11 @@ public class AlunoController {
         AlunoResponseDto response = alunoService.updateAluno(id, dto);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{matricula}")
+    public ResponseEntity<Void> inativarAluno(@PathVariable String matricula) {
+        alunoOrquestrador.inativarAlunoComPlanos(matricula);
+        return ResponseEntity.noContent().build();
+    }
+
 }
