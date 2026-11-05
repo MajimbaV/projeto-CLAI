@@ -7,7 +7,6 @@ import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.AlunoMapper;
 import com.ifpb.edu.br.clai.model.aluno.Aluno;
-import com.ifpb.edu.br.clai.model.planoacao.PlanoAcao;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import com.ifpb.edu.br.clai.specification.AlunoSpecification;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,11 +27,9 @@ import java.util.UUID;
 public class AlunoService {
 
     private final AlunoRepository alunoRepository;
-    private final PlanoAcaoService planoAcaoService;
 
-    public AlunoService(AlunoRepository alunoRepository, PlanoAcaoService planoAcaoService) {
+    public AlunoService(AlunoRepository alunoRepository) {
         this.alunoRepository = alunoRepository;
-        this.planoAcaoService = planoAcaoService;
     }
 
     private void validarRegrasAdicionais(AlunoRequestDto dto) {
@@ -168,14 +165,14 @@ public class AlunoService {
     @Transactional
     public void inativarPorMatricula(String matricula) {
         Aluno aluno = alunoRepository.findByAlunoMatricula(matricula)
-                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com a matrícula: " + matricula));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Aluno não encontrado com a matrícula: " + matricula
+                ));
 
         validarAlunoAtivo(aluno, "inativar o aluno");
 
         aluno.setStatusAtivo(false);
         alunoRepository.save(aluno);
-
-        planoAcaoService.inativarPlanosPorMatricula(matricula);
     }
 
     public AlunoResponseDto getAlunoByMatricula(String matricula) {
