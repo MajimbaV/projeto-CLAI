@@ -1,7 +1,8 @@
 package com.ifpb.edu.br.clai.controller;
 
-import com.ifpb.edu.br.clai.dto.AlunoRequestDto;
-import com.ifpb.edu.br.clai.dto.AlunoResponseDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoRequestDto;
+import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
+import com.ifpb.edu.br.clai.service.AlunoOrquestrador;
 import com.ifpb.edu.br.clai.service.AlunoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,27 @@ import java.util.UUID;
 @RequestMapping("/alunos")
 public class AlunoController {
     private final AlunoService alunoService;
+    private final AlunoOrquestrador alunoOrquestrador;
 
-    public AlunoController(AlunoService alunoService) {
+    public AlunoController(AlunoService alunoService, AlunoOrquestrador alunoOrquestrador) {
         this.alunoService = alunoService;
+        this.alunoOrquestrador = alunoOrquestrador;
     }
 
     @GetMapping
     public ResponseEntity<Page<AlunoResponseDto>> getAllAlunos(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String matricula,
+            @RequestParam(required = false) String curso,
+            @RequestParam(required = false) String periodo,
+            @RequestParam(required = false) Boolean maioridade,
+            @RequestParam(required = false) Boolean statusAtivo,
             @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return ResponseEntity.ok(alunoService.getAllAlunos(pageable));
+
+        Page<AlunoResponseDto> alunos = alunoService.getAllAlunos(
+                nome, matricula, curso, periodo, maioridade, statusAtivo, pageable);
+
+        return ResponseEntity.ok(alunos);
     }
 
     @GetMapping("/matricula/{matricula}")
@@ -54,4 +67,19 @@ public class AlunoController {
         AlunoResponseDto response = alunoService.updateAluno(id, dto);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/matricula/{matricula}")
+    public ResponseEntity<Void> inativarAluno(@PathVariable("matricula") String matricula) {
+        alunoOrquestrador.inativarAlunoComDocumentos(matricula);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/matricula/{matricula}/ativar")
+    public ResponseEntity<AlunoResponseDto> ativarAluno(@PathVariable("matricula") String matricula){
+        alunoService.ativarPorMatricula(matricula);
+        AlunoResponseDto response = alunoService.getAlunoByMatricula(matricula);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

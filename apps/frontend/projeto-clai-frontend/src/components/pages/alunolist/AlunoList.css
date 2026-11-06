@@ -224,17 +224,18 @@ td {
   color: #374151;
   padding: 16px;
   border-bottom: 1px solid #f3f4f6;
+  height: 100%;
 }
 
 /* A última célula da tabela (onde estão os botões de ação) */
-td:last-child {
+.action-buttons {
   display: flex;
   align-items: center;
   gap: 12px; /* Espaço agradável entre o botão de editar e o de excluir */
 }
 
 /* O estilo para os botões de ação */
-td:last-child button {
+.action-buttons button {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
@@ -248,21 +249,27 @@ td:last-child button {
     border-color 0.2s;
 }
 
-td:last-child button:hover {
+.action-buttons button:hover {
   background-color: #f9fafb;
   border-color: #d1d5db;
 }
 
-/* O tamanho das imagens dentro dos botões */
-td:last-child img {
-  width: 14px;
-  height: 14px;
+/* Tamanho e cor base dos ícones do React Icons */
+.action-icon {
+  width: 18px; /* Ligeiramente maior que os 14px do PNG para compensar o traçado fino do Heroicons */
+  height: 18px;
+  color: #6b7280; /* Substitui o inline color="gray" e color="blue" por uma cor padrão sólida */
   opacity: 0.7;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, color 0.2s;
 }
 
-td:last-child button:hover img {
+.archive-icon {
+  color: #9ca3af;
+}
+
+td:last-child button:hover .action-icon {
   opacity: 1;
+  color: #111827;
 }
 
 /* Badge base */
@@ -354,8 +361,12 @@ td:last-child button:hover img {
   font-weight: 600;
 }
 
-/* Tamanho do ícone da seta no botão anterior/seguinte */
-.page-btn img {
-  width: 12px;
-  height: 12px;
+.page-icon {
+  width: 14px;
+  height: 14px;
+  color: #374151;
+}
+
+.page-btn:disabled .page-icon {
+  color: #9ca3af;
 }

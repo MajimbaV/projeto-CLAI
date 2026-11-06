@@ -1,15 +1,12 @@
-import ChevronLeft from "../../../assets/ChevronLeft.png";
-import EditImg from "../../../assets/Edit.png";
 import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
+import { HiPencilAlt, HiArchive, HiCheck ,HiChevronLeft } from "react-icons/hi";
 
 import "./AlunoView.css";
 
-function AlunoView({ matriculaAluno, onBack, onEdit }) {
-  const {
-    data: aluno,
-    isLoading,
-    error,
-  } = useGetAlunoByMatricula(matriculaAluno);
+function AlunoView({ matriculaAluno, onBack, onEdit, onDelete, onActivate }) {
+
+  const { data: aluno, isLoading, error } = useGetAlunoByMatricula(matriculaAluno);
+
 
   if (isLoading) {
     return (
@@ -26,7 +23,7 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
           <p>Aluno não encontrado.</p>
 
           <button className="aluno-view-back" onClick={onBack}>
-            <img src={ChevronLeft} alt="" />
+            <HiChevronLeft className="back-icon" />
             Voltar para alunos
           </button>
         </div>
@@ -41,7 +38,7 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
         <p>Erro: {mensagemErro}</p>
 
         <button className="aluno-view-back" onClick={onBack}>
-          <img src={ChevronLeft} alt="" />
+          <HiChevronLeft className="back-icon" />
           Voltar
         </button>
       </div>
@@ -54,7 +51,7 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
         <p>Dados do aluno não estão disponíveis.</p>
 
         <button className="aluno-view-back" onClick={onBack}>
-          <img src={ChevronLeft} alt="" />
+          <HiChevronLeft className="back-icon" />
           Voltar para alunos
         </button>
       </div>
@@ -98,7 +95,7 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
       <div className="aluno-view-header">
         <div>
           <button className="aluno-view-back" onClick={onBack}>
-            <img src={ChevronLeft} alt="" />
+            <HiChevronLeft className="back-icon" />
             Voltar para alunos
           </button>
 
@@ -109,10 +106,27 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
           </p>
         </div>
 
-        <button className="aluno-view-edit" onClick={() => onEdit?.(aluno)}>
-          <img src={EditImg} alt="" />
-          Editar aluno
-        </button>
+        <div className="aluno-view-actions">
+          <button className="aluno-view-action-btn" onClick={() => onEdit?.(aluno)}>
+            <HiPencilAlt className="action-icon"/>
+            Editar aluno
+          </button>
+
+        { aluno.statusAtivo && (
+          <button className="aluno-view-action-btn btn-archive" onClick={() => onDelete?.(aluno)}>
+            <HiArchive className="action-icon" />
+              Arquivar Aluno
+          </button>
+        )}
+
+        {!aluno.statusAtivo && (
+          <button className="aluno-view-action-btn" onClick={() => onActivate?.(aluno)}>
+            <HiCheck className="action-icon" />
+              Ativar Aluno
+          </button>
+        )}
+   
+        </div>
       </div>
 
       <section className="aluno-view-card">

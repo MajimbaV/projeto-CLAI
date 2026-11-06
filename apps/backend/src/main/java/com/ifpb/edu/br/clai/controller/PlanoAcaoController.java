@@ -1,7 +1,7 @@
 package com.ifpb.edu.br.clai.controller;
 
-import com.ifpb.edu.br.clai.dto.PlanoAcaoRequestDto;
-import com.ifpb.edu.br.clai.dto.PlanoAcaoResponseDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoRequestDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoResponseDto;
 import com.ifpb.edu.br.clai.service.PlanoAcaoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;

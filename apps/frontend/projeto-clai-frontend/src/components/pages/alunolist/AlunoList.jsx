@@ -1,10 +1,7 @@
-import TrashImg from "../../../assets/TrashCan.png";
-import EditImg from "../../../assets/Edit.png";
 import { useState } from "react";
 import "./AlunoList.css";
-import ChevronLeft from "../../../assets/ChevronLeft.png";
-import ChevronRight from "../../../assets/ChevronRight.png";
 import { useGetAlunos } from "../../../hooks/useGetAlunos";
+import { HiOutlineArchive, HiOutlinePencilAlt, HiChevronLeft, HiChevronRight} from "react-icons/hi";
 
 function AlunoList({ onDelete, onEdit, onView, onAdd }) {
   const [paginaAtual, setPaginaAtual] = useState(1);
@@ -100,13 +97,15 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
                   <td>{aluno.alunoCurso}</td>
 
                   <td>
-                    <button onClick={() => handleEdit(aluno)}>
-                      <img src={EditImg} alt="Editar" />
-                    </button>
+                    <div className="action-buttons">
+                      <button onClick={() => handleEdit(aluno)}>
+                        {<HiOutlinePencilAlt className="action-icon"/>} 
+                      </button>
 
-                    <button onClick={() => handleDelete(aluno)}>
-                      <img src={TrashImg} alt="Excluir" />
-                    </button>
+                      <button onClick={() => handleDelete(aluno)}>
+                        {<HiOutlineArchive className="action-icon archive-icon"/>}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -130,7 +129,7 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
                 onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 1))}
                 disabled={paginaAtual === 1}
               >
-                <img src={ChevronLeft} alt="Anterior" />
+                <HiChevronLeft className="page-icon" />
               </button>
 
               {Array.from({ length: totalPaginas }, (_, index) => {
@@ -156,7 +155,7 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
                 }
                 disabled={paginaAtual === totalPaginas || totalPaginas === 0}
               >
-                <img src={ChevronRight} alt="Seguinte" />
+                <HiChevronRight className="page-icon" />
               </button>
             </div>
           </div>

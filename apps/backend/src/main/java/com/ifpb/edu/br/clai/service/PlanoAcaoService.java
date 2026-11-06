@@ -1,16 +1,18 @@
 package com.ifpb.edu.br.clai.service;
 
-import com.ifpb.edu.br.clai.dto.PlanoAcaoRequestDto;
-import com.ifpb.edu.br.clai.dto.PlanoAcaoResponseDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoRequestDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoResponseDto;
 import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.PlanoAcaoMapper;
-import com.ifpb.edu.br.clai.model.Aluno;
-import com.ifpb.edu.br.clai.model.PlanoAcao;
-import com.ifpb.edu.br.clai.model.planoacao.AfirmacaoEnum;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
+import com.ifpb.edu.br.clai.model.planoacao.PlanoAcao;
+import com.ifpb.edu.br.clai.model.planoacao.enums.AfirmacaoEnum;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import com.ifpb.edu.br.clai.repository.PlanoAcaoRepository;
+import com.ifpb.edu.br.clai.specification.AlunoSpecification;
+import com.ifpb.edu.br.clai.specification.PlanoAcaoSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,13 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.ifpb.edu.br.clai.specification.PlanoAcaoSpecification.*;
 
 @Service
 public class PlanoAcaoService {
     private final PlanoAcaoRepository planoAcaoRepository;
     private final AlunoRepository alunoRepository;
-
     public PlanoAcaoService(PlanoAcaoRepository planoAcaoRepository, AlunoRepository alunoRepository){
         this.planoAcaoRepository = planoAcaoRepository;
         this.alunoRepository = alunoRepository;
@@ -64,15 +64,39 @@ public class PlanoAcaoService {
         }
     }
 
+    private List<PlanoAcao> getPlanosEntidadeByMatricula(String matricula) {
+        List<Aluno> alunos = alunoRepository.findAll(
+                AlunoSpecification.filtrarPorMatricula(matricula)
+                        .and(AlunoSpecification.filtrarPorStatusAtivo(null))
+        );
+
+        Specification<PlanoAcao> spec =
+                PlanoAcaoSpecification.filtrarPorEstudantes(alunos);
+
+        return planoAcaoRepository.findAll(spec);
+    }
+
     private PlanoAcao buscarOuFalhar(UUID id) {
         return planoAcaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Plano não encontrado com o ID: " + id));
     }
 
-    public Page<PlanoAcaoResponseDto> getAllPlanoAcao(String nomeAluno, String matriculaAluno, Boolean statusAtivo,Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<PlanoAcaoResponseDto> getAllPlanoAcao(String nomeAluno, String matriculaAluno, Boolean statusAtivo, Pageable pageable) {
+        Specification<PlanoAcao> spec = Specification.where(PlanoAcaoSpecification.filtrarPorStatusAtivo(statusAtivo));
 
-        Specification<PlanoAcao> spec = Specification.where(filtrarPorNome(nomeAluno))
-                .and(filtrarPorMatricula(matriculaAluno).and(filtrarPorStatusAtivo(statusAtivo)));
+        if ((nomeAluno != null && !nomeAluno.isBlank()) || (matriculaAluno != null && !matriculaAluno.isBlank())) {
+
+            Boolean statusAluno = statusAtivo == null || statusAtivo;
+
+            Specification<Aluno> alunoSpec = Specification.where(AlunoSpecification.filtrarPorNome(nomeAluno))
+                            .and(AlunoSpecification.filtrarPorMatricula(matriculaAluno))
+                            .and(AlunoSpecification.filtrarPorStatusAtivo(statusAluno));
+
+            List<Aluno> alunosFiltrados = alunoRepository.findAll(alunoSpec);
+
+            spec = spec.and(PlanoAcaoSpecification.filtrarPorEstudantes(alunosFiltrados));
+        }
 
         return planoAcaoRepository.findAll(spec, pageable)
                 .map(PlanoAcaoMapper::entityToResponse);
@@ -132,6 +156,19 @@ public class PlanoAcaoService {
 
         planoAcao.setStatusAtivo(false);
         planoAcaoRepository.save(planoAcao);
+    }
+
+    @Transactional
+    public void inativarPlanosPorMatricula(String matricula) {
+
+        List<PlanoAcao> planos = getPlanosEntidadeByMatricula(matricula);
+
+        if (!planos.isEmpty()) {
+            for (PlanoAcao plano : planos) {
+                plano.setStatusAtivo(false);
+            }
+            planoAcaoRepository.saveAll(planos);
+        }
     }
 
     public Page<PlanoAcaoResponseDto> getPlanosByMatricula(String matricula, Pageable pageable) {

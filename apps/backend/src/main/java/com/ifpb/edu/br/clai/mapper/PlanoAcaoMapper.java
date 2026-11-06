@@ -1,8 +1,8 @@
 package com.ifpb.edu.br.clai.mapper;
 
-import com.ifpb.edu.br.clai.dto.PlanoAcaoRequestDto;
-import com.ifpb.edu.br.clai.dto.PlanoAcaoResponseDto;
-import com.ifpb.edu.br.clai.model.PlanoAcao;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoRequestDto;
+import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoResponseDto;
+import com.ifpb.edu.br.clai.model.planoacao.PlanoAcao;
 
 public class PlanoAcaoMapper {
 
