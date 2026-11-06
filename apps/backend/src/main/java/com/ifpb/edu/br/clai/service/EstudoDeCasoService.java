@@ -9,6 +9,7 @@ import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.EstudoDeCaso;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacional;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;
+import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.StatusEstudoDeCaso;
 import com.ifpb.edu.br.clai.repository.EstudoDeCasoRepository;
 import org.springframework.stereotype.Service;
@@ -279,6 +280,33 @@ public class EstudoDeCasoService {
     private void requiredList(Map<String, String> errors, String field, Collection<?> value) {
         if (value == null || value.isEmpty()) {
             required(errors, field);
+        }
+    }
+
+    private boolean alterarStatusParaArquivado(List<EstudoDeCaso> estudos) {
+        boolean sofreuAlteracao = false;
+
+        for (EstudoDeCaso estudo : estudos) {
+            if (estudo.getSituacaoEstudoDeCaso() == SituacaoEstudoDeCaso.VALIDO) {
+                estudo.setSituacaoEstudoDeCaso(SituacaoEstudoDeCaso.ARQUIVADO);
+                sofreuAlteracao = true;
+            }
+        }
+
+        return sofreuAlteracao;
+    }
+
+    @Transactional
+    public void arquivarEstudosPorMatricula(String matricula) {
+        alunoService.getAlunoByMatricula(matricula);
+
+        List<EstudoDeCaso> estudos = estudoDeCasoRepository.findByIdentificacaoAlunoIdAlunoMatricula(matricula);
+
+        if (!estudos.isEmpty()) {
+            boolean sofreuAlteracao = alterarStatusParaArquivado(estudos);
+            if (sofreuAlteracao) {
+                estudoDeCasoRepository.saveAll(estudos);
+            }
         }
     }
 }
