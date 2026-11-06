@@ -20,6 +20,15 @@ const filtrosIniciais = {
   statusAtivo: true
 };
 
+const opcoesSort = [
+  {value: "alunoNome,asc", label: "Nome (A-Z)"},
+  {value: "alunoNome,desc", label: "Nome (Z-A)"},
+  {value: "alunoMatricula,asc", label: "Matrícula (Crescente)"},
+  {value: "alunoMatricula,desc", label: "Matrícula (Decrescente)"},
+  {value: "alunoCurso,asc", label: "Curso (A-Z)"},
+  {value: "alunoCurso,desc", label: "Curso (Z-A)"},
+]
+
 
 const opcoesCurso = [
   {value: "Integrado em Informática", label: "Integrado em Informática"},
@@ -46,13 +55,14 @@ const opcoesPeriodo = [
 
 function AlunoList({ onDelete, onEdit, onView, onAdd }) {
   const [filtros, setFiltros] = useState(filtrosIniciais);
+  const [sort, setSort] = useState("alunoNome,asc");
   const [tabAtual, setTabAtual] = useState("ativos"); 
   const [termoBusca, setTermoBusca] = useState("");
 
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 5;
 
-  const { data, isLoading, error } = useGetAlunos({page: paginaAtual, size: itensPorPagina, filters: filtros});
+  const { data, isLoading, error } = useGetAlunos({page: paginaAtual, size: itensPorPagina, filters: filtros, sort: sort});
 
   const alunos = data?.content || [];
   const quantidadeAlunos = data?.numberOfElements || 0;
@@ -168,6 +178,11 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
             />
           </div>
           <div className="toolbar-right">
+
+              <Selector
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              options={opcoesSort}/>
             
             <Selector
               value={filtros.curso}
