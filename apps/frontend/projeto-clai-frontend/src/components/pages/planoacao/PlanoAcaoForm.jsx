@@ -1,7 +1,12 @@
 import { useState } from "react";
 import FormField from "../../forms/FormField";
 import FormSelect from "../../forms/FormSelect";
+import FormTextarea from "../../forms/FormTextarea";
 import FormStringList from "../../forms/FormStringList";
+import {
+  validarPlanoAcao,
+  prepararPayloadPlanoAcao,
+} from "../../../utils/validarPlanoAcao";
 import "./PlanoAcaoForm.css";
 
 const OPCOES_SIM_NAO = [
@@ -9,9 +14,6 @@ const OPCOES_SIM_NAO = [
   { value: "NAO", label: "Não" },
 ];
 
-// Configuração dos 4 pares pergunta (SIM/NAO) + lista condicional — evita
-// repetir 4x o mesmo par de FormSelect/FormStringList no JSX. A ordem aqui
-// é a mesma do PlanoAcaoRequestDto do back-end.
 const CAMPOS_CLINICOS = [
   {
     campoAfirmacao: "comorbidadeRelevante",
@@ -39,16 +41,33 @@ const CAMPOS_CLINICOS = [
   },
 ];
 
-// Estado vazio — também serve de "esquema": normalizarDefaultValues usa o
-// tipo de cada valor aqui (string vs array) para saber como normalizar o
-// valor correspondente vindo de defaultValues.
+const CAMPOS_DESCRITIVOS = [
+  {
+    campo: "necessidades",
+    label: "Identificação das necessidades específicas",
+    placeholder: "Descreva as necessidades específicas identificadas...",
+  },
+  {
+    campo: "relatoDificuldades",
+    label:
+      "Relato de avanços, dificuldades e potencialidades no percurso educacional",
+    placeholder: "Descreva avanços, dificuldades e potencialidades...",
+  },
+  {
+    campo: "demandas",
+    label: "Principais demandas identificadas",
+    placeholder: "Descreva as principais demandas...",
+  },
+  {
+    campo: "propostas",
+    label: "Descrição das propostas iniciais de intervenção",
+    placeholder: "Descreva as propostas iniciais de intervenção...",
+  },
+];
+
 const PLANO_VAZIO = {
   matricula: "",
   dataPlano: "",
-
-  // Campos das Etapas 2/3 (toggles SIM/NAO e suas listas condicionais,
-  // campos descritivos). Já fazem parte do formato do payload desde já —
-  // só a UI para preenchê-los chega nos próximos commits.
   comorbidadeRelevante: "",
   comorbidadeDescricao: [],
   fazUsoMedicacao: "",
@@ -57,23 +76,12 @@ const PLANO_VAZIO = {
   servicoApoioDescricao: [],
   apresentouDocumentos: "",
   documentosDescricao: [],
-
   necessidades: "",
   relatoDificuldades: "",
   demandas: "",
   propostas: "",
 };
 
-// Usa exclusivamente as chaves de PLANO_VAZIO — chave extra em `valores` é
-// ignorada. Para cada chave, olha o tipo do valor vazio correspondente:
-// se for array, normaliza para array de strings, descartando qualquer item
-// que não seja string; se for string, só aceita o valor recebido se ele de
-// fato for uma string — um número, booleano ou objeto vira "" em vez de ser
-// armazenado como está. Isso evita que um defaultValues malformado (ex.:
-// uma API retornando um tipo inesperado) contamine o formData com um tipo
-// que quebraria operações como .trim() mais adiante (validarPlanoAcao, no
-// Commit 3). Mesma função tanto para o estado inicial quanto para repor o
-// formData quando defaultValues mudar de referência.
 function normalizarDefaultValues(valores) {
   const normalizado = {};
 
@@ -101,36 +109,47 @@ function PlanoAcaoForm({
   isLoading = false,
   error = null,
   defaultValues,
-  mode = "create", // "create" | "edit" — "edit" ainda não implementado, só reservado
+  mode = "create",
   alunos = [],
   isLoadingAlunos = false,
 }) {
   const [formData, setFormData] = useState(() =>
     normalizarDefaultValues(defaultValues),
   );
+  const [errosLocais, setErrosLocais] = useState({});
 
-  // Repõe o formData quando defaultValues mudar de referência (ex.: a
-  // matrícula identificada pela URL chegando de forma assíncrona, no fluxo
-  // de edição futuro). Feito durante a própria renderização — e não em um
-  // useEffect — seguindo o mesmo padrão já validado em AlunoForm.jsx contra
-  // a regra react-hooks/set-state-in-effect do projeto.
+  // Sincroniza os valores recebidos quando defaultValues muda de referência.
   const [syncedDefaultValues, setSyncedDefaultValues] = useState(defaultValues);
   if (defaultValues !== syncedDefaultValues) {
     setSyncedDefaultValues(defaultValues);
     setFormData(normalizarDefaultValues(defaultValues));
   }
 
+  // Remove somente erros da validação local. Erros recebidos da API continuam
+  // em `invalidFields`, sem serem misturados com o estado local.
+  function limparErrosLocais(...campos) {
+    setErrosLocais((prev) => {
+      const proximos = { ...prev };
+      let houveAlteracao = false;
+
+      for (const campo of campos) {
+        if (Object.prototype.hasOwnProperty.call(prev, campo)) {
+          delete proximos[campo];
+          houveAlteracao = true;
+        }
+      }
+
+      return houveAlteracao ? proximos : prev;
+    });
+  }
+
   function handleChange(event) {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    limparErrosLocais(name);
   }
 
-  // Ao responder a afirmação, já limpa a lista correspondente se a resposta
-  // for NAO — não basta só esconder a lista na UI, porque o estado (e,
-  // futuramente, o payload) tem que respeitar a regra do back-end: "quando
-  // NAO, a lista precisa permanecer vazia" (PlanoAcaoService.validarRegrasAdicionais).
-  // Se isso ficasse só a cargo da validação no envio, um SIM -> preenche
-  // lista -> NAO deixaria itens "fantasmas" no estado até o submit.
+  // Ao mudar para NAO, limpa a lista correspondente no próprio estado.
   function handleAfirmacaoChange(campoAfirmacao, campoLista, event) {
     const novoValor = event.target.value;
 
@@ -139,18 +158,25 @@ function PlanoAcaoForm({
       [campoAfirmacao]: novoValor,
       [campoLista]: novoValor === "NAO" ? [] : prev[campoLista],
     }));
+    limparErrosLocais(campoAfirmacao, campoLista);
   }
 
   function handleListaChange(campoLista, novaLista) {
     setFormData((prev) => ({ ...prev, [campoLista]: novaLista }));
+    limparErrosLocais(campoLista);
   }
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    // Validação completa chega na Etapa 3 (validarPlanoAcao). Por enquanto,
-    // o envio só repassa o estado atual — estrutura, não comportamento.
-    onSubmit?.({ ...formData });
+    const erros = validarPlanoAcao(formData);
+    setErrosLocais(erros);
+
+    if (Object.keys(erros).length > 0) {
+      return;
+    }
+
+    onSubmit?.(prepararPayloadPlanoAcao(formData));
   }
 
   if (isLoading) {
@@ -164,6 +190,10 @@ function PlanoAcaoForm({
   const errorResponse = error?.response?.data || {};
   const invalidFields = errorResponse.invalidFields || {};
   const mensagemErro = errorResponse.detail || error?.message || null;
+
+  function erroDoCampo(campo) {
+    return errosLocais[campo] || invalidFields[campo];
+  }
 
   const opcoesAlunos = alunos.map((aluno) => ({
     value: aluno.alunoMatricula,
@@ -204,7 +234,7 @@ function PlanoAcaoForm({
               }
               required
               disabled={isPending || isLoadingAlunos}
-              error={invalidFields.matricula}
+              error={erroDoCampo("matricula")}
             />
 
             <FormField
@@ -215,7 +245,7 @@ function PlanoAcaoForm({
               onChange={handleChange}
               required
               disabled={isPending}
-              error={invalidFields.dataPlano}
+              error={erroDoCampo("dataPlano")}
             />
           </div>
         </fieldset>
@@ -240,7 +270,7 @@ function PlanoAcaoForm({
                   options={OPCOES_SIM_NAO}
                   required
                   disabled={isPending}
-                  error={invalidFields[campoAfirmacao]}
+                  error={erroDoCampo(campoAfirmacao)}
                 />
 
                 {formData[campoAfirmacao] === "SIM" && (
@@ -251,7 +281,7 @@ function PlanoAcaoForm({
                       handleListaChange(campoLista, novaLista)
                     }
                     disabled={isPending}
-                    error={invalidFields[campoLista]}
+                    error={erroDoCampo(campoLista)}
                   />
                 )}
               </div>
@@ -263,8 +293,23 @@ function PlanoAcaoForm({
           <legend>Informações descritivas</legend>
           <span className="plano-acao-section-desc">
             Necessidades específicas, avanços, demandas e propostas de
-            intervenção. Campos adicionados na próxima etapa.
+            intervenção.
           </span>
+
+          {CAMPOS_DESCRITIVOS.map(({ campo, label, placeholder }) => (
+            <FormTextarea
+              key={campo}
+              name={campo}
+              label={label}
+              placeholder={placeholder}
+              value={formData[campo]}
+              onChange={handleChange}
+              rows={4}
+              required
+              disabled={isPending}
+              error={erroDoCampo(campo)}
+            />
+          ))}
         </fieldset>
 
         <div className="plano-acao-actions">
