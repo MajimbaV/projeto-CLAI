@@ -1,7 +1,7 @@
-package com.ifpb.edu.br.clai.dto;
+package com.ifpb.edu.br.clai.dto.planoacao;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ifpb.edu.br.clai.model.planoacao.AfirmacaoEnum;
+import com.ifpb.edu.br.clai.model.planoacao.enums.AfirmacaoEnum;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
