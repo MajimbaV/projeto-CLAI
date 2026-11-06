@@ -11,11 +11,12 @@
 }
 
 .toast {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 12px;
   width: 100%;
-  padding: 16px;
+  padding: 16px 16px 18px;
   border: 1px solid;
   border-radius: 10px;
   background-color: #ffffff;
@@ -25,18 +26,21 @@
 }
 
 .toast-success {
+  --toast-accent: #166534;
   border-color: #86efac;
   background-color: #f0fdf4;
   color: #166534;
 }
 
 .toast-error {
+  --toast-accent: #991b1b;
   border-color: #fecaca;
   background-color: #fef2f2;
   color: #991b1b;
 }
 
 .toast-info {
+  --toast-accent: #1e40af;
   border-color: #bfdbfe;
   background-color: #eff6ff;
   color: #1e40af;
@@ -50,7 +54,7 @@
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background-color: currentColor;
+  background-color: var(--toast-accent);
   color: #ffffff;
   font-size: 15px;
   font-weight: 700;
@@ -106,6 +110,30 @@
   outline-offset: 2px;
 }
 
+.toast-exit {
+  animation: toast-exit 0.2s ease-in forwards;
+  pointer-events: none;
+}
+
+.toast-progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border-radius: 0 0 9px 9px;
+}
+
+.toast-progress-bar {
+  width: 100%;
+  height: 100%;
+  background-color: var(--toast-accent);
+  transform-origin: left;
+  animation: toast-progress var(--toast-duration) linear forwards;
+}
+
 @keyframes toast-enter {
   from {
     opacity: 0;
@@ -115,6 +143,19 @@
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes toast-exit {
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+@keyframes toast-progress {
+  to {
+    transform: scaleX(0);
   }
 }
 
@@ -130,4 +171,9 @@
   .toast {
     animation: none;
   }
+
+  .toast-exit {
+    animation: toast-exit 0.01ms linear forwards;
+  }
+
 }
