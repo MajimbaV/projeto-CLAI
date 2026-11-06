@@ -13,6 +13,8 @@ import AddEstudoCasoPage from "./components/pages/estudodecaso/AddEstudoCasoPage
 import PlanejamentoAlunosPage from "./components/pages/planejamento/PlanejamentoAlunosPage";
 import AlunoPlanejamentoPage from "./components/pages/planejamento/AlunoPlanejamentoPage";
 
+import PlanoAcaoCreatePage from "./components/pages/planoacao/PlanoAcaoCreatePage";
+
 function App() {
   return (
     <Routes>
@@ -49,6 +51,12 @@ function App() {
         <Route
           path="alunos/:matricula/estudo-caso/:id/editar"
           element={<AddEstudoCasoPage modo="editar" />}
+        />
+
+        {/* Rota de criação do Plano de Ação */}
+        <Route
+          path="plano-acao/novo"
+          element={<PlanoAcaoCreatePage />}
         />
       </Route>
     </Routes>
