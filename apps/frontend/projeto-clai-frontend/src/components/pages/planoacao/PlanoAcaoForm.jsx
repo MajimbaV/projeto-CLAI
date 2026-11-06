@@ -332,7 +332,11 @@ function PlanoAcaoForm({
               className="plano-acao-btn-submit"
               disabled={isPending}
             >
-              {isPending ? "Salvando..." : "Cadastrar Plano de Ação"}
+              {isPending
+                ? "Salvando..."
+                : mode === "edit"
+                  ? "Salvar alterações"
+                  : "Cadastrar Plano de Ação"}
             </button>
           </div>
         </div>

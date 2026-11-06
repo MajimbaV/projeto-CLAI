@@ -167,3 +167,8 @@
     gap: 16px;
   }
 }
+
+.plano-acao-body button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}

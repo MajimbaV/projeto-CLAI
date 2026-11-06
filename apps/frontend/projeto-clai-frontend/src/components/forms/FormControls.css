@@ -40,6 +40,10 @@
   box-shadow: 0 0 0 2px rgb(0 82 61 / 10%);
 }
 
+.clai-field select:not(:disabled) {
+  cursor: pointer;
+}
+
 .clai-field input:disabled,
 .clai-field select:disabled,
 .clai-field textarea:disabled {
