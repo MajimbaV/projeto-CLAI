@@ -1,16 +1,58 @@
 import TrashImg from "../../../assets/TrashCan.png";
 import EditImg from "../../../assets/Edit.png";
+// import ArrowDown from "../../../assets/Chevron-down.png";
+import {SearchBar} from "../../queries/searchBar/SearchBar.jsx";
+import Selector from "../../queries/selector/Selector.jsx";
+import { contemApenasNumeros } from "../../../utils/validations.js";
 import { useState } from "react";
 import "./AlunoList.css";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import ChevronRight from "../../../assets/ChevronRight.png";
 import { useGetAlunos } from "../../../hooks/useGetAlunos";
 
+
+const filtrosIniciais = {
+  nome: undefined,
+  matricula: undefined,
+  curso: undefined,
+  periodo: undefined,
+  maioridade: undefined,
+  statusAtivo: true
+};
+
+
+const opcoesCurso = [
+  {value: "Integrado em Informática", label: "Integrado em Informática"},
+  {value: "Integrado em Eletromecânica", label: "Integrado em Eletromecânica"},
+  {value: "Integrado em Meio Ambiente", label: "Integrado em Meio Ambiente"},
+  {value: "Bacharelado em Engenharia de Controle e Automação", label: "Bacharelado em Engenharia de Controle e Automação"},
+  {value: "Análise e Desenvolvimento de Sistemas", label: "Análise e Desenvolvimento de Sistemas"},
+  {value: "Licenciatura em Matemática", label: "Licenciatura em Matemática"},
+  {value: "Licenciatura em Química", label: "Licenciatura em Química"},
+  {value: "Bacharelado em Engenharia Civil", label: "Bacharelado em Engenharia Civil"},
+  {value: "Tecnologia em Automação Industrial", label: "Tecnologia em Automação Industrial"},
+];
+
+const opcoesPeriodo = [
+  {value: "2026.2", label: "2026.2"},
+  {value: "2026.1", label: "2026.1"},
+  {value: "2025.2", label: "2025.2"},
+  {value: "2025.1", label: "2025.1"},
+  {value: "2024.2", label: "2024.2"},
+  {value: "2024.1", label: "2024.1"},
+  {value: "2023.2", label: "2023.2"},
+  {value: "2023.1", label: "2023.1"},
+]
+
 function AlunoList({ onDelete, onEdit, onView, onAdd }) {
+  const [filtros, setFiltros] = useState(filtrosIniciais);
+  const [tabAtual, setTabAtual] = useState("ativos"); 
+  const [termoBusca, setTermoBusca] = useState("");
+
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 5;
 
-  const { data, isLoading, error } = useGetAlunos(paginaAtual, itensPorPagina);
+  const { data, isLoading, error } = useGetAlunos({page: paginaAtual, size: itensPorPagina, filters: filtros});
 
   const alunos = data?.content || [];
   const quantidadeAlunos = data?.numberOfElements || 0;
@@ -32,6 +74,38 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
   function handleAdd() {
     onAdd();
   }
+
+  function handleSearch (termoDebounced) {
+    let nome = undefined;
+    let matricula = undefined;
+
+    // Só aplica o filtro se tiver 3 ou mais caracteres
+    if (termoDebounced.trim().length >= 3) {
+      if (contemApenasNumeros(termoDebounced)) {
+        matricula = termoDebounced;
+      } else {
+        nome = termoDebounced;
+      }
+    }
+
+    setFiltros((prev) => ({
+      ...prev,
+      nome,
+      matricula,
+    }));
+    
+    setPaginaAtual(1); 
+  };
+
+  function handleTabChange (tab){
+    setTabAtual(tab);
+    setFiltros((prev) => ({
+      ...prev,
+      statusAtivo: tab === "ativos" ? true : false,
+    }));
+    setPaginaAtual(1);
+  }
+
 
   if (isLoading) {
     return (
@@ -66,6 +140,55 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
       </div>
 
       <div className="aluno-card">
+        <div className="filters">
+          <button
+            onClick={() => {
+              handleTabChange("ativos");
+            }}
+            className={tabAtual === "ativos" ? "btn-ativo" : ""}
+          >
+            Ativos
+          </button>
+          <button
+            onClick={() => {
+              handleTabChange("arquivados");
+            }}
+            className={tabAtual === "arquivados" ? "btn-ativo" : ""}
+          >
+            Arquivados
+          </button>
+        </div>
+        <div className="table-toolbar">
+          <div className="search-container">
+            <SearchBar
+              value={termoBusca}
+              onChange={setTermoBusca}
+              onSearch={handleSearch}
+              placeholder="Buscar por nome ou matrícula..."
+            />
+          </div>
+          <div className="toolbar-right">
+            
+            <Selector
+              value={filtros.curso}
+              onChange={(e) => setFiltros((prev) => ({ ...prev, curso: e.target.value }))}
+              options={[{value: "", label: "Todos os cursos"}, ...opcoesCurso]}/>
+
+            <Selector
+              value={filtros.periodo}
+              onChange={(e) => setFiltros((prev) => ({ ...prev, periodo: e.target.value }))}
+              options={[{value: "", label: "Todos os períodos"}, ...opcoesPeriodo]}/>
+
+            <Selector
+              value={filtros.maioridade}
+              onChange={(e) => setFiltros((prev) => ({ ...prev, maioridade: e.target.value }))}
+              options={[{value: "", label: "Todas as maioridades"},
+                {value: true, label: "Maiores de idade"},
+                {value: false, label: "Menores de idade"}
+              ]}/>
+          </div>
+        </div>
+
         <table>
           <thead>
             <tr>
