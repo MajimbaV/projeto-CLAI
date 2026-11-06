@@ -119,6 +119,7 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
         <div className="header">
           <h1 className="header-text">Alunos</h1>
         </div>
+
         <p>Carregando...</p>
       </div>
     );
@@ -130,7 +131,14 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
         <div className="header">
           <h1 className="header-text">Alunos</h1>
         </div>
-        <p>Erro: {error.detail || error.message || String(error)}</p>
+
+        <p>
+          Erro:{" "}
+          {error.response?.data?.detail ||
+            error.detail ||
+            error.message ||
+            String(error)}
+        </p>
       </div>
     );
   }
@@ -216,6 +224,7 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
                   <td onClick={() => handleView(aluno)}>
                     <div className="aluno-info">
                       <span className="aluno-nome">{aluno.alunoNome}</span>
+
                       <span className="aluno-matricula">
                         {aluno.alunoMatricula}
                       </span>

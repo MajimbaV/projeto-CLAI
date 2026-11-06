@@ -16,11 +16,12 @@ function AlunoView({ matriculaAluno, onBack, onEdit, onDelete, onActivate }) {
     );
   }
 
-if (error) {
+  if (error) {
     if (error.response?.status === 404) {
       return (
         <div className="aluno-view-body">
           <p>Aluno não encontrado.</p>
+
           <button className="aluno-view-back" onClick={onBack}>
             <HiChevronLeft className="back-icon" />
             Voltar para alunos
@@ -29,10 +30,13 @@ if (error) {
       );
     }
 
-    const mensagemErro = error.response?.data?.detail || error.message || "Erro desconhecido";
+    const mensagemErro =
+      error.response?.data?.detail || error.message || "Erro desconhecido";
+
     return (
       <div className="aluno-view-body">
         <p>Erro: {mensagemErro}</p>
+
         <button className="aluno-view-back" onClick={onBack}>
           <HiChevronLeft className="back-icon" />
           Voltar
@@ -45,6 +49,7 @@ if (error) {
     return (
       <div className="aluno-view-body">
         <p>Dados do aluno não estão disponíveis.</p>
+
         <button className="aluno-view-back" onClick={onBack}>
           <HiChevronLeft className="back-icon" />
           Voltar para alunos
