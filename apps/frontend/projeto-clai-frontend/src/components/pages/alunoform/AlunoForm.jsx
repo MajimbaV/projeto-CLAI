@@ -284,8 +284,8 @@ function AlunoForm({
                 disabled={isPending}
                 required={responsavelPreenchido}
               >
-                <option value="" disabled>
-                  Selecione o grau de parentesco...
+                <option value="">
+                  Nenhum
                 </option>
 
                 {OPCOES_PARENTESCO.map((parentesco) => (
