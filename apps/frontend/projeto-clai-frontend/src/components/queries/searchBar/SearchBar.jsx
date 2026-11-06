@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import SearchIcon from "../../../assets/Search.png";
 import "./SearchBar.css";
 
-export function SearchBar({
+export default function SearchBar({
   value,
   onChange,
   onSearch,

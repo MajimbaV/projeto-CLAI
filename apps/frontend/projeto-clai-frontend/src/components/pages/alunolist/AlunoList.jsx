@@ -1,7 +1,7 @@
 import TrashImg from "../../../assets/TrashCan.png";
 import EditImg from "../../../assets/Edit.png";
 // import ArrowDown from "../../../assets/Chevron-down.png";
-import {SearchBar} from "../../queries/searchBar/SearchBar.jsx";
+import SearchBar from "../../queries/searchBar/SearchBar.jsx";
 import Selector from "../../queries/selector/Selector.jsx";
 import { contemApenasNumeros } from "../../../utils/validations.js";
 import { useState } from "react";
