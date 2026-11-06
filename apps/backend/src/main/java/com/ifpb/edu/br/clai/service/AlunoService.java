@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class AlunoService {
 
     private final AlunoRepository alunoRepository;
@@ -89,14 +90,32 @@ public class AlunoService {
         }
     }
 
+    private void validarAlunoAtivo(Aluno aluno, String operacao) {
+        if (Boolean.FALSE.equals(aluno.getStatusAtivo())) {
+            throw new BusinessRuleException("Não é possível " + operacao + " porque o aluno encontra-se inativo (arquivado).");
+        }
+    }
+
+    private void validarAlunoInativo(Aluno aluno, String operacao) {
+        if (!Boolean.FALSE.equals(aluno.getStatusAtivo())) {
+            throw new BusinessRuleException("Não é possível " + operacao + " porque o aluno encontra-se Ativo.");
+        }
+    }
+
     public Aluno buscarOuFalhar(UUID id) {
         return alunoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + id));
     }
 
-    public List<Aluno> findAlunosPorFiltros(String nome, String matricula) {
+    public List<Aluno> findAlunosPorFiltros(String nome, String matricula, Boolean statusAtivo) {
+        if (statusAtivo == null) {
+            statusAtivo = true;
+        }
+
         Specification<Aluno> spec = Specification.where(AlunoSpecification.filtrarPorNome(nome))
-                .and(AlunoSpecification.filtrarPorMatricula(matricula));
+                .and(AlunoSpecification.filtrarPorMatricula(matricula))
+                .and(AlunoSpecification.filtrarPorStatusAtivo(statusAtivo));
+
         return alunoRepository.findAll(spec);
     }
 
@@ -114,8 +133,12 @@ public class AlunoService {
         return AlunoMapper.entityToResponse(alunoGuardado);
     }
 
-    @Transactional(readOnly = true)
+
     public Page<AlunoResponseDto> getAllAlunos(String nome, String matricula, String curso, String periodo, Boolean maioridade, Boolean statusAtivo, Pageable pageable) {
+
+        if (statusAtivo == null) {
+            statusAtivo = true;
+        }
 
         Specification<Aluno> spec = Specification.where(AlunoSpecification.filtrarPorNome(nome))
                 .and(AlunoSpecification.filtrarPorMatricula(matricula))
@@ -133,14 +156,42 @@ public class AlunoService {
         return AlunoMapper.entityToResponse(aluno);
     }
 
+    @Transactional
     public AlunoResponseDto updateAluno(UUID id, AlunoRequestDto dto) {
         Aluno aluno = buscarOuFalhar(id);
+        validarAlunoAtivo(aluno, "atualizar os dados");
         validarRegrasAdicionais(dto);
         validarMatriculaUnica(dto.alunoMatricula(), id);
 
         AlunoMapper.requestToEntity(dto, aluno);
         Aluno alunoAtualizado = alunoRepository.save(aluno);
         return AlunoMapper.entityToResponse(alunoAtualizado);
+    }
+
+    @Transactional
+    public void inativarPorMatricula(String matricula) {
+        Aluno aluno = alunoRepository.findByAlunoMatricula(matricula)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Aluno não encontrado com a matrícula: " + matricula
+                ));
+
+        validarAlunoAtivo(aluno, "inativar o aluno");
+
+        aluno.setStatusAtivo(false);
+        alunoRepository.save(aluno);
+    }
+
+    @Transactional
+    public void ativarPorMatricula(String matricula) {
+        Aluno aluno = alunoRepository.findByAlunoMatricula(matricula)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Aluno não encontrado com a matrícula: " + matricula
+                ));
+
+        validarAlunoInativo(aluno, "ativar o aluno");
+
+        aluno.setStatusAtivo(true);
+        alunoRepository.save(aluno);
     }
 
     public AlunoResponseDto getAlunoByMatricula(String matricula) {

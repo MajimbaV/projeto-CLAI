@@ -17,6 +17,13 @@
   min-width: 0;
 }
 
+.aluno-view-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
 .aluno-view-back {
   display: flex;
   align-items: center;
@@ -34,9 +41,9 @@
   color: #003f2f;
 }
 
-.aluno-view-back img {
-  width: 14px;
-  height: 14px;
+.aluno-view-back .back-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .aluno-view-title {
@@ -53,7 +60,7 @@
   line-height: 1.5;
 }
 
-.aluno-view-edit {
+.aluno-view-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,14 +77,29 @@
   transition: background-color 0.2s;
 }
 
-.aluno-view-edit:hover {
+.aluno-view-action-btn:hover {
   background-color: #00402e;
 }
 
-.aluno-view-edit img {
-  width: 15px;
-  height: 15px;
-  filter: brightness(0) invert(1);
+.aluno-view-action-btn .action-icon {
+  width: 18px;
+  height: 18px;
+  color: #ffffff;
+}
+
+.btn-archive {
+  background-color: #ffffff;
+  color: #dc2626;
+  border-color: #d1d5db;
+}
+
+.btn-archive .action-icon {
+  color: #dc2626;
+}
+
+.btn-archive:hover {
+  background-color: #fef2f2;
+  border-color: #dc2626;
 }
 
 .aluno-view-card {
