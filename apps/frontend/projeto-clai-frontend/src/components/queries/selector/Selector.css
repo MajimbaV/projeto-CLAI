@@ -1,0 +1,61 @@
+.clai-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+}
+
+
+.clai-selector-arrow {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px; 
+  height: 12px; 
+  
+  pointer-events: none; 
+}
+
+
+.clai-field .clai-selector {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+  
+
+  padding: 8px 14px 8px 36px;
+  
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+
+.clai-field .clai-selector:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+
+.clai-field .clai-selector:focus {
+  border-color: #00523d;
+  box-shadow: 0 0 0 2px rgb(0 82 61 / 10%);
+}
+
+
+.clai-field .clai-selector:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
