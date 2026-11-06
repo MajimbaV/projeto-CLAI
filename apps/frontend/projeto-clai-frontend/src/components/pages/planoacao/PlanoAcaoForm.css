@@ -1,3 +1,14 @@
+/* Classes prefixadas com plano-acao- de propósito: o projeto importa CSS
+   puro (sem CSS Modules), então nomes genéricos como .form-section ou
+   .btn-cancel colidiriam globalmente com os de AlunoForm.css. EstudoCasoForm
+   já resolveu isso prefixando com estudo-; seguimos o mesmo cuidado aqui. */
+
+/* box-sizing: border-box escopado só a este formulário — não existe reset
+   global equivalente em index.css (só em #root, que não é herdado pelos
+   descendentes). Sem isso, os inputs de FormControls.css (que usam
+   width: 100% + padding sem declarar box-sizing) vazariam ~20px para fora
+   do container. Escopado via seletor descendente, em vez de `* { }` global,
+   para não vazar para o restante do app como o AlunoForm.css faz hoje. */
 .plano-acao-body,
 .plano-acao-body *,
 .plano-acao-body *::before,
@@ -71,6 +82,17 @@
 .plano-acao-row > * {
   flex: 1;
   min-width: 0;
+}
+
+.plano-acao-afirmacao-bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plano-acao-afirmacao-bloco + .plano-acao-afirmacao-bloco {
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
 }
 
 .plano-acao-error-banner {
