@@ -1,9 +1,9 @@
 import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
-import { HiPencilAlt, HiArchive, HiChevronLeft } from "react-icons/hi";
+import { HiPencilAlt, HiArchive, HiCheck ,HiChevronLeft } from "react-icons/hi";
 
 import "./AlunoView.css";
 
-function AlunoView({ matriculaAluno, onBack, onEdit, onDelete }) {
+function AlunoView({ matriculaAluno, onBack, onEdit, onDelete, onActivate }) {
 
   const { data: aluno, isLoading, error } = useGetAlunoByMatricula(matriculaAluno);
 
@@ -107,10 +107,20 @@ if (error) {
             Editar aluno
           </button>
 
+        { aluno.statusAtivo && (
           <button className="aluno-view-action-btn btn-archive" onClick={() => onDelete?.(aluno)}>
             <HiArchive className="action-icon" />
               Arquivar Aluno
           </button>
+        )}
+
+        {!aluno.statusAtivo && (
+          <button className="aluno-view-action-btn" onClick={() => onActivate?.(aluno)}>
+            <HiCheck className="action-icon" />
+              Ativar Aluno
+          </button>
+        )}
+   
         </div>
       </div>
 
