@@ -96,6 +96,12 @@ public class AlunoService {
         }
     }
 
+    private void validarAlunoInativo(Aluno aluno, String operacao) {
+        if (!Boolean.FALSE.equals(aluno.getStatusAtivo())) {
+            throw new BusinessRuleException("Não é possível " + operacao + " porque o aluno encontra-se Ativo.");
+        }
+    }
+
     public Aluno buscarOuFalhar(UUID id) {
         return alunoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com o ID: " + id));
@@ -172,6 +178,19 @@ public class AlunoService {
         validarAlunoAtivo(aluno, "inativar o aluno");
 
         aluno.setStatusAtivo(false);
+        alunoRepository.save(aluno);
+    }
+
+    @Transactional
+    public void ativarPorMatricula(String matricula) {
+        Aluno aluno = alunoRepository.findByAlunoMatricula(matricula)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Aluno não encontrado com a matrícula: " + matricula
+                ));
+
+        validarAlunoInativo(aluno, "ativar o aluno");
+
+        aluno.setStatusAtivo(true);
         alunoRepository.save(aluno);
     }
 
