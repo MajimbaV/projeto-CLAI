@@ -68,10 +68,18 @@ public class AlunoController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{matricula}")
-    public ResponseEntity<Void> inativarAluno(@PathVariable String matricula) {
-        alunoOrquestrador.inativarAlunoComPlanos(matricula);
+    @DeleteMapping("/matricula/{matricula}")
+    public ResponseEntity<Void> inativarAluno(@PathVariable("matricula") String matricula) {
+        alunoOrquestrador.inativarAlunoComDocumentos(matricula);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/matricula/{matricula}/ativar")
+    public ResponseEntity<AlunoResponseDto> ativarAluno(@PathVariable("matricula") String matricula){
+        alunoService.ativarPorMatricula(matricula);
+        AlunoResponseDto response = alunoService.getAlunoByMatricula(matricula);
+
+        return ResponseEntity.ok(response);
     }
 
 }
