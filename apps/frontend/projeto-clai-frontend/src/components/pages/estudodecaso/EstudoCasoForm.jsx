@@ -30,6 +30,21 @@ const DADOS_ALUNO_VAZIOS = {
   periodoAluno: "",
 };
 
+const OPCOES_PARENTESCO = ["Pai", "Mãe", "Irmão", "Irmã", "Outro"];
+
+const OPCOES_CURSO = [
+  "Integrado em Informática",
+  "Integrado em Edificações",
+  "Integrado em Eletromecânica",
+  "Integrado em Meio Ambiente",
+  "Bacharelado em Engenharia de Controle e Automação",
+  "Análise e Desenvolvimento de Sistemas",
+  "Licenciatura em Matemática",
+  "Licenciatura em Química",
+  "Bacharelado em Engenharia Civil",
+  "Tecnologia em Automação Industrial",
+];
+
 const DIMENSOES_BARREIRAS = [
   "Acesso físico/ambiental",
   "Comunicação",
@@ -462,7 +477,13 @@ export default function EstudoCasoForm({
 
   const { success } = useToast();
 
-  const alunosDisponiveis = [...alunos];
+  const alunosDisponiveis = Array.isArray(alunos)
+    ? alunos
+    : Array.isArray(alunos?.content)
+      ? alunos.content
+      : Array.isArray(alunos?.data?.content)
+        ? alunos.data.content
+        : [];
 
   const alunoSelecionado =
     alunosDisponiveis.find(
@@ -476,6 +497,12 @@ export default function EstudoCasoForm({
   const invalidFields = errorResponse.invalidFields || {};
 
   const menorDeIdade = estudanteMenorDeIdade(alunoData.alunoNascimento);
+
+  const responsavelPreenchido = Boolean(
+    alunoData.nomeResponsavel?.trim() ||
+    alunoData.responsavelTelefone?.trim() ||
+    alunoData.responsavelEmail?.trim(),
+  );
 
   function handleAlunoChange(event) {
     const { name, value } = event.target;
@@ -735,11 +762,13 @@ export default function EstudoCasoForm({
                   error={invalidFields.alunoMatricula}
                 />
 
-                <FormField
+                <FormSelect
                   name="alunoCurso"
                   label="Curso/turma"
                   value={alunoData.alunoCurso}
                   onChange={handleAlunoChange}
+                  options={OPCOES_CURSO}
+                  placeholder="Selecione um curso..."
                   required
                   disabled={isPending}
                   error={invalidFields.alunoCurso}
@@ -778,11 +807,14 @@ export default function EstudoCasoForm({
                   error={invalidFields.nomeResponsavel}
                 />
 
-                <FormField
+                <FormSelect
                   name="grauParentesco"
-                  label="Grau de parentesco"
+                  label={`Grau de parentesco${responsavelPreenchido ? " *" : ""}`}
                   value={alunoData.grauParentesco}
                   onChange={handleAlunoChange}
+                  options={OPCOES_PARENTESCO}
+                  placeholder="Selecione o parentesco..."
+                  required={responsavelPreenchido}
                   disabled={isPending}
                   error={invalidFields.grauParentesco}
                 />
