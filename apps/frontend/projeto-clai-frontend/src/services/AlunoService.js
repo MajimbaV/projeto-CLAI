@@ -5,12 +5,20 @@ export async function postAluno(data) {
     return response.data;
 }
 
-export async function getAlunos(page = 0, size = 10, sort = 'alunoNome,asc') {
+export async function getAlunos({page = 0, size = 10, sort = 'alunoNome,asc', filters} = {}) {
+    for (const key in filters) {
+        if (filters[key] === "" || filters[key] === null || filters[key] === undefined) {
+            delete filters[key];
+        }
+    }
+
+
     const response = await api.get('/alunos', {
         params: {
             page,
             size,
-            sort
+            sort,
+            ...filters
         }
     });
     return response.data;
