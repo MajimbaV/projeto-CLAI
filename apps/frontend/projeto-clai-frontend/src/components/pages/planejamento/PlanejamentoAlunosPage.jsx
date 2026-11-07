@@ -17,6 +17,7 @@ function PlanejamentoAlunosPage() {
       onViewPlanning={abrirPlanejamento}
       onAddAluno={() => navigate("/alunos/novo")}
       onNovoEstudoCaso={() => navigate("/planejamento/estudos-de-caso/novo")}
+      onNovoPlanoAcao={() => navigate("/plano-acao/novo")}
     />
   );
 }

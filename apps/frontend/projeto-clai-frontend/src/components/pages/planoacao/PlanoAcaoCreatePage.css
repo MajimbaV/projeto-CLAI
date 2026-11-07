@@ -1,0 +1,37 @@
+.plano-acao-toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  max-width: min(420px, calc(100vw - 48px));
+  padding: 14px 18px;
+
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+
+  color: #065f46;
+  font-size: 14px;
+
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+}
+
+.plano-acao-toast button {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+
+  color: #065f46;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.plano-acao-toast button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}

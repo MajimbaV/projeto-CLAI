@@ -278,7 +278,9 @@ function CronologiaDocumentos({ aluno, matricula, cronologiaPorMatricula }) {
             <span className="planejamento-documento-ponto" />
 
             <span className="planejamento-documento-textos">
-              <span className="planejamento-documento-nome">{tipo.titulo}</span>
+              <span className="planejamento-documento-nome">
+                {tipo.titulo}
+              </span>
 
               <span className="planejamento-documento-resumo">
                 {textoStatus}
@@ -342,6 +344,7 @@ const opcoesPeriodo = [
 function PlanejamentoAlunos({
   onViewPlanning,
   onNovoEstudoCaso,
+  onNovoPlanoAcao,
   cronologiaPorMatricula,
 }) {
   const [filtros, setFiltros] = useState(filtrosIniciais);
@@ -402,6 +405,14 @@ function PlanejamentoAlunos({
               onClick={onNovoEstudoCaso}
             >
               + Novo estudo de caso
+            </button>
+
+            <button
+              type="button"
+              className="btn-add"
+              onClick={onNovoPlanoAcao}
+            >
+              + Novo Plano de Ação
             </button>
           </div>
         )}

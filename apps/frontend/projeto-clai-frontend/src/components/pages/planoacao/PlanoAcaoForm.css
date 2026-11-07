@@ -1,0 +1,174 @@
+/* Classes prefixadas com plano-acao- de propósito: o projeto importa CSS
+   puro (sem CSS Modules), então nomes genéricos como .form-section ou
+   .btn-cancel colidiriam globalmente com os de AlunoForm.css. EstudoCasoForm
+   já resolveu isso prefixando com estudo-; seguimos o mesmo cuidado aqui. */
+
+/* box-sizing: border-box escopado só a este formulário — não existe reset
+   global equivalente em index.css (só em #root, que não é herdado pelos
+   descendentes). Sem isso, os inputs de FormControls.css (que usam
+   width: 100% + padding sem declarar box-sizing) vazariam ~20px para fora
+   do container. Escopado via seletor descendente, em vez de `* { }` global,
+   para não vazar para o restante do app como o AlunoForm.css faz hoje. */
+.plano-acao-body,
+.plano-acao-body *,
+.plano-acao-body *::before,
+.plano-acao-body *::after {
+  box-sizing: border-box;
+}
+
+.plano-acao-body {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.plano-acao-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.plano-acao-title {
+  color: #111827;
+  font-size: 24px;
+  font-weight: 450;
+}
+
+.plano-acao-header-comment {
+  font-size: 12px;
+  color: #e53e3e;
+}
+
+.plano-acao-form {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.plano-acao-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plano-acao-section legend {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+  padding: 0 8px;
+}
+
+.plano-acao-section-desc {
+  font-size: 12px;
+  color: #9ca3af;
+  display: block;
+}
+
+.plano-acao-row {
+  display: flex;
+  gap: 32px;
+  width: 100%;
+}
+
+.plano-acao-row > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.plano-acao-afirmacao-bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plano-acao-afirmacao-bloco + .plano-acao-afirmacao-bloco {
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.plano-acao-error-banner {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.plano-acao-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 8px;
+}
+
+.plano-acao-footer-note {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.plano-acao-buttons-group {
+  display: flex;
+  gap: 12px;
+}
+
+.plano-acao-btn-cancel {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.plano-acao-btn-cancel:hover {
+  background-color: #f9fafb;
+}
+
+.plano-acao-btn-submit {
+  background-color: #00523d;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.plano-acao-btn-submit:hover:not(:disabled) {
+  background-color: #00402e;
+}
+
+.plano-acao-btn-submit:disabled,
+.plano-acao-btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .plano-acao-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.plano-acao-body button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
