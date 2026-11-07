@@ -1,194 +1,142 @@
 import { useState } from "react";
 
 import FormField from "../../forms/FormField";
-
 import FormSelect from "../../forms/FormSelect";
-
 import FormTextarea from "../../forms/FormTextarea";
-
 import FormCheckboxGroup from "../../forms/FormCheckboxGroup";
-
 import DocumentList from "../../forms/DocumentList";
+
+import { useToast } from "../../../hooks/useToast";
 
 import "./EstudoCasoForm.css";
 
-import { mapearParaEstudoCasoDTO, mapearParaEstudoCasoDTOCombinado } from "../../../utils/estudoCasoMapper";
+import {
+  mapearParaEstudoCasoDTO,
+  mapearParaEstudoCasoDTOCombinado,
+} from "../../../utils/estudoCasoMapper";
 
 const DADOS_ALUNO_VAZIOS = {
   alunoNome: "",
-
   alunoNascimento: "",
-
   alunoTelefone: "",
-
   alunoEmail: "",
-
   nomeResponsavel: "",
-
   grauParentesco: "",
-
   responsavelTelefone: "",
-
   responsavelEmail: "",
-
   alunoMatricula: "",
-
   alunoCurso: "",
-
   periodoIngresso: "",
-
   periodoAluno: "",
 };
 
+const OPCOES_PARENTESCO = ["Pai", "Mãe", "Irmão", "Irmã", "Outro"];
+
+const OPCOES_CURSO = [
+  "Integrado em Informática",
+  "Integrado em Edificações",
+  "Integrado em Eletromecânica",
+  "Integrado em Meio Ambiente",
+  "Bacharelado em Engenharia de Controle e Automação",
+  "Análise e Desenvolvimento de Sistemas",
+  "Licenciatura em Matemática",
+  "Licenciatura em Química",
+  "Bacharelado em Engenharia Civil",
+  "Tecnologia em Automação Industrial",
+];
+
 const DIMENSOES_BARREIRAS = [
   "Acesso físico/ambiental",
-
   "Comunicação",
-
   "Currículo/metodologia",
-
   "Avaliação",
-
   "Organização/temporalidade",
-
   "Interação/participação",
-
   "Tecnologia assistiva/recursos",
-
   "Outra",
 ];
 
 const OPCOES_ORIGEM = [
   "CLAI",
-
   "COPED",
-
   "CAEST",
-
   "Coordenação de Curso",
-
   "Docente",
-
   "Família",
-
   "Estudante",
-
   "Outro",
 ];
 
 const OPCOES_SIM_NAO = [
   { value: "nao", label: "Não" },
-
   { value: "sim", label: "Sim" },
 ];
 
 const CHECKLIST_APOIOS = [
   {
     key: "acessibilidade",
-
     label: "Acessibilidade e ambiente",
-
     options: [
       "Acesso físico",
-
       "Lugar em sala",
-
       "Iluminação",
-
       "Redução de estímulos",
-
       "Outro",
     ],
   },
-
   {
     key: "comunicacaoMateriais",
-
     label: "Comunicação e materiais",
-
     options: [
       "Material ampliado",
-
       "Libras/intérprete",
-
       "Linguagem objetiva",
-
       "Recursos visuais",
-
       "Outro",
     ],
   },
-
   {
     key: "metodologia",
-
     label: "Metodologia",
-
     options: [
       "Fragmentação de tarefas",
-
       "Mediação",
-
       "Antecipação de rotina",
-
       "Recursos concretos/digitais",
-
       "Outro",
     ],
   },
-
   {
     key: "avaliacao",
-
     label: "Avaliação",
-
     options: [
       "Tempo adicional",
-
       "Formato acessível",
-
       "Ambiente adequado",
-
       "Forma alternativa de resposta",
-
       "Outro",
     ],
   },
-
   {
     key: "curriculo",
-
     label: "Currículo",
-
     options: [
       "Adaptação de pequeno porte",
-
       "Adaptação de grande porte",
-
       "Temporalidade",
-
       "Priorização de objetivos",
-
       "Outro",
     ],
   },
-
   {
     key: "apoiosInstitucionais",
-
     label: "Apoios institucionais",
-
     options: [
       "Assistência estudantil",
-
       "Monitoria",
-
       "Assistente inclusivo",
-
       "Cuidador",
-
       "Psicopedagogia",
-
       "Outro",
     ],
   },
@@ -197,77 +145,81 @@ const CHECKLIST_APOIOS = [
 const CAMPOS_ANAMNESE = [
   {
     name: "historicoEscolar",
-
     label: "Histórico escolar (escolas, mudanças, retenções, interrupções)",
   },
-
-  { name: "experienciasPositivas", label: "Experiências escolares positivas" },
-
+  {
+    name: "experienciasPositivas",
+    label: "Experiências escolares positivas",
+  },
   {
     name: "experienciasNegativas",
-
     label: "Experiências escolares negativas/barreiras vivenciadas",
   },
-
   {
     name: "adaptacoesRecursos",
-
     label: "Adaptações/recursos já utilizados e resultados",
   },
-
   {
     name: "conhecimentosConsolidados",
-
     label: "Objetivos/conhecimentos já consolidados",
   },
-
-  { name: "areasFacilidade", label: "Áreas/disciplinas de maior facilidade" },
-
-  { name: "areasDificuldade", label: "Áreas/disciplinas de maior dificuldade" },
+  {
+    name: "areasFacilidade",
+    label: "Áreas/disciplinas de maior facilidade",
+  },
+  {
+    name: "areasDificuldade",
+    label: "Áreas/disciplinas de maior dificuldade",
+  },
 ];
 
 const CAMPOS_PERFIL = [
   {
     name: "comunicacaoCompreensao",
-
     label: "Comunicação e compreensão de orientações",
   },
-
-  { name: "leituraEscritaLinguagem", label: "Leitura, escrita e linguagem" },
-
-  { name: "raciocinioLogico", label: "Raciocínio lógico-matemático" },
-
-  { name: "atencaoMemoria", label: "Atenção, memória e funções executivas" },
-
+  {
+    name: "leituraEscritaLinguagem",
+    label: "Leitura, escrita e linguagem",
+  },
+  {
+    name: "raciocinioLogico",
+    label: "Raciocínio lógico-matemático",
+  },
+  {
+    name: "atencaoMemoria",
+    label: "Atenção, memória e funções executivas",
+  },
   {
     name: "organizacaoTarefas",
-
     label: "Organização, planejamento e realização de tarefas",
   },
-
-  { name: "interacaoSocial", label: "Interação social e participação em sala" },
-
-  { name: "aspectosSensoriais", label: "Aspectos sensoriais relevantes" },
-
+  {
+    name: "interacaoSocial",
+    label: "Interação social e participação em sala",
+  },
+  {
+    name: "aspectosSensoriais",
+    label: "Aspectos sensoriais relevantes",
+  },
   {
     name: "mobilidadeTecnologia",
-
     label: "Mobilidade, acesso físico e uso de tecnologias/recursos",
   },
-
-  { name: "autonomiaFamiliar", label: "Autonomia no contexto familiar" },
-
-  { name: "autonomiaEscolar", label: "Autonomia no contexto escolar" },
-
+  {
+    name: "autonomiaFamiliar",
+    label: "Autonomia no contexto familiar",
+  },
+  {
+    name: "autonomiaEscolar",
+    label: "Autonomia no contexto escolar",
+  },
   {
     name: "estrategiasAprendizagem",
-
     label: "Estratégias que favorecem a aprendizagem",
   },
-
   {
     name: "situacoesDificultam",
-
     label: "Situações que dificultam/desorganizam a aprendizagem",
   },
 ];
@@ -275,39 +227,37 @@ const CAMPOS_PERFIL = [
 const CAMPOS_CONTEXTO = [
   {
     name: "relacaoCursoExpectativas",
-
     label: "Relação com o curso e expectativas acadêmicas/profissionais",
   },
-
-  { name: "redeApoio", label: "Rede de apoio familiar/social" },
-
+  {
+    name: "redeApoio",
+    label: "Rede de apoio familiar/social",
+  },
   {
     name: "fatoresPsicossociais",
-
     label: "Conflitos ou fatores psicossociais com repercussão acadêmica",
   },
-
   {
     name: "frequenciaRotina",
-
     label: "Observações sobre frequência, rotina e permanência",
   },
 ];
 
 const CAMPOS_POTENCIALIDADES = [
-  { name: "potencialidadesAcademicas", label: "Potencialidades acadêmicas" },
-
-  { name: "interessesHabilidades", label: "Interesses/habilidades" },
-
+  {
+    name: "potencialidadesAcademicas",
+    label: "Potencialidades acadêmicas",
+  },
+  {
+    name: "interessesHabilidades",
+    label: "Interesses/habilidades",
+  },
   {
     name: "preferenciasAprendizagem",
-
     label: "Formas preferenciais de aprender e demonstrar conhecimento",
   },
-
   {
     name: "recursosPessoaisTecnologicos",
-
     label: "Recursos pessoais/tecnológicos que favorecem o desempenho",
   },
 ];
@@ -315,31 +265,22 @@ const CAMPOS_POTENCIALIDADES = [
 const CAMPOS_SINTESE = [
   {
     name: "sinteseNecessidades",
-
     label: "A) Identificação da(s) necessidade(s) específica(s)",
   },
-
   {
     name: "sinteseAvancos",
-
     label: "B) Avanços e objetivos/conhecimentos já alcançados",
   },
-
   {
     name: "sinteseBarreiras",
-
     label: "C) Dificuldades/barreiras com repercussão educacional",
   },
-
   {
     name: "sintesePotencialidades",
-
     label: "D) Potencialidades e condições facilitadoras",
   },
-
   {
     name: "sinteseDemandas",
-
     label: "E) Principais demandas identificadas no caso",
   },
 ];
@@ -347,90 +288,50 @@ const CAMPOS_SINTESE = [
 function criarEstudoCasoVazio() {
   const dados = {
     dataAtendimentos: "",
-
     profissionalResponsavel: "",
-
     origemEncaminhamento: "",
-
     origemOutro: "",
-
     motivoPrincipal: "",
-
     demandaEstudante: "",
-
     demandaFamilia: "",
-
     demandaEquipe: "",
-
     necessidadeEspecifica: "",
-
     diagnosticos: "",
-
     documentosApresentados: "nao",
-
     documentos: [],
-
     condicaoAssociada: "nao",
-
     condicaoAssociadaQual: "",
-
     medicacaoContinua: "nao",
-
     medicacaoQual: "",
-
     encaminhamentosAnteriores: "",
-
     servicosApoio: "",
-
     relacaoCursoExpectativas: "",
-
     redeApoio: "",
-
     fatoresPsicossociais: "",
-
     frequenciaRotina: "",
-
     potencialidadesAcademicas: "",
-
     interessesHabilidades: "",
-
     preferenciasAprendizagem: "",
-
     recursosPessoaisTecnologicos: "",
-
     sinteseNecessidades: "",
-
     sinteseAvancos: "",
-
     sinteseBarreiras: "",
-
     sintesePotencialidades: "",
-
     sinteseDemandas: "",
-
     encaminhamentosExternos: "",
-
     assinaturaPsicopedagogo: "",
-
     assinaturaCoordenador: "",
-
     dataEstudoCaso: "",
-
     apoios: Object.fromEntries(
       CHECKLIST_APOIOS.flatMap(({ key }) => [
         [key, []],
-
         [`${key}Outro`, ""],
       ]),
     ),
-
     barreiras: DIMENSOES_BARREIRAS.map((dimensao) => ({
       dimensao,
-
       identificada: "",
-
       evidenciasImpactos: "",
-
       prioridade: "",
     })),
   };
@@ -478,14 +379,20 @@ function estudanteMenorDeIdade(dataNascimento) {
   return idade < 18;
 }
 
-function FormSection({ title, description, children, defaultOpen = false , hasError }) {
-  const [aberta, setAberta] = useState(defaultOpen || hasError); 
+function FormSection({
+  title,
+  description,
+  children,
+  defaultOpen = false,
+  hasError,
+}) {
+  const [aberta, setAberta] = useState(defaultOpen || hasError);
 
   const [prevHasError, setPrevHasError] = useState(hasError);
 
   if (hasError !== prevHasError) {
     setPrevHasError(hasError);
-    
+
     if (hasError) {
       setAberta(true);
     }
@@ -544,39 +451,44 @@ function CampoTextoLongo({ campo, values, onChange, disabled }) {
 
 export default function EstudoCasoForm({
   modo = "novo",
-
   alunos = [],
-
   alunoInicial = null,
-
   isLoadingAlunos = false,
-
   isPending = false,
-
   error = null,
-
   onSubmit,
-
   onCancel,
 }) {
-
-  const [alunoData, setAlunoData] = useState( alunoInicial ? () => ({ ...alunoInicial }) : () => ({ ...DADOS_ALUNO_VAZIOS }));
+  const [alunoData, setAlunoData] = useState(
+    alunoInicial
+      ? () => ({ ...alunoInicial })
+      : () => ({ ...DADOS_ALUNO_VAZIOS }),
+  );
 
   const [estudoCaso, setEstudoCaso] = useState(criarEstudoCasoVazio);
 
   const [idAlunoSelecionado, setIdAlunoSelecionado] = useState(
-    obterChaveAluno(alunoInicial)
+    obterChaveAluno(alunoInicial),
   );
 
   const [feedback, setFeedback] = useState("");
 
   const [cadastroCombinado, setCadastroCombinado] = useState(false);
 
-  const alunosDisponiveis = [...alunos];
+  const { success } = useToast();
 
-  const alunoSelecionado = alunosDisponiveis.find(
-    (aluno) => obterChaveAluno(aluno) === idAlunoSelecionado,
-  ) || alunoInicial;
+  const alunosDisponiveis = Array.isArray(alunos)
+    ? alunos
+    : Array.isArray(alunos?.content)
+      ? alunos.content
+      : Array.isArray(alunos?.data?.content)
+        ? alunos.data.content
+        : [];
+
+  const alunoSelecionado =
+    alunosDisponiveis.find(
+      (aluno) => obterChaveAluno(aluno) === idAlunoSelecionado,
+    ) || alunoInicial;
 
   const errorResponse = error?.response?.data || {};
 
@@ -585,6 +497,12 @@ export default function EstudoCasoForm({
   const invalidFields = errorResponse.invalidFields || {};
 
   const menorDeIdade = estudanteMenorDeIdade(alunoData.alunoNascimento);
+
+  const responsavelPreenchido = Boolean(
+    alunoData.nomeResponsavel?.trim() ||
+    alunoData.responsavelTelefone?.trim() ||
+    alunoData.responsavelEmail?.trim(),
+  );
 
   function handleAlunoChange(event) {
     const { name, value } = event.target;
@@ -601,7 +519,6 @@ export default function EstudoCasoForm({
   function handleApoioChange(key, value) {
     setEstudoCaso((prev) => ({
       ...prev,
-
       apoios: { ...prev.apoios, [key]: value },
     }));
   }
@@ -609,7 +526,6 @@ export default function EstudoCasoForm({
   function handleBarreiraChange(index, key, value) {
     setEstudoCaso((prev) => ({
       ...prev,
-
       barreiras: prev.barreiras.map((barreira, currentIndex) =>
         currentIndex === index ? { ...barreira, [key]: value } : barreira,
       ),
@@ -630,25 +546,46 @@ export default function EstudoCasoForm({
 
     if (cadastroCombinado) {
       const alunoPayload = {
-        ...alunoData
-      }
+        ...alunoData,
+      };
 
       if (!menorDeIdade) {
-        alunoPayload.nomeResponsavel = null
-        alunoPayload.grauParentesco = null
+        alunoPayload.nomeResponsavel = null;
+        alunoPayload.grauParentesco = null;
         alunoPayload.responsavelTelefone = null;
         alunoPayload.responsavelEmail = null;
       }
 
-      const payloadCombinado = mapearParaEstudoCasoDTOCombinado(estudoCaso, alunoData, "INCOMPLETO");
+      const payloadCombinado = mapearParaEstudoCasoDTOCombinado(
+        estudoCaso,
+        alunoData,
+        "INCOMPLETO",
+      );
 
-      onSubmit(payloadCombinado);
+      onSubmit(payloadCombinado, {
+        onSuccess: () => {
+          success("Aluno e estudo de caso cadastrados com sucesso!");
+        },
+      });
+
       return;
     }
 
-    const payloadEstudoCaso = mapearParaEstudoCasoDTO(estudoCaso, alunoSelecionado.id, "INCOMPLETO");
+    const payloadEstudoCaso = mapearParaEstudoCasoDTO(
+      estudoCaso,
+      alunoSelecionado.id,
+      "INCOMPLETO",
+    );
 
-    onSubmit(payloadEstudoCaso);
+    onSubmit(payloadEstudoCaso, {
+      onSuccess: () => {
+        success(
+          modo === "editar"
+            ? "Estudo de caso atualizado com sucesso!"
+            : "Estudo de caso cadastrado com sucesso!",
+        );
+      },
+    });
   }
 
   return (
@@ -658,7 +595,7 @@ export default function EstudoCasoForm({
           <h1 className="estudo-caso-title">
             {modo === "editar"
               ? "Editar Estudo de Caso"
-              : "Novo Estudo de Caso"}  
+              : "Novo Estudo de Caso"}
           </h1>
 
           <p className="estudo-caso-subtitle">
@@ -691,7 +628,11 @@ export default function EstudoCasoForm({
         >
           {!alunoInicial && (
             <>
-              <label className="clai-checkbox-option" htmlFor="checkboxCadastroCombinado" key="checkboxCadastroCombinado">
+              <label
+                className="clai-checkbox-option"
+                htmlFor="checkboxCadastroCombinado"
+                key="checkboxCadastroCombinado"
+              >
                 <input
                   id="checkboxCadastroCombinado"
                   type="checkbox"
@@ -713,8 +654,9 @@ export default function EstudoCasoForm({
                     }
                     options={alunosDisponiveis.map((aluno) => ({
                       value: obterChaveAluno(aluno),
-
-                      label: `${obterNomeAluno(aluno) || "Nome não informado"} — ${obterMatricula(aluno) || obterChaveAluno(aluno)}`,
+                      label: `${
+                        obterNomeAluno(aluno) || "Nome não informado"
+                      } — ${obterMatricula(aluno) || obterChaveAluno(aluno)}`,
                     }))}
                     placeholder={
                       isLoadingAlunos
@@ -733,41 +675,37 @@ export default function EstudoCasoForm({
                   de alunos da API.
                 </p>
               )}
-
-
             </>
           )}
 
+          {alunoSelecionado && !cadastroCombinado && (
+            <div className="estudo-student-summary">
+              <strong>
+                {obterNomeAluno(alunoSelecionado) || "Nome não informado"}
+              </strong>
 
-              {alunoSelecionado && !cadastroCombinado && (
-                <div className="estudo-student-summary">
-                  <strong>
-                    {obterNomeAluno(alunoSelecionado) || "Nome não informado"}
-                  </strong>
+              <span>
+                Matrícula: {obterMatricula(alunoSelecionado) || "Não informada"}
+              </span>
 
-                  <span>
-                    Matrícula:{" "}
-                    {obterMatricula(alunoSelecionado) || "Não informada"}
-                  </span>
+              <span>
+                Curso/turma:{" "}
+                {obterCursoAluno(alunoSelecionado) || "Não informado"}
+              </span>
 
-                  <span>
-                    Curso/turma:{" "}
-                    {obterCursoAluno(alunoSelecionado) || "Não informado"}
-                  </span>
+              <span>
+                Período letivo:{" "}
+                {alunoSelecionado.periodoAluno || "Não informado"}
+              </span>
 
-                  <span>
-                    Período letivo:{" "}
-                    {alunoSelecionado.periodoAluno || "Não informado"}
-                  </span>
-
-                  <span>
-                    Período de ingresso:{" "}
-                    {alunoSelecionado.periodoIngresso ||
-                      alunoSelecionado.log ||
-                      "Não informado"}
-                  </span>
-                </div>
-              )}
+              <span>
+                Período de ingresso:{" "}
+                {alunoSelecionado.periodoIngresso ||
+                  alunoSelecionado.log ||
+                  "Não informado"}
+              </span>
+            </div>
+          )}
 
           {cadastroCombinado && (
             <>
@@ -824,11 +762,13 @@ export default function EstudoCasoForm({
                   error={invalidFields.alunoMatricula}
                 />
 
-                <FormField
+                <FormSelect
                   name="alunoCurso"
                   label="Curso/turma"
                   value={alunoData.alunoCurso}
                   onChange={handleAlunoChange}
+                  options={OPCOES_CURSO}
+                  placeholder="Selecione um curso..."
                   required
                   disabled={isPending}
                   error={invalidFields.alunoCurso}
@@ -858,43 +798,46 @@ export default function EstudoCasoForm({
               </div>
 
               <div className="estudo-form-grid estudo-guardian-grid">
-                  <FormField
-                    name="nomeResponsavel"
-                    label="Nome do responsável"
-                    value={alunoData.nomeResponsavel}
-                    onChange={handleAlunoChange}
-                    disabled={isPending}
-                    error={invalidFields.nomeResponsavel}
-                  />
+                <FormField
+                  name="nomeResponsavel"
+                  label="Nome do responsável"
+                  value={alunoData.nomeResponsavel}
+                  onChange={handleAlunoChange}
+                  disabled={isPending}
+                  error={invalidFields.nomeResponsavel}
+                />
 
-                  <FormField
-                    name="grauParentesco"
-                    label="Grau de parentesco"
-                    value={alunoData.grauParentesco}
-                    onChange={handleAlunoChange}
-                    disabled={isPending}
-                    error={invalidFields.grauParentesco}
-                  />
+                <FormSelect
+                  name="grauParentesco"
+                  label={`Grau de parentesco${responsavelPreenchido ? " *" : ""}`}
+                  value={alunoData.grauParentesco}
+                  onChange={handleAlunoChange}
+                  options={OPCOES_PARENTESCO}
+                  placeholder="Selecione o parentesco..."
+                  required={responsavelPreenchido}
+                  disabled={isPending}
+                  error={invalidFields.grauParentesco}
+                />
 
-                  <FormField
-                    name="responsavelTelefone"
-                    label="Telefone do responsável"
-                    value={alunoData.responsavelTelefone}
-                    onChange={handleAlunoChange}
-                    disabled={isPending}
-                    error={invalidFields.responsavelTelefone}
-                  />
+                <FormField
+                  name="responsavelTelefone"
+                  label="Telefone do responsável"
+                  value={alunoData.responsavelTelefone}
+                  onChange={handleAlunoChange}
+                  disabled={isPending}
+                  error={invalidFields.responsavelTelefone}
+                />
 
-                  <FormField
-                    name="responsavelEmail"
-                    label="E-mail do responsável"
-                    type="email"
-                    value={alunoData.responsavelEmail}
-                    onChange={handleAlunoChange}
-                    disabled={isPending}
-                    error={invalidFields.responsavelEmail}
-                  />
-                </div>
+                <FormField
+                  name="responsavelEmail"
+                  label="E-mail do responsável"
+                  type="email"
+                  value={alunoData.responsavelEmail}
+                  onChange={handleAlunoChange}
+                  disabled={isPending}
+                  error={invalidFields.responsavelEmail}
+                />
+              </div>
             </>
           )}
 
@@ -1020,11 +963,17 @@ export default function EstudoCasoForm({
           </div>
 
           {estudoCaso.documentosApresentados === "sim" && (
-              <DocumentList
-                documentos={estudoCaso.documentos}
-                onChange={(novosDocumentos) => handleCasoChange({ target: { name: "documentos", value: novosDocumentos } })}
-              >
-              </DocumentList>
+            <DocumentList
+              documentos={estudoCaso.documentos}
+              onChange={(novosDocumentos) =>
+                handleCasoChange({
+                  target: {
+                    name: "documentos",
+                    value: novosDocumentos,
+                  },
+                })
+              }
+            ></DocumentList>
           )}
 
           {estudoCaso.documentosApresentados === "sim" && (
@@ -1164,7 +1113,12 @@ export default function EstudoCasoForm({
         <FormSection
           title="8. Barreiras e necessidades educacionais identificadas"
           description="Identifique barreiras observadas ou relatadas e seus impactos no acesso, participação, aprendizagem e avaliação."
-          hasError = {invalidFields && Object.keys(invalidFields).some(key => key.startsWith('necessidadesEducacionais.barreiras'))}
+          hasError={
+            invalidFields &&
+            Object.keys(invalidFields).some((key) =>
+              key.startsWith("necessidadesEducacionais.barreiras"),
+            )
+          }
         >
           <div className="estudo-barrier-list">
             {estudoCaso.barreiras.map((barreira, index) => (
@@ -1178,16 +1132,17 @@ export default function EstudoCasoForm({
                   onChange={(event) =>
                     handleBarreiraChange(
                       index,
-
                       "identificada",
-
                       event.target.value,
                     )
                   }
                   disabled={isPending}
                   rows={2}
-                  
-                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].barreiraNecessidade`]}
+                  error={
+                    invalidFields[
+                      `necessidadesEducacionais.barreiras[${index}].barreiraNecessidade`
+                    ]
+                  }
                 />
 
                 <FormTextarea
@@ -1197,16 +1152,17 @@ export default function EstudoCasoForm({
                   onChange={(event) =>
                     handleBarreiraChange(
                       index,
-
                       "evidenciasImpactos",
-
                       event.target.value,
                     )
                   }
                   disabled={isPending}
                   rows={2}
-
-                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].evidenciasImpactos`]}
+                  error={
+                    invalidFields[
+                      `necessidadesEducacionais.barreiras[${index}].evidenciasImpactos`
+                    ]
+                  }
                 />
 
                 <FormSelect
@@ -1216,16 +1172,18 @@ export default function EstudoCasoForm({
                   onChange={(event) =>
                     handleBarreiraChange(
                       index,
-
                       "prioridade",
-
                       event.target.value,
                     )
                   }
                   options={["Alta", "Média", "Baixa"]}
                   disabled={isPending}
                   placeholder="Defina a prioridade"
-                  error={invalidFields[`necessidadesEducacionais.barreiras[${index}].prioridade`]}
+                  error={
+                    invalidFields[
+                      `necessidadesEducacionais.barreiras[${index}].prioridade`
+                    ]
+                  }
                 />
               </div>
             ))}

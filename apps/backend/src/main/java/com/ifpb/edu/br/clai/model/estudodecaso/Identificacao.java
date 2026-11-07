@@ -1,6 +1,6 @@
 package com.ifpb.edu.br.clai.model.estudodecaso;
 
-import com.ifpb.edu.br.clai.model.Aluno;
+import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

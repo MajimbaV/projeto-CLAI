@@ -1,10 +1,9 @@
-import ChevronLeft from "../../../assets/ChevronLeft.png";
-import EditImg from "../../../assets/Edit.png";
 import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
+import { HiPencilAlt, HiArchive, HiCheck ,HiChevronLeft } from "react-icons/hi";
 
 import "./AlunoView.css";
 
-function AlunoView({ matriculaAluno, onBack, onEdit }) {
+function AlunoView({ matriculaAluno, onBack, onEdit, onDelete, onActivate }) {
 
   const { data: aluno, isLoading, error } = useGetAlunoByMatricula(matriculaAluno);
 
@@ -17,25 +16,29 @@ function AlunoView({ matriculaAluno, onBack, onEdit }) {
     );
   }
 
-if (error) {
+  if (error) {
     if (error.response?.status === 404) {
       return (
         <div className="aluno-view-body">
           <p>Aluno não encontrado.</p>
+
           <button className="aluno-view-back" onClick={onBack}>
-            <img src={ChevronLeft} alt="" />
+            <HiChevronLeft className="back-icon" />
             Voltar para alunos
           </button>
         </div>
       );
     }
 
-    const mensagemErro = error.response?.data?.detail || error.message || "Erro desconhecido";
+    const mensagemErro =
+      error.response?.data?.detail || error.message || "Erro desconhecido";
+
     return (
       <div className="aluno-view-body">
         <p>Erro: {mensagemErro}</p>
+
         <button className="aluno-view-back" onClick={onBack}>
-          <img src={ChevronLeft} alt="" />
+          <HiChevronLeft className="back-icon" />
           Voltar
         </button>
       </div>
@@ -46,15 +49,14 @@ if (error) {
     return (
       <div className="aluno-view-body">
         <p>Dados do aluno não estão disponíveis.</p>
+
         <button className="aluno-view-back" onClick={onBack}>
-          <img src={ChevronLeft} alt="" />
+          <HiChevronLeft className="back-icon" />
           Voltar para alunos
         </button>
       </div>
     );
   }
-
-  console.log("Aluno data:", aluno); // Log the aluno data for debugging
 
   const nome = aluno.alunoNome || aluno.nome;
   const matricula = aluno.alunoMatricula || aluno.matricula;
@@ -93,7 +95,7 @@ if (error) {
       <div className="aluno-view-header">
         <div>
           <button className="aluno-view-back" onClick={onBack}>
-            <img src={ChevronLeft} alt="" />
+            <HiChevronLeft className="back-icon" />
             Voltar para alunos
           </button>
 
@@ -104,10 +106,27 @@ if (error) {
           </p>
         </div>
 
-        <button className="aluno-view-edit" onClick={() => onEdit?.(aluno)}>
-          <img src={EditImg} alt="" />
-          Editar aluno
-        </button>
+        <div className="aluno-view-actions">
+          <button className="aluno-view-action-btn" onClick={() => onEdit?.(aluno)}>
+            <HiPencilAlt className="action-icon"/>
+            Editar aluno
+          </button>
+
+        { aluno.statusAtivo && (
+          <button className="aluno-view-action-btn btn-archive" onClick={() => onDelete?.(aluno)}>
+            <HiArchive className="action-icon" />
+              Arquivar Aluno
+          </button>
+        )}
+
+        {!aluno.statusAtivo && (
+          <button className="aluno-view-action-btn" onClick={() => onActivate?.(aluno)}>
+            <HiCheck className="action-icon" />
+              Ativar Aluno
+          </button>
+        )}
+   
+        </div>
       </div>
 
       <section className="aluno-view-card">

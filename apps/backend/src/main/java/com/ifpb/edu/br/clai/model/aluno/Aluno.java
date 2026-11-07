@@ -1,4 +1,4 @@
-package com.ifpb.edu.br.clai.model;
+package com.ifpb.edu.br.clai.model.aluno;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -53,4 +53,6 @@ public class Aluno {
     @Column(name="al_periodo_letivo", nullable = false)
     private String periodoAluno;
 
+    @Column(name = "status")
+    private Boolean statusAtivo = true;
 }
