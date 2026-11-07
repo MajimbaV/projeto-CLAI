@@ -54,6 +54,8 @@ const CAMPOS_DESCRITIVOS = [
   },
 ];
 
+const MIN_CARACTERES_DESCRITIVOS = 1;
+
 function obterDataAtualLocal() {
   const hoje = new Date();
   const ano = hoje.getFullYear();
@@ -104,8 +106,10 @@ export function validarPlanoAcao(formData, dataAtual = obterDataAtualLocal()) {
     }
   }
 
-  for (const { campo, mensagem } of CAMPOS_DESCRITIVOS) {
-    if (!formData[campo] || formData[campo].trim() === "") {
+    for (const { campo, mensagem } of CAMPOS_DESCRITIVOS) {
+    const valor = String(formData[campo] ?? "").trim();
+
+    if (valor.length < MIN_CARACTERES_DESCRITIVOS) {
       erros[campo] = mensagem;
     }
   }
