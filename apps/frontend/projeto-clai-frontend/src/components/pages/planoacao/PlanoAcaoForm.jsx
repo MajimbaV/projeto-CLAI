@@ -209,7 +209,7 @@ function PlanoAcaoForm({
         <span className="plano-acao-header-comment">* Campos obrigatórios</span>
       </div>
 
-      <form className="plano-acao-form" onSubmit={handleSubmit}>
+      <form className="plano-acao-form" noValidate onSubmit={handleSubmit}>
         {mensagemErro && (
           <div className="plano-acao-error-banner">
             <p>Erro: {mensagemErro}</p>
