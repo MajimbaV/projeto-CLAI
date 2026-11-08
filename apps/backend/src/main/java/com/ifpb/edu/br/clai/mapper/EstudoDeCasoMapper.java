@@ -86,7 +86,6 @@ public class EstudoDeCasoMapper {
                 motivo.getOutroOrigemEncaminhamento(),
                 motivo.getMotivoPrincipal(),
                 motivo.getDemandaDoEstudante(),
-                motivo.getDemandaDoProfissional(),
                 motivo.getDemandaDoResponsavel(),
                 motivo.getDemandaEquipeEscolar()
         );
