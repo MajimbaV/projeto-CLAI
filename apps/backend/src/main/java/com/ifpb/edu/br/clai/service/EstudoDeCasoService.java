@@ -27,6 +27,7 @@ public class EstudoDeCasoService {
         this.alunoService = alunoService;
     }
 
+    @Transactional
     public EstudoDeCasoResponseDto createEstudoDeCaso(EstudoDeCasoRequestDto dto) {
         EstudoDeCasoRequestDto dtoLimpo = prepararParaMapeamentoEstudoDeCaso(dto);
         validarRegras(dtoLimpo.motivoDemanda(), dtoLimpo.necessidadesEducacionais(), dtoLimpo.necessidadesEspecificas());
