@@ -27,4 +27,12 @@ public class CursoSpecification {
             return cb.like(nomeBancoTratado, "%" + termo + "%");
         };
     }
+
+    public static Specification<Curso> filtrarPorStatusAtivo(Boolean statusAtivo){
+        return (root, query, cb) -> {
+            if (statusAtivo == null) return cb.conjunction();
+            return cb.equal(root.get("statusAtivo"), statusAtivo);
+        };
+    }
+
 }
