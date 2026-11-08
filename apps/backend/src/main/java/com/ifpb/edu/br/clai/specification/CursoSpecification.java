@@ -50,4 +50,10 @@ public class CursoSpecification {
         };
     }
 
+    public static Specification<Curso> filtrarPorTurno(Turno turno) {
+        return (root, query, cb) -> {
+            if (turno == null) return cb.conjunction();
+            return cb.equal(root.get("cursoTurno"), turno);
+        };
+    }
 }
