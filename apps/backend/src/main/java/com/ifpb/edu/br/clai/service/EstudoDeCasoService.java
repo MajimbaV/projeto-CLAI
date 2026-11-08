@@ -31,6 +31,7 @@ public class EstudoDeCasoService {
         this.alunoService = alunoService;
     }
 
+    @Transactional
     public EstudoDeCasoResponseDto createEstudoDeCaso(EstudoDeCasoRequestDto dto) {
         EstudoDeCasoRequestDto dtoLimpo = prepararParaMapeamentoEstudoDeCaso(dto);
         validarRegras(dtoLimpo.motivoDemanda(), dtoLimpo.necessidadesEducacionais(), dtoLimpo.necessidadesEspecificas());
@@ -222,12 +223,18 @@ public class EstudoDeCasoService {
         }
     }
 
+    @Transactional
     public EstudoDeCasoResponseDto updateEstudoDeCaso(UUID id, EstudoDeCasoAtualizacaoRequestDTO dto) {
         EstudoDeCaso estudoDeCaso = estudoDeCasoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudo de caso não encontrado com o ID: " + id));
 
 
         validarRegras(dto.motivoDemanda(), dto.necessidadesEducacionais(), dto.necessidadesEspecificas());
+
+        if(dto.situacaoEstudoDeCaso() == SituacaoEstudoDeCaso.VALIDO) {
+            arquivarEstudosPorMatricula(estudoDeCaso.getIdentificacao().getAlunoId().getAlunoMatricula());
+        }
+
         EstudoDeCasoMapper.aplicarUpdate(dto, estudoDeCaso);
 
         EstudoDeCaso estudoAtualizado = estudoDeCasoRepository.save(estudoDeCaso);
