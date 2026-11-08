@@ -74,7 +74,7 @@ public class EstudoDeCasoService {
     private EstudoDeCasoRequestDto prepararParaMapeamentoEstudoDeCaso(EstudoDeCasoRequestDto dto) {
         return new EstudoDeCasoRequestDto(
                 dto.identificacao() != null ? dto.identificacao() : new IdentificacaoRequestDto(null, null, null),
-                dto.motivoDemanda() != null ? dto.motivoDemanda() : new MotivoDemandaRequestDto(null, null, null, null, null, null, null),
+                dto.motivoDemanda() != null ? dto.motivoDemanda() : new MotivoDemandaRequestDto(null, null, null, null, null, null),
                 dto.necessidadesEspecificas() != null ? dto.necessidadesEspecificas()
                         : new NecessidadesEspecificasRequestDto(null, null, null, null, null, null, null),
                 dto.anamnese() != null ? dto.anamnese() : new AnamneseRequestDto(null, null, null, null, null, null, null),
