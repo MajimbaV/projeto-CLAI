@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record IdentificacaoRequestDto(
-        UUID alunoId,
+        @NotNull(message = "O ID do aluno é obrigatório") UUID alunoId,
         List<@NotNull @PastOrPresent LocalDate> datasAnamnese,
         @Size(max = 60) String nomeProfissional
 ) {}

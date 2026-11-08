@@ -1,6 +1,6 @@
 package com.ifpb.edu.br.clai.controller;
 
-import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.CadastroCombinadoRequestDto;
+import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoCombinadoRequestDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoRequestDto;
 import com.ifpb.edu.br.clai.service.EstudoDeCasoService;
@@ -39,7 +39,7 @@ public class EstudoDeCasoController {
 
     @PostMapping("/combinado")
     public ResponseEntity<EstudoDeCasoResponseDto> createEstudoDeCasoCombinado(
-            @Valid @RequestBody CadastroCombinadoRequestDto dto
+            @Valid @RequestBody EstudoDeCasoCombinadoRequestDto dto
     ) {
         EstudoDeCasoResponseDto response = estudoDeCasoService.createEstudoDeCasoCombinado(dto);
 

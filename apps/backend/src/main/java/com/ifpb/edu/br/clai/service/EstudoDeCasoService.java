@@ -6,11 +6,10 @@ import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.*;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.mapper.EstudoDeCasoMapper;
 import com.ifpb.edu.br.clai.model.aluno.Aluno;
-import com.ifpb.edu.br.clai.model.estudodecaso.EstudoDeCaso;
+import com.ifpb.edu.br.clai.model.estudodecaso.*;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacional;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
-import com.ifpb.edu.br.clai.model.estudodecaso.enums.StatusEstudoDeCaso;
 import com.ifpb.edu.br.clai.repository.EstudoDeCasoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,33 +27,55 @@ public class EstudoDeCasoService {
         this.alunoService = alunoService;
     }
 
+    @Transactional
     public EstudoDeCasoResponseDto createEstudoDeCaso(EstudoDeCasoRequestDto dto) {
-        validarRegras(dto);
+        EstudoDeCasoRequestDto dtoLimpo = prepararParaMapeamentoEstudoDeCaso(dto);
+        validarRegras(dtoLimpo.motivoDemanda(), dtoLimpo.necessidadesEducacionais(), dtoLimpo.necessidadesEspecificas());
 
-        Aluno aluno = dto.identificacao() != null && dto.identificacao().alunoId() != null
-                ? alunoService.buscarOuFalhar(dto.identificacao().alunoId())
-                : null;
-        EstudoDeCaso estudoDeCaso = EstudoDeCasoMapper.requestToEntity(prepararParaMapeamento(dto), aluno);
+        Aluno aluno = alunoService.buscarOuFalhar(dtoLimpo.identificacao().alunoId());
+
+        EstudoDeCaso estudoDeCaso = EstudoDeCasoMapper.requestToEntity(dtoLimpo, aluno);
+        arquivarEstudosPorMatricula(aluno.getAlunoMatricula());
         EstudoDeCaso estudoDeCasoSalvo = estudoDeCasoRepository.save(estudoDeCaso);
         return EstudoDeCasoMapper.entityToResponse(estudoDeCasoSalvo);
     }
 
     @Transactional
-    public EstudoDeCasoResponseDto createEstudoDeCasoCombinado(CadastroCombinadoRequestDto dto){
-        validarRegras(dto.estudoDeCaso());
+    public EstudoDeCasoResponseDto createEstudoDeCasoCombinado(EstudoDeCasoCombinadoRequestDto dto) {
+        validarIdentificacaoCombinada(dto);
+        validarRegras(dto.motivoDemanda(), dto.necessidadesEducacionais(), dto.necessidadesEspecificas());
 
-        AlunoResponseDto alunoSalvo = alunoService.createAluno(dto.aluno());
-
+        AlunoResponseDto alunoSalvo = alunoService.createAluno(dto.identificacao().aluno());
         Aluno novoAluno = alunoService.buscarOuFalhar(alunoSalvo.id());
-        EstudoDeCaso estudoDeCaso = EstudoDeCasoMapper.requestToEntity(prepararParaMapeamento(dto.estudoDeCaso()), novoAluno);
+
+        EstudoDeCasoRequestDto dtoLimpo = prepararParaMapeamentoEstudoDeCaso(
+                new EstudoDeCasoRequestDto(
+                        new IdentificacaoRequestDto(
+                                alunoSalvo.id(),
+                                dto.identificacao().datasAnamnese(),
+                                dto.identificacao().nomeProfissional()
+                        ),
+                        dto.motivoDemanda(),
+                        dto.necessidadesEspecificas(),
+                        dto.anamnese(),
+                        dto.perfilEstudante(),
+                        dto.contextoPsicossocial(),
+                        dto.potencialidades(),
+                        dto.necessidadesEducacionais(),
+                        dto.sintesePsicopedagogica(),
+                        dto.checklistApoios()
+                )
+        );
+        EstudoDeCaso estudoDeCaso = EstudoDeCasoMapper.requestToEntity(dtoLimpo, novoAluno);
+        arquivarEstudosPorMatricula(novoAluno.getAlunoMatricula());
         EstudoDeCaso estudoDeCasoSalvo = estudoDeCasoRepository.save(estudoDeCaso);
         return EstudoDeCasoMapper.entityToResponse(estudoDeCasoSalvo);
     }
 
-    private EstudoDeCasoRequestDto prepararParaMapeamento(EstudoDeCasoRequestDto dto) {
+    private EstudoDeCasoRequestDto prepararParaMapeamentoEstudoDeCaso(EstudoDeCasoRequestDto dto) {
         return new EstudoDeCasoRequestDto(
                 dto.identificacao() != null ? dto.identificacao() : new IdentificacaoRequestDto(null, null, null),
-                dto.motivoDemanda() != null ? dto.motivoDemanda() : new MotivoDemandaRequestDto(null, null, null, null, null, null, null),
+                dto.motivoDemanda() != null ? dto.motivoDemanda() : new MotivoDemandaRequestDto(null, null, null, null, null, null),
                 dto.necessidadesEspecificas() != null ? dto.necessidadesEspecificas()
                         : new NecessidadesEspecificasRequestDto(null, null, null, null, null, null, null),
                 dto.anamnese() != null ? dto.anamnese() : new AnamneseRequestDto(null, null, null, null, null, null, null),
@@ -69,27 +90,18 @@ public class EstudoDeCasoService {
                         : new SintesePsicopedagogicaRequestDto(null, null, null, null, null),
                 dto.checklistApoios() != null ? dto.checklistApoios()
                         : new ChecklistApoiosRequestDto(null, null, null, null, null, null, null, null,
-                        null, null, null, null, null, null, null, null),
-                dto.statusEstudoDeCaso()
+                        null, null, null, null, null, null, null, null)
         );
     }
 
-    private void validarRegras(EstudoDeCasoRequestDto dto) {
+    private void validarIdentificacaoCombinada(EstudoDeCasoCombinadoRequestDto dto) {
         Map<String, String> errors = new LinkedHashMap<>();
         if (dto == null) {
-            errors.put("request", "O corpo da requisição é obrigatório.");
-            throw new FieldValidationException(errors);
-        }
-
-        if (dto.statusEstudoDeCaso() == null) {
-            errors.put("statusEstudoDeCaso", "O status do estudo de caso é obrigatório.");
-        }
-
-        validarOrigemOutro(dto.motivoDemanda(), errors);
-        validarNecessidadesEducacionais(dto.necessidadesEducacionais(), errors);
-
-        if (dto.statusEstudoDeCaso() == StatusEstudoDeCaso.COMPLETO) {
-            validarEstudoCompleto(dto, errors);
+            required(errors, "body");
+        } else if (dto.identificacao() == null) {
+            required(errors, "identificacao");
+        } else if (dto.identificacao().aluno() == null) {
+            required(errors, "identificacao.aluno");
         }
 
         if (!errors.isEmpty()) {
@@ -97,114 +109,16 @@ public class EstudoDeCasoService {
         }
     }
 
-    private void validarEstudoCompleto(EstudoDeCasoRequestDto dto, Map<String, String> errors) {
-        IdentificacaoRequestDto identificacao = dto.identificacao();
-        if (identificacao == null) {
-            required(errors, "identificacao");
-        } else {
-            required(errors, "identificacao.alunoId", identificacao.alunoId());
-            requiredList(errors, "identificacao.datasAnamnese", identificacao.datasAnamnese());
-            requiredText(errors, "identificacao.nomeProfissional", identificacao.nomeProfissional());
-        }
+    private void validarRegras(MotivoDemandaRequestDto motivoDemanda, NecessidadesEducacionaisRequestDto necessidadesEducacionais, NecessidadesEspecificasRequestDto necessidadesEspecificasRequestDto) {
+        Map<String, String> errors = new LinkedHashMap<>();
 
-        MotivoDemandaRequestDto motivo = dto.motivoDemanda();
-        if (motivo == null) {
-            required(errors, "motivoDemanda");
-        } else {
-            required(errors, "motivoDemanda.origemEncaminhamento", motivo.origemEncaminhamento());
-            requiredText(errors, "motivoDemanda.motivoPrincipal", motivo.motivoPrincipal());
-            requiredText(errors, "motivoDemanda.demandaDoEstudante", motivo.demandaDoEstudante());
-            requiredText(errors, "motivoDemanda.demandaDoProfissional", motivo.demandaDoProfissional());
-            requiredText(errors, "motivoDemanda.demandaDoResponsavel", motivo.demandaDoResponsavel());
-            requiredText(errors, "motivoDemanda.demandaEquipeEscolar", motivo.demandaEquipeEscolar());
-        }
 
-        NecessidadesEspecificasRequestDto necessidades = dto.necessidadesEspecificas();
-        if (necessidades == null) {
-            required(errors, "necessidadesEspecificas");
-        } else {
-            requiredText(errors, "necessidadesEspecificas.necessidadeInformada", necessidades.necessidadeInformada());
-            validarDocumentosComprobatorios(necessidades, errors);
-            requiredText(errors, "necessidadesEspecificas.encaminhamentosAnteriores", necessidades.encaminhamentosAnteriores());
-            requiredText(errors, "necessidadesEspecificas.servicosApoioAtuaisAnteriores", necessidades.servicosApoioAtuaisAnteriores());
-        }
+        validarOrigemOutro(motivoDemanda, errors);
+        validarNecessidadesEducacionais(necessidadesEducacionais, errors);
+        validarDocumentosComprobatorios(necessidadesEspecificasRequestDto, errors);
 
-        AnamneseRequestDto anamnese = dto.anamnese();
-        if (anamnese == null) {
-            required(errors, "anamnese");
-        } else {
-            requiredText(errors, "anamnese.historicoEscolar", anamnese.historicoEscolar());
-            requiredText(errors, "anamnese.experienciasEscolaresPositivas", anamnese.experienciasEscolaresPositivas());
-            requiredText(errors, "anamnese.experienciasEscolaresNegativas", anamnese.experienciasEscolaresNegativas());
-            requiredText(errors, "anamnese.adaptacoesRecursosEResultados", anamnese.adaptacoesRecursosEResultados());
-            requiredText(errors, "anamnese.objetivosConhecimentosConsolidados", anamnese.objetivosConhecimentosConsolidados());
-            requiredList(errors, "anamnese.areasDisciplinasFacilidade", anamnese.areasDisciplinasFacilidade());
-            requiredList(errors, "anamnese.areasDisciplinasDificuldade", anamnese.areasDisciplinasDificuldade());
-        }
-
-        PerfilEstudanteRequestDto perfil = dto.perfilEstudante();
-        if (perfil == null) {
-            required(errors, "perfilEstudante");
-        } else {
-            requiredText(errors, "perfilEstudante.comunicacaoCompreensaoOrientacoes", perfil.comunicacaoCompreensaoOrientacoes());
-            requiredText(errors, "perfilEstudante.leituraEscritaLinguagem", perfil.leituraEscritaLinguagem());
-            requiredText(errors, "perfilEstudante.raciocinioLogicoMatematico", perfil.raciocinioLogicoMatematico());
-            requiredText(errors, "perfilEstudante.atencaoMemoriaFuncoesExecutivas", perfil.atencaoMemoriaFuncoesExecutivas());
-            requiredText(errors, "perfilEstudante.organizacaoPlanejamentoRealizacaoTarefas", perfil.organizacaoPlanejamentoRealizacaoTarefas());
-            requiredText(errors, "perfilEstudante.interacaoSocialParticipacaoSala", perfil.interacaoSocialParticipacaoSala());
-            requiredText(errors, "perfilEstudante.aspectosSensoriaisRelevantes", perfil.aspectosSensoriaisRelevantes());
-            requiredText(errors, "perfilEstudante.mobilidadeAcessoTecnologiasRecursos", perfil.mobilidadeAcessoTecnologiasRecursos());
-            requiredText(errors, "perfilEstudante.autonomiaContextoFamiliar", perfil.autonomiaContextoFamiliar());
-            requiredText(errors, "perfilEstudante.autonomiaContextoEscolar", perfil.autonomiaContextoEscolar());
-            requiredText(errors, "perfilEstudante.estrategiasQueFavorecemAprendizagem", perfil.estrategiasQueFavorecemAprendizagem());
-            requiredText(errors, "perfilEstudante.situacoesQueDificultamAprendizagem", perfil.situacoesQueDificultamAprendizagem());
-        }
-
-        ContextoPsicossocialRequestDto contexto = dto.contextoPsicossocial();
-        if (contexto == null) {
-            required(errors, "contextoPsicossocial");
-        } else {
-            requiredText(errors, "contextoPsicossocial.relacaoComCursoEExpectativas", contexto.relacaoComCursoEExpectativas());
-            requiredText(errors, "contextoPsicossocial.redeApoioFamiliarSocial", contexto.redeApoioFamiliarSocial());
-            requiredText(errors, "contextoPsicossocial.conflitosOuFatoresPsicossociais", contexto.conflitosOuFatoresPsicossociais());
-            requiredText(errors, "contextoPsicossocial.observacoesFrequenciaRotinaPermanencia", contexto.observacoesFrequenciaRotinaPermanencia());
-        }
-
-        PotencialidadesRequestDto potencialidades = dto.potencialidades();
-        if (potencialidades == null) {
-            required(errors, "potencialidades");
-        } else {
-            requiredText(errors, "potencialidades.potencialidadesAcademicas", potencialidades.potencialidadesAcademicas());
-            requiredText(errors, "potencialidades.interessesHabilidades", potencialidades.interessesHabilidades());
-            requiredText(errors, "potencialidades.formasPreferenciaisAprendizagemEDemonstracao", potencialidades.formasPreferenciaisAprendizagemEDemonstracao());
-            requiredText(errors, "potencialidades.recursosQueFavorecemDesempenho", potencialidades.recursosQueFavorecemDesempenho());
-        }
-
-        SintesePsicopedagogicaRequestDto sintese = dto.sintesePsicopedagogica();
-        if (sintese == null) {
-            required(errors, "sintesePsicopedagogica");
-        } else {
-            requiredText(errors, "sintesePsicopedagogica.identificacaoNecessidadesEspecificas", sintese.identificacaoNecessidadesEspecificas());
-            requiredText(errors, "sintesePsicopedagogica.avancosObjetivosConhecimentosAlcancados", sintese.avancosObjetivosConhecimentosAlcancados());
-            requiredText(errors, "sintesePsicopedagogica.dificuldadesBarreirasComRepercussaoEducacional", sintese.dificuldadesBarreirasComRepercussaoEducacional());
-            requiredText(errors, "sintesePsicopedagogica.potencialidadesECondicoesFacilitadoras", sintese.potencialidadesECondicoesFacilitadoras());
-            requiredText(errors, "sintesePsicopedagogica.principaisDemandasIdentificadasNoCaso", sintese.principaisDemandasIdentificadasNoCaso());
-        }
-
-        ChecklistApoiosRequestDto checklist = dto.checklistApoios();
-        if (checklist == null) {
-            required(errors, "checklistApoios");
-        } else {
-            requiredList(errors, "checklistApoios.acessibilidadeAmbiente", checklist.acessibilidadeAmbiente());
-            requiredList(errors, "checklistApoios.comunicacaoMateriais", checklist.comunicacaoMateriais());
-            requiredList(errors, "checklistApoios.metodologia", checklist.metodologia());
-            requiredList(errors, "checklistApoios.avaliacao", checklist.avaliacao());
-            requiredList(errors, "checklistApoios.curriculo", checklist.curriculo());
-            requiredList(errors, "checklistApoios.apoiosInstitucionais", checklist.apoiosInstitucionais());
-            requiredText(errors, "checklistApoios.apoiosExternosEncaminhamentos", checklist.apoiosExternosEncaminhamentos());
-            requiredText(errors, "checklistApoios.psicopedagogoResponsavel", checklist.psicopedagogoResponsavel());
-            requiredText(errors, "checklistApoios.coordenadorResponsavel", checklist.coordenadorResponsavel());
-            required(errors, "checklistApoios.data", checklist.data());
+        if (!errors.isEmpty()) {
+            throw new FieldValidationException(errors);
         }
     }
 
@@ -212,7 +126,7 @@ public class EstudoDeCasoService {
             NecessidadesEspecificasRequestDto necessidades,
             Map<String, String> errors
     ) {
-        if (necessidades.documentos() == null) return;
+        if (necessidades == null || necessidades.documentos() == null) return;
         for (int index = 0; index < necessidades.documentos().size(); index++) {
             DocumentoComprobatorioRequestDto documento = necessidades.documentos().get(index);
             String prefix = "necessidadesEspecificas.documentos[" + index + "]";
@@ -277,11 +191,6 @@ public class EstudoDeCasoService {
         }
     }
 
-    private void requiredList(Map<String, String> errors, String field, Collection<?> value) {
-        if (value == null || value.isEmpty()) {
-            required(errors, field);
-        }
-    }
 
     private boolean alterarStatusParaArquivado(List<EstudoDeCaso> estudos) {
         boolean sofreuAlteracao = false;

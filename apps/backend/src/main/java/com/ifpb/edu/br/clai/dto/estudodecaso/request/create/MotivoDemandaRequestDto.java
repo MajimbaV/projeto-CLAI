@@ -9,7 +9,6 @@ public record MotivoDemandaRequestDto(
         @Size(max = 100) String outroOrigemEncaminhamento,
         @Size(max = 300) String motivoPrincipal,
         @Size(max = 255) String demandaDoEstudante,
-        @Size(max = 255) String demandaDoProfissional,
         @Size(max = 255) String demandaDoResponsavel,
         @Size(max = 255) String demandaEquipeEscolar
 ) {
