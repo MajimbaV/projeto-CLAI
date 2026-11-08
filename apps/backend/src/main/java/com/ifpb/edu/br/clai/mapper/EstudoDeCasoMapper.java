@@ -73,7 +73,6 @@ public class EstudoDeCasoMapper {
         Aluno aluno = identificacao.getAlunoId();
         UUID alunoId = aluno == null ? null : aluno.getId();
         return new IdentificacaoResponseDto(
-                alunoId,
                 aluno == null ? null : AlunoMapper.entityToResponse(aluno),
                 identificacao.getDatasAnamnese(),
                 identificacao.getIde_nome_profissional()

@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 public record EstudoDeCasoRequestDto(
-        @Valid IdentificacaoRequestDto identificacao,
+        @NotNull @Valid IdentificacaoRequestDto identificacao,
         @Valid MotivoDemandaRequestDto motivoDemanda,
         @Valid NecessidadesEspecificasRequestDto necessidadesEspecificas,
         @Valid AnamneseRequestDto anamnese,
