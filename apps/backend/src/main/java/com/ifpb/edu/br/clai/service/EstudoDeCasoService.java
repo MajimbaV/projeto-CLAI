@@ -4,6 +4,7 @@ import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.*;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
+import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.EstudoDeCasoMapper;
 import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.*;
@@ -11,10 +12,13 @@ import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacio
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 import com.ifpb.edu.br.clai.repository.EstudoDeCasoRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static com.ifpb.edu.br.clai.mapper.EstudoDeCasoMapper.*;
 
 @Service
 public class EstudoDeCasoService {
@@ -74,7 +78,7 @@ public class EstudoDeCasoService {
     private EstudoDeCasoRequestDto prepararParaMapeamentoEstudoDeCaso(EstudoDeCasoRequestDto dto) {
         return new EstudoDeCasoRequestDto(
                 dto.identificacao() != null ? dto.identificacao() : new IdentificacaoRequestDto(null, null, null),
-                dto.motivoDemanda() != null ? dto.motivoDemanda() : new MotivoDemandaRequestDto(null, null, null, null, null, null, null),
+                dto.motivoDemanda() != null ? dto.motivoDemanda() : new MotivoDemandaRequestDto(null, null, null, null, null, null),
                 dto.necessidadesEspecificas() != null ? dto.necessidadesEspecificas()
                         : new NecessidadesEspecificasRequestDto(null, null, null, null, null, null, null),
                 dto.anamnese() != null ? dto.anamnese() : new AnamneseRequestDto(null, null, null, null, null, null, null),
@@ -217,4 +221,18 @@ public class EstudoDeCasoService {
             }
         }
     }
+
+    public EstudoDeCasoResponseDto updateEstudoDeCaso(UUID id, EstudoDeCasoAtualizacaoRequestDTO dto) {
+        EstudoDeCaso estudoDeCaso = estudoDeCasoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudo de caso não encontrado com o ID: " + id));
+
+
+        validarRegras(dto.motivoDemanda(), dto.necessidadesEducacionais(), dto.necessidadesEspecificas());
+        EstudoDeCasoMapper.aplicarUpdate(dto, estudoDeCaso);
+
+        EstudoDeCaso estudoAtualizado = estudoDeCasoRepository.save(estudoDeCaso);
+
+        return EstudoDeCasoMapper.entityToResponse(estudoAtualizado);
+    }
+
 }

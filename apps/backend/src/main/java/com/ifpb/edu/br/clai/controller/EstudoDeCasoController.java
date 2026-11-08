@@ -1,5 +1,6 @@
 package com.ifpb.edu.br.clai.controller;
 
+import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoAtualizacaoRequestDTO;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoCombinadoRequestDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoRequestDto;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173") // Alterar isso quando fizer deploy
@@ -50,6 +52,15 @@ public class EstudoDeCasoController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EstudoDeCasoResponseDto> updateEstudoDeCaso(
+            @PathVariable("id") UUID id,
+            @Valid @RequestBody EstudoDeCasoAtualizacaoRequestDTO dto
+            ) {
+        EstudoDeCasoResponseDto response = estudoDeCasoService.updateEstudoDeCaso(id, dto);
+        return ResponseEntity.ok(response);
     }
 
 }

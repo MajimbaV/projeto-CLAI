@@ -86,7 +86,6 @@ public class EstudoDeCasoMapper {
                 motivo.getOutroOrigemEncaminhamento(),
                 motivo.getMotivoPrincipal(),
                 motivo.getDemandaDoEstudante(),
-                motivo.getDemandaDoProfissional(),
                 motivo.getDemandaDoResponsavel(),
                 motivo.getDemandaEquipeEscolar()
         );
@@ -245,7 +244,6 @@ public class EstudoDeCasoMapper {
         motivo.setOutroOrigemEncaminhamento(request.outroOrigemEncaminhamento());
         motivo.setMotivoPrincipal(request.motivoPrincipal());
         motivo.setDemandaDoEstudante(request.demandaDoEstudante());
-        motivo.setDemandaDoProfissional(request.demandaDoProfissional());
         motivo.setDemandaDoResponsavel(request.demandaDoResponsavel());
         motivo.setDemandaEquipeEscolar(request.demandaEquipeEscolar());
         return motivo;
@@ -370,5 +368,18 @@ public class EstudoDeCasoMapper {
 
     private static <T> ArrayList<T> copyList(List<T> values) {
         return values == null ? new ArrayList<>() : new ArrayList<>(values);
+    }
+
+    public static void aplicarUpdate(EstudoDeCasoAtualizacaoRequestDTO dto, EstudoDeCaso estudo) {
+        estudo.setMotivoDemanda(toMotivoDemanda(dto.motivoDemanda()));
+        estudo.setNecessidadesEspecificas(toNecessidadesEspecificas(dto.necessidadesEspecificas()));
+        estudo.setAnamnese(toAnamnese(dto.anamnese()));
+        estudo.setPerfilEstudante(toPerfilEstudante(dto.perfilEstudante()));
+        estudo.setContextoPsicossocial(toContextoPsicossocial(dto.contextoPsicossocial()));
+        estudo.setPotencialidades(toPotencialidades(dto.potencialidades()));
+        estudo.setNecessidadesEducacionais(toNecessidadesEducacionais(dto.necessidadesEducacionais()));
+        estudo.setSintesePsicopedagogica(toSintesePsicopedagogica(dto.sintesePsicopedagogica()));
+        estudo.setChecklistApoios(toChecklistApoios(dto.checklistApoios()));
+        estudo.setSituacaoEstudoDeCaso(dto.situacaoEstudoDeCaso());
     }
 }
