@@ -41,4 +41,13 @@ public class CursoSpecification {
             return cb.equal(root.get("cursoModalidade"), modalidade);
         };
     }
+
+
+    public static Specification<Curso> filtrarPorNivelEnsino(NivelEnsino nivelEnsino) {
+        return (root, query, cb) -> {
+            if (nivelEnsino == null) return cb.conjunction();
+            return cb.equal(root.get("nivelEnsino"), nivelEnsino);
+        };
+    }
+
 }
