@@ -35,4 +35,10 @@ public class CursoSpecification {
         };
     }
 
+    public static Specification<Curso> filtrarPorModalidade(Modalidade modalidade) {
+        return (root, query, cb) -> {
+            if (modalidade == null) return cb.conjunction();
+            return cb.equal(root.get("cursoModalidade"), modalidade);
+        };
+    }
 }
