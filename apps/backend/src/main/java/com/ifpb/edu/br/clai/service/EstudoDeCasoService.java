@@ -11,6 +11,9 @@ import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacio
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 import com.ifpb.edu.br.clai.repository.EstudoDeCasoRepository;
+import com.ifpb.edu.br.clai.specification.EstudoDeCasoSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -217,5 +220,19 @@ public class EstudoDeCasoService {
                 estudoDeCasoRepository.saveAll(estudos);
             }
         }
+    }
+
+
+    public Page<EstudoDeCasoResponseDto> getAllEstudosDeCaso(
+            Pageable pageable,
+            String nomeAluno,
+            String matriculaAluno,
+            SituacaoEstudoDeCaso situacao
+    ) {
+        var filtro = new EstudoDeCasoFiltroRequestDto(nomeAluno, matriculaAluno, situacao);
+        var spec = EstudoDeCasoSpecification.comFiltros(filtro);
+
+        return estudoDeCasoRepository.findAll(spec, pageable)
+                .map(EstudoDeCasoMapper::entityToResponse);
     }
 }
