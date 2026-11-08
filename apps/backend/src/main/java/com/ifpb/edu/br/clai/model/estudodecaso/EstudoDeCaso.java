@@ -1,7 +1,6 @@
 package com.ifpb.edu.br.clai.model.estudodecaso;
 
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
-import com.ifpb.edu.br.clai.model.estudodecaso.enums.StatusEstudoDeCaso;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,10 +47,6 @@ public class EstudoDeCaso {
 
     @Embedded
     private ChecklistApoios checklistApoios;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private StatusEstudoDeCaso statusEstudoDeCaso;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "situacao", nullable = false)

@@ -13,19 +13,37 @@ import java.util.UUID;
 
 public class EstudoDeCasoMapper {
 
-    public static EstudoDeCaso requestToEntity(EstudoDeCasoRequestDto request, Aluno aluno) {
+    public static EstudoDeCaso requestToEntity(EstudoDeCasoRequestDto dto, Aluno alunoId) {
         EstudoDeCaso estudoDeCaso = new EstudoDeCaso();
-        estudoDeCaso.setIdentificacao(toIdentificacao(request.identificacao(), aluno));
-        estudoDeCaso.setMotivoDemanda(toMotivoDemanda(request.motivoDemanda()));
-        estudoDeCaso.setNecessidadesEspecificas(toNecessidadesEspecificas(request.necessidadesEspecificas()));
-        estudoDeCaso.setAnamnese(toAnamnese(request.anamnese()));
-        estudoDeCaso.setPerfilEstudante(toPerfilEstudante(request.perfilEstudante()));
-        estudoDeCaso.setContextoPsicossocial(toContextoPsicossocial(request.contextoPsicossocial()));
-        estudoDeCaso.setPotencialidades(toPotencialidades(request.potencialidades()));
-        estudoDeCaso.setNecessidadesEducacionais(toNecessidadesEducacionais(request.necessidadesEducacionais()));
-        estudoDeCaso.setSintesePsicopedagogica(toSintesePsicopedagogica(request.sintesePsicopedagogica()));
-        estudoDeCaso.setChecklistApoios(toChecklistApoios(request.checklistApoios()));
-        estudoDeCaso.setStatusEstudoDeCaso(request.statusEstudoDeCaso());
+        estudoDeCaso.setIdentificacao(toIdentificacao(dto.identificacao(), alunoId));
+        estudoDeCaso.setMotivoDemanda(toMotivoDemanda(dto.motivoDemanda()));
+        estudoDeCaso.setNecessidadesEspecificas(toNecessidadesEspecificas(dto.necessidadesEspecificas()));
+        estudoDeCaso.setAnamnese(toAnamnese(dto.anamnese()));
+        estudoDeCaso.setPerfilEstudante(toPerfilEstudante(dto.perfilEstudante()));
+        estudoDeCaso.setContextoPsicossocial(toContextoPsicossocial(dto.contextoPsicossocial()));
+        estudoDeCaso.setPotencialidades(toPotencialidades(dto.potencialidades()));
+        estudoDeCaso.setNecessidadesEducacionais(toNecessidadesEducacionais(dto.necessidadesEducacionais()));
+        estudoDeCaso.setSintesePsicopedagogica(toSintesePsicopedagogica(dto.sintesePsicopedagogica()));
+        estudoDeCaso.setChecklistApoios(toChecklistApoios(dto.checklistApoios()));
+
+        //Regra de negócio: Inicializado como Válido
+        estudoDeCaso.setSituacaoEstudoDeCaso(SituacaoEstudoDeCaso.VALIDO);
+
+        return estudoDeCaso;
+    }
+
+    public static EstudoDeCaso requestoCombinadoToEntity(EstudoDeCasoCombinadoRequestDto dto, Aluno alunoId) {
+        EstudoDeCaso estudoDeCaso = new EstudoDeCaso();
+        estudoDeCaso.setIdentificacao(toIdentificacao(dto.identificacao(), alunoId));
+        estudoDeCaso.setMotivoDemanda(toMotivoDemanda(dto.motivoDemanda()));
+        estudoDeCaso.setNecessidadesEspecificas(toNecessidadesEspecificas(dto.necessidadesEspecificas()));
+        estudoDeCaso.setAnamnese(toAnamnese(dto.anamnese()));
+        estudoDeCaso.setPerfilEstudante(toPerfilEstudante(dto.perfilEstudante()));
+        estudoDeCaso.setContextoPsicossocial(toContextoPsicossocial(dto.contextoPsicossocial()));
+        estudoDeCaso.setPotencialidades(toPotencialidades(dto.potencialidades()));
+        estudoDeCaso.setNecessidadesEducacionais(toNecessidadesEducacionais(dto.necessidadesEducacionais()));
+        estudoDeCaso.setSintesePsicopedagogica(toSintesePsicopedagogica(dto.sintesePsicopedagogica()));
+        estudoDeCaso.setChecklistApoios(toChecklistApoios(dto.checklistApoios()));
 
         //Regra de negócio: Inicializado como Válido
         estudoDeCaso.setSituacaoEstudoDeCaso(SituacaoEstudoDeCaso.VALIDO);
@@ -36,7 +54,6 @@ public class EstudoDeCasoMapper {
     public static EstudoDeCasoResponseDto entityToResponse(EstudoDeCaso estudoDeCaso) {
         return new EstudoDeCasoResponseDto(
                 estudoDeCaso.getId(),
-                estudoDeCaso.getStatusEstudoDeCaso(),
                 toIdentificacaoResponse(estudoDeCaso.getIdentificacao()),
                 toMotivoDemandaResponse(estudoDeCaso.getMotivoDemanda()),
                 toNecessidadesEspecificasResponse(estudoDeCaso.getNecessidadesEspecificas()),
@@ -207,9 +224,17 @@ public class EstudoDeCasoMapper {
         );
     }
 
-    private static Identificacao toIdentificacao(IdentificacaoRequestDto request, Aluno aluno) {
+    private static Identificacao toIdentificacao(IdentificacaoRequestDto request, Aluno alunoId) {
+            Identificacao identificacao = new Identificacao();
+            identificacao.setAlunoId(alunoId);
+            identificacao.setDatasAnamnese(copyList(request.datasAnamnese()));
+            identificacao.setIde_nome_profissional(request.nomeProfissional());
+            return identificacao;
+    }
+
+    public static Identificacao toIdentificacao(IdentificacaoCombinadaRequestDto request, Aluno alunoId) {
         Identificacao identificacao = new Identificacao();
-        identificacao.setAlunoId(aluno);
+        identificacao.setAlunoId(alunoId);
         identificacao.setDatasAnamnese(copyList(request.datasAnamnese()));
         identificacao.setIde_nome_profissional(request.nomeProfissional());
         return identificacao;

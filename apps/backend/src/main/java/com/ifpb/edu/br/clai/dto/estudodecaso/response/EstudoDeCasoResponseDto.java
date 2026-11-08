@@ -9,7 +9,6 @@ import java.util.UUID;
 
 public record EstudoDeCasoResponseDto(
         UUID id,
-        StatusEstudoDeCaso statusEstudoDeCaso,
         IdentificacaoResponseDto identificacao,
         MotivoDemandaResponseDto motivoDemanda,
         NecessidadesEspecificasResponseDto necessidadesEspecificas,
@@ -23,7 +22,6 @@ public record EstudoDeCasoResponseDto(
         SituacaoEstudoDeCaso situacaoEstudoDeCaso
 ) {
     public record IdentificacaoResponseDto(
-            UUID alunoId,
             AlunoResponseDto aluno,
             List<LocalDate> datasAnamnese,
             String nomeProfissional
