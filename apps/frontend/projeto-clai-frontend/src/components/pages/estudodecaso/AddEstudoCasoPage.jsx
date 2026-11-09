@@ -21,7 +21,6 @@ export default function AddEstudoCasoPage({
     return <div>Carregando dados...</div>;
   }
   
-  console.log("Aluno carregado:", aluno);
   return (
     <EstudoCasoForm
       modo={modo}
