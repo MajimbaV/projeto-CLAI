@@ -1,0 +1,177 @@
+.plano-acao-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  color: #374151;
+}
+
+.plano-acao-view-metadados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  background-color: #f9fafb;
+}
+
+.plano-acao-view-metadados > div {
+  display: flex;
+  flex: 1 1 150px;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.plano-acao-view-metadados dt {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.plano-acao-view-metadados dd {
+  margin: 0;
+  color: #111827;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.plano-acao-view-bloco {
+  min-width: 0;
+}
+
+.plano-acao-view-bloco > h3 {
+  margin: 0 0 14px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.plano-acao-view-campos-clinicos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.plano-acao-view-campo-clinico {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  background-color: #ffffff;
+}
+
+.plano-acao-view-campo-cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.plano-acao-view-campo-cabecalho h4 {
+  min-width: 0;
+  margin: 2px 0 0;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.plano-acao-view-resposta {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.plano-acao-view-resposta.positiva {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.plano-acao-view-resposta.negativa {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.plano-acao-view-resposta.indefinida {
+  background-color: #fffbeb;
+  color: #92400e;
+}
+
+.plano-acao-view-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.plano-acao-view-lista li,
+.plano-acao-view-sem-descricao,
+.plano-acao-view-secao p {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.plano-acao-view-sem-descricao {
+  margin: 10px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.plano-acao-view-descritivo {
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.plano-acao-view-secao {
+  min-width: 0;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.plano-acao-view-secao:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.plano-acao-view-secao h4 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.plano-acao-view-secao p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .plano-acao-view-campos-clinicos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plano-acao-view-metadados {
+    gap: 14px 20px;
+    padding: 15px;
+  }
+}
