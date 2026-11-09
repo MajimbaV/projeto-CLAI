@@ -4,8 +4,11 @@ import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoAtualiza
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoCombinadoRequestDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoRequestDto;
+import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 import com.ifpb.edu.br.clai.service.EstudoDeCasoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -54,13 +57,23 @@ public class EstudoDeCasoController {
         return ResponseEntity.created(location).body(response);
     }
 
-    @PutMapping("/{id}")
+    @GetMapping
+    public ResponseEntity<Page<EstudoDeCasoResponseDto>> getAllEstudosDeCaso(
+            Pageable pageable,
+            @RequestParam(value = "nomeAluno", required = false) String nomeAluno,
+            @RequestParam(value = "matriculaAluno", required = false) String matriculaAluno,
+            @RequestParam(value = "situacao", required = false) SituacaoEstudoDeCaso situacao
+    ) {
+        Page<EstudoDeCasoResponseDto> response = estudoDeCasoService.getAllEstudosDeCaso(pageable, nomeAluno, matriculaAluno, situacao);
+        return ResponseEntity.ok(response);
+    }
+  
+      @PutMapping("/{id}")
     public ResponseEntity<EstudoDeCasoResponseDto> updateEstudoDeCaso(
             @PathVariable("id") UUID id,
             @Valid @RequestBody EstudoDeCasoAtualizacaoRequestDTO dto
-            ) {
+    ) {
         EstudoDeCasoResponseDto response = estudoDeCasoService.updateEstudoDeCaso(id, dto);
         return ResponseEntity.ok(response);
     }
-
 }

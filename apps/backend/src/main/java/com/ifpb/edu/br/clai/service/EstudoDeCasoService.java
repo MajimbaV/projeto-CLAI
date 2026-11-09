@@ -12,7 +12,9 @@ import com.ifpb.edu.br.clai.model.estudodecaso.enums.DimensaoNecessidadeEducacio
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.OrigemEncaminhamento;
 import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 import com.ifpb.edu.br.clai.repository.EstudoDeCasoRepository;
-import jakarta.validation.Valid;
+import com.ifpb.edu.br.clai.specification.EstudoDeCasoSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,7 +118,6 @@ public class EstudoDeCasoService {
     private void validarRegras(MotivoDemandaRequestDto motivoDemanda, NecessidadesEducacionaisRequestDto necessidadesEducacionais, NecessidadesEspecificasRequestDto necessidadesEspecificasRequestDto) {
         Map<String, String> errors = new LinkedHashMap<>();
 
-
         validarOrigemOutro(motivoDemanda, errors);
         validarNecessidadesEducacionais(necessidadesEducacionais, errors);
         validarDocumentosComprobatorios(necessidadesEspecificasRequestDto, errors);
@@ -195,7 +196,6 @@ public class EstudoDeCasoService {
         }
     }
 
-
     private boolean alterarStatusParaArquivado(List<EstudoDeCaso> estudos) {
         boolean sofreuAlteracao = false;
 
@@ -228,10 +228,9 @@ public class EstudoDeCasoService {
         EstudoDeCaso estudoDeCaso = estudoDeCasoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudo de caso não encontrado com o ID: " + id));
 
-
         validarRegras(dto.motivoDemanda(), dto.necessidadesEducacionais(), dto.necessidadesEspecificas());
 
-        if(dto.situacaoEstudoDeCaso() == SituacaoEstudoDeCaso.VALIDO) {
+        if (dto.situacaoEstudoDeCaso() == SituacaoEstudoDeCaso.VALIDO) {
             arquivarEstudosPorMatricula(estudoDeCaso.getIdentificacao().getAlunoId().getAlunoMatricula());
         }
 
@@ -242,4 +241,16 @@ public class EstudoDeCasoService {
         return EstudoDeCasoMapper.entityToResponse(estudoAtualizado);
     }
 
+    public Page<EstudoDeCasoResponseDto> getAllEstudosDeCaso(
+            Pageable pageable,
+            String nomeAluno,
+            String matriculaAluno,
+            SituacaoEstudoDeCaso situacao
+    ) {
+        var filtro = new EstudoDeCasoFiltroRequestDto(nomeAluno, matriculaAluno, situacao);
+        var spec = EstudoDeCasoSpecification.comFiltros(filtro);
+
+        return estudoDeCasoRepository.findAll(spec, pageable)
+                .map(EstudoDeCasoMapper::entityToResponse);
+    }
 }
