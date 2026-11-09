@@ -3,8 +3,11 @@ package com.ifpb.edu.br.clai.controller;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoCombinadoRequestDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoRequestDto;
+import com.ifpb.edu.br.clai.model.estudodecaso.enums.SituacaoEstudoDeCaso;
 import com.ifpb.edu.br.clai.service.EstudoDeCasoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -50,6 +53,15 @@ public class EstudoDeCasoController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @GetMapping
+    Page<EstudoDeCasoResponseDto> getAllEstudosDeCaso(
+            Pageable pageable,
+            @RequestParam(value = "nomeAluno", required = false) String nomeAluno,
+            @RequestParam(value = "matriculaAluno", required = false) String matriculaAluno,
+            @RequestParam(value = "situacao", required = false)SituacaoEstudoDeCaso situacao) {
+        return estudoDeCasoService.getAllEstudosDeCaso(pageable, nomeAluno, matriculaAluno, situacao);
     }
 
 }
