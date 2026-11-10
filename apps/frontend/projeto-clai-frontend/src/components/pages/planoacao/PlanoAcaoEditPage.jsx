@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PlanoAcaoForm from "./PlanoAcaoForm";
-import { useGetTodosAlunos } from "../../../hooks/useGetTodosAlunos";
+import { useGetTodosAlunos } from "../../../hooks/aluno/useGetTodosAlunos";
 import { useGetPlanoAcaoById } from "../../../hooks/useGetPlanoAcaoById";
 import { useUpdatePlanoAcao } from "../../../hooks/useUpdatePlanoAcao";
 import { useToast } from "../../../hooks/useToast";
