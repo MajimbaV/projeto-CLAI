@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import AlunoForm from "./AlunoForm";
-import { useUpdateAluno } from "../../../hooks/useUpdateAluno";
-import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
+import { useUpdateAluno } from "../../../hooks/aluno/useUpdateAluno";
+import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 
 function EditAlunoPage() {
   const { matricula } = useParams();

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import PlanoAcaoForm from "./PlanoAcaoForm";
-import { useGetTodosAlunos } from "../../../hooks/useGetTodosAlunos";
+import { useGetTodosAlunos } from "../../../hooks/aluno/useGetTodosAlunos";
 
 import "./PlanoAcaoCreatePage.css";
 
