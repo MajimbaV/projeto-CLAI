@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import PlanoAcaoForm from "./PlanoAcaoForm";
 import { useGetTodosAlunos } from "../../../hooks/aluno/useGetTodosAlunos";
+import { useCreatePlanoAcao } from "../../../hooks/useCreatePlanoAcao";
+import { useToast } from "../../../hooks/useToast";
 
 import "./PlanoAcaoCreatePage.css";
 
 function PlanoAcaoCreatePage() {
   const navigate = useNavigate();
-  const [mensagemSucesso, setMensagemSucesso] = useState("");
+  const location = useLocation();
+  const { success, sucess } = useToast();
+  const notifySuccess = success || sucess;
+
+  const matriculaInicial = location.state?.matricula || "";
 
   const {
     data: alunos = [],
@@ -16,57 +21,47 @@ function PlanoAcaoCreatePage() {
     error: errorAlunos,
   } = useGetTodosAlunos();
 
-  useEffect(() => {
-    if (!mensagemSucesso) return;
-
-    const timeoutId = window.setTimeout(() => {
-      setMensagemSucesso("");
-    }, 4000);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [mensagemSucesso]);
+  const {
+    mutate: createPlano,
+    isPending: isCreating,
+    error: errorCreate,
+  } = useCreatePlanoAcao();
 
   function handleSubmit(payload) {
-    console.log("Payload do Plano de Ação:", payload);
-
-    setMensagemSucesso(
-      "Formulário validado. O envio à API será implementado posteriormente.",
-    );
+    createPlano(payload, {
+      onSuccess: () => {
+        notifySuccess("Plano de Ação cadastrado com sucesso!");
+        if (matriculaInicial) {
+          navigate(`/planejamento/alunos/${encodeURIComponent(matriculaInicial)}`);
+        } else {
+          navigate("/planejamento/alunos");
+        }
+      },
+      onError: (error) => {
+        console.error("Erro ao cadastrar Plano de Ação:", error);
+      },
+    });
   }
 
   function handleCancel() {
-    navigate("/planejamento/alunos");
+    if (matriculaInicial) {
+      navigate(`/planejamento/alunos/${encodeURIComponent(matriculaInicial)}`);
+    } else {
+      navigate("/planejamento/alunos");
+    }
   }
 
   return (
-    <>
-      <PlanoAcaoForm
-        mode="create"
-        alunos={alunos}
-        isLoadingAlunos={isLoadingAlunos}
-        error={errorAlunos}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
-
-      {mensagemSucesso && (
-        <div
-          className="plano-acao-toast"
-          role="status"
-          aria-live="polite"
-        >
-          <span>{mensagemSucesso}</span>
-
-          <button
-            type="button"
-            onClick={() => setMensagemSucesso("")}
-            aria-label="Fechar notificação"
-          >
-            ×
-          </button>
-        </div>
-      )}
-    </>
+    <PlanoAcaoForm
+      mode="create"
+      defaultValues={{ matricula: matriculaInicial }}
+      alunos={alunos}
+      isLoadingAlunos={isLoadingAlunos}
+      isPending={isCreating}
+      error={errorCreate || errorAlunos}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
   );
 }
 

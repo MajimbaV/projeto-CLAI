@@ -3,11 +3,13 @@ import ChevronLeft from "../../../assets/ChevronLeft.png";
 import EditImg from "../../../assets/Edit.png";
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useGetEstudosCaso } from "../../../hooks/estudo-caso/useGetEstudosCaso";
+import PlanoAcaoView from "../planoacao/PlanoAcaoView";
 
 import "./AlunoPlanejamento.css";
 
 const ABAS_PLANEJAMENTO = [
   { id: "estudo-caso", titulo: "Estudo de caso" },
+  { id: "plano-acao", titulo: "Planos de Ação" },
   { id: "plano-atendimento", titulo: "Plano de atendimento" },
   { id: "adaptacoes", titulo: "Adaptações" },
   { id: "documentos", titulo: "Outros documentos" },
@@ -271,10 +273,16 @@ function AlunoPlanejamento({
   matriculaAluno,
   onBack,
   onNovoEstudoCaso,
+  onNovoPlanoAcao,
   onEditarEstudoCaso,
+  onEditarPlanoAcao,
+  planosAcao = [],
+  isLoadingPlanosAcao = false,
+  erroPlanosAcao = null,
 }) {
   const [abaAtiva, setAbaAtiva] = useState("estudo-caso");
   const [estudosExpandidos, setEstudosExpandidos] = useState([]);
+  const [planosExpandidos, setPlanosExpandidos] = useState([]);
 
   const {
     data: aluno,
@@ -282,11 +290,26 @@ function AlunoPlanejamento({
     error,
   } = useGetAlunoByMatricula(matriculaAluno);
 
-  const { data: estudosCasoData, isLoading: isLoadingEstudosCaso, error: erroEstudosCaso } = useGetEstudosCaso({ sort:'situacaoEstudoDeCaso,desc', filters: { matricula: matriculaAluno } });
+  const {
+    data: estudosCasoData,
+    isLoading: isLoadingEstudosCaso,
+    error: erroEstudosCaso,
+  } = useGetEstudosCaso({
+    sort: "situacaoEstudoDeCaso,desc",
+    filters: { matricula: matriculaAluno },
+  });
   const estudosCaso = estudosCasoData?.content || [];
 
   function alternarEstudo(id) {
     setEstudosExpandidos((atuais) =>
+      atuais.includes(id)
+        ? atuais.filter((item) => item !== id)
+        : [...atuais, id],
+    );
+  }
+
+  function alternarPlano(id) {
+    setPlanosExpandidos((atuais) =>
       atuais.includes(id)
         ? atuais.filter((item) => item !== id)
         : [...atuais, id],
@@ -339,6 +362,7 @@ function AlunoPlanejamento({
   const possuiStatus = typeof aluno.ativo === "boolean";
 
   const listaEstudos = Array.isArray(estudosCaso) ? estudosCaso : [];
+  const listaPlanos = Array.isArray(planosAcao) ? planosAcao : [];
 
   function renderizarEstudosCaso() {
     if (isLoadingEstudosCaso) {
@@ -475,6 +499,130 @@ function AlunoPlanejamento({
     );
   }
 
+  function renderizarPlanosAcao() {
+    if (isLoadingPlanosAcao) {
+      return (
+        <p className="planejamento-mensagem">Carregando Planos de Ação...</p>
+      );
+    }
+
+    if (erroPlanosAcao) {
+      return (
+        <p className="planejamento-erro">
+          Erro ao carregar os Planos de Ação:{" "}
+          {erroPlanosAcao.detail ||
+            erroPlanosAcao.message ||
+            String(erroPlanosAcao)}
+        </p>
+      );
+    }
+
+    if (listaPlanos.length === 0) {
+      return (
+        <div className="planejamento-vazio">
+          <div className="planejamento-vazio-icone">+</div>
+
+          <h3>Nenhum Plano de Ação cadastrado</h3>
+
+          <p>
+            Os Planos de Ação deste aluno aparecerão aqui depois de serem
+            cadastrados.
+          </p>
+
+          {onNovoPlanoAcao && (
+            <button
+              type="button"
+              className="planejamento-botao-principal"
+              onClick={onNovoPlanoAcao}
+            >
+              Criar Plano de Ação
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="planejamento-lista-planos">
+        {listaPlanos.map((plano, index) => {
+          const idPlano =
+            plano.id ?? plano._id ?? plano.planoAcaoId ?? `${matricula}-${index}`;
+          const expandido = planosExpandidos.includes(idPlano);
+          const painelId = `plano-acao-${idPlano}`;
+
+          return (
+            <article className="planejamento-plano-acao" key={idPlano}>
+              <div className="planejamento-plano-acao-cabecalho">
+                <button
+                  type="button"
+                  className="planejamento-plano-acao-toggle"
+                  onClick={() => alternarPlano(idPlano)}
+                  aria-expanded={expandido}
+                  aria-controls={painelId}
+                >
+                  <span
+                    className="planejamento-plano-acao-icone"
+                    aria-hidden="true"
+                  >
+                    PA
+                  </span>
+
+                  <span className="planejamento-plano-acao-resumo">
+                    <strong>Plano de Ação</strong>
+                    <span>
+                      {plano.dataPlano
+                        ? `Data do plano: ${formatarData(plano.dataPlano)}`
+                        : "Data do plano não informada"}
+                    </span>
+                  </span>
+
+                  <span
+                    className={`planejamento-plano-acao-seta ${
+                      expandido ? "expandido" : ""
+                    }`}
+                    aria-hidden="true"
+                  >
+                    ⌄
+                  </span>
+                </button>
+
+                {expandido && (
+                  <button
+                    type="button"
+                    className="planejamento-estudo-editar planejamento-plano-acao-editar"
+                    title="Editar Plano de Ação"
+                    aria-label="Editar Plano de Ação"
+                    disabled={!onEditarPlanoAcao}
+                    onClick={(evento) => {
+                      evento.stopPropagation();
+                      onEditarPlanoAcao?.(plano);
+                    }}
+                  >
+                    <img src={EditImg} alt="" />
+                    <span>Editar</span>
+                  </button>
+                )}
+              </div>
+
+              <div
+                className="planejamento-plano-acao-conteudo"
+                id={painelId}
+                hidden={!expandido}
+              >
+                {expandido && (
+                  <PlanoAcaoView
+                    plano={plano}
+                    onEdit={onEditarPlanoAcao}
+                  />
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <div className="aluno-planejamento-body">
       <div className="aluno-planejamento-header">
@@ -495,14 +643,25 @@ function AlunoPlanejamento({
           </p>
         </div>
 
-        <button
-          type="button"
-          className="planejamento-botao-principal"
-          onClick={onNovoEstudoCaso}
-        >
-          <span aria-hidden="true">+</span>
-          Novo estudo de caso
-        </button>
+        {abaAtiva === "plano-acao" && onNovoPlanoAcao ? (
+          <button
+            type="button"
+            className="planejamento-botao-principal"
+            onClick={onNovoPlanoAcao}
+          >
+            <span aria-hidden="true">+</span>
+            Novo Plano de Ação
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="planejamento-botao-principal"
+            onClick={onNovoEstudoCaso}
+          >
+            <span aria-hidden="true">+</span>
+            Novo estudo de caso
+          </button>
+        )}
       </div>
 
       <section className="planejamento-aluno-card">
@@ -561,7 +720,7 @@ function AlunoPlanejamento({
             >
               {aba.titulo}
             </button>
-          ))}
+          )}
         </div>
 
         <div className="planejamento-conteudo-aba">
@@ -583,6 +742,27 @@ function AlunoPlanejamento({
               </div>
 
               {renderizarEstudosCaso()}
+            </>
+          )}
+
+          {abaAtiva === "plano-acao" && (
+            <>
+              <div className="planejamento-lista-header">
+                <div>
+                  <h2>Planos de Ação</h2>
+                  <p>
+                    Consulte as informações clínicas, necessidades e propostas
+                    de intervenção do aluno.
+                  </p>
+                </div>
+
+                <span className="planejamento-contador">
+                  {listaPlanos.length}{" "}
+                  {listaPlanos.length === 1 ? "registro" : "registros"}
+                </span>
+              </div>
+
+              {renderizarPlanosAcao()}
             </>
           )}
 

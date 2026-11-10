@@ -637,6 +637,121 @@
   object-fit: contain;
 }
 
+.planejamento-lista-planos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.planejamento-plano-acao {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+
+.planejamento-plano-acao-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.planejamento-plano-acao-toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  gap: 14px;
+  padding: 17px 18px;
+  border: none;
+  background-color: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.planejamento-plano-acao-toggle:hover {
+  background-color: #f9fafb;
+}
+
+.planejamento-plano-acao-toggle:focus-visible,
+.planejamento-plano-acao-editar:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+.planejamento-plano-acao-icone {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background-color: #e5f2ed;
+  color: #00523d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.planejamento-plano-acao-resumo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 5px;
+}
+
+.planejamento-plano-acao-resumo strong {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.planejamento-plano-acao-resumo > span {
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.planejamento-plano-acao-seta {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #6b7280;
+  font-size: 22px;
+  transition: transform 0.2s;
+}
+
+.planejamento-plano-acao-seta.expandido {
+  transform: rotate(180deg);
+}
+
+.planejamento-plano-acao-editar {
+  margin-right: 14px;
+}
+
+.planejamento-plano-acao-conteudo {
+  min-width: 0;
+  padding: 18px 22px 24px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #ffffff;
+}
+
+.planejamento-plano-acao-conteudo[hidden] {
+  display: none;
+}
+
 @media (max-width: 560px) {
   .planejamento-estudo-editar {
     gap: 0;
@@ -646,5 +761,19 @@
 
   .planejamento-estudo-editar span {
     display: none;
+  }
+
+  .planejamento-plano-acao-toggle {
+    gap: 10px;
+    padding: 14px 12px;
+  }
+
+  .planejamento-plano-acao-conteudo {
+    padding: 14px 16px 20px;
+  }
+
+  .planejamento-plano-acao-editar {
+    margin-right: 8px;
+    padding: 8px;
   }
 }

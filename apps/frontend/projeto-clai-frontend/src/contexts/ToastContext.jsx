@@ -40,6 +40,7 @@ export function ToastProvider({ children }) {
       showToast,
       removeToast,
       success: (message, duration) => showToast(message, "success", duration),
+      sucess: (message, duration) => showToast(message, "success", duration),
       error: (message, duration) => showToast(message, "error", duration),
       info: (message, duration) => showToast(message, "info", duration),
     }),
