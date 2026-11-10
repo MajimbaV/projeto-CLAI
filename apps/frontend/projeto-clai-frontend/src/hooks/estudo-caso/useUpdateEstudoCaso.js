@@ -7,6 +7,7 @@ export function useUpdateEstudoCaso(id) {
     return useMutation({
         mutationFn: (payload) => putEstudoCaso(id, payload),
         onSuccess: (data) => {
+            queryCliente.invalidateQueries({queryKey: ['estudo-de-caso', id]});
             queryCliente.invalidateQueries({queryKey: ['estudos-de-caso']});
             console.log('Estudo de caso atualizado com sucesso!', data);
         },
