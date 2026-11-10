@@ -26,3 +26,8 @@ export async function getEstudosCaso({page = 0, size = 5, sort = 'id,asc', filte
     });
     return response.data;
 }
+
+export async function putEstudoCaso(id, data){
+    const response = await api.put(`/estudos-de-caso/${id}`, data);
+    return response.data;
+}
