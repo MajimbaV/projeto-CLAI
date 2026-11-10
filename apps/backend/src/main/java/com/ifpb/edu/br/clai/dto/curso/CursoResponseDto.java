@@ -9,6 +9,7 @@ import java.util.UUID;
 public record CursoResponseDto(
         UUID id,
         String nomeCurso,
+        String cursoSigla,
         NivelEnsino nivelEnsino,
         Modalidade cursoModalidade,
         Turno cursoTurno,
