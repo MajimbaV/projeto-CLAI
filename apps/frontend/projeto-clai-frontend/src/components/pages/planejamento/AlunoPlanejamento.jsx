@@ -297,7 +297,7 @@ function AlunoPlanejamento({
     error: erroEstudosCaso,
   } = useGetEstudosCaso({
     sort: "situacaoEstudoDeCaso,desc",
-    filters: { matricula: matriculaAluno },
+    filters: { matriculaAluno: matriculaAluno },
   });
   const estudosCaso = estudosCasoData?.content || [];
 
