@@ -14,6 +14,7 @@ import PlanejamentoAlunosPage from "./components/pages/planejamento/Planejamento
 import AlunoPlanejamentoPage from "./components/pages/planejamento/AlunoPlanejamentoPage";
 
 import PlanoAcaoCreatePage from "./components/pages/planoacao/PlanoAcaoCreatePage";
+import PlanoAcaoEditPage from "./components/pages/planoacao/PlanoAcaoEditPage";
 
 function App() {
   return (
@@ -53,10 +54,18 @@ function App() {
           element={<AddEstudoCasoPage modo="editar" />}
         />
 
-        {/* Rota de criação do Plano de Ação */}
+        {/* Rotas do Plano de Ação */}
         <Route
           path="plano-acao/novo"
           element={<PlanoAcaoCreatePage />}
+        />
+        <Route
+          path="plano-acao/editar/:id"
+          element={<PlanoAcaoEditPage />}
+        />
+        <Route
+          path="plano-acao/:id/editar"
+          element={<PlanoAcaoEditPage />}
         />
       </Route>
     </Routes>
