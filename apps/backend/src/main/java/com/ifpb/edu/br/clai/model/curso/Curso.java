@@ -23,6 +23,9 @@ public class Curso {
     @Column(name = "curso_nome", nullable = false)
     private String nomeCurso;
 
+    @Column(name="curso_sigla", nullable = false, unique = true)
+    private String cursoSigla;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "curso_nivel", nullable = false)
     private NivelEnsino nivelEnsino;
