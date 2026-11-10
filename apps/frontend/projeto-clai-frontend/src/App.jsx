@@ -9,6 +9,7 @@ import AlunoViewPage from "./components/pages/alunoview/AlunoViewPage";
 
 import NewEstudoCasoPage from "./components/pages/estudodecaso/NewEstudoCasoPage";
 import AddEstudoCasoPage from "./components/pages/estudodecaso/AddEstudoCasoPage";
+import EditEstudoCasoPage from "./components/pages/estudodecaso/EditEstudoCasoPage";
 
 import PlanejamentoAlunosPage from "./components/pages/planejamento/PlanejamentoAlunosPage";
 import AlunoPlanejamentoPage from "./components/pages/planejamento/AlunoPlanejamentoPage";
@@ -51,7 +52,7 @@ function App() {
         {/* Rota de edição de estudo de caso */}
         <Route
           path="alunos/:matricula/estudo-caso/:id/editar"
-          element={<AddEstudoCasoPage modo="editar" />}
+          element={<EditEstudoCasoPage modo="editar" />}
         />
 
         {/* Rotas do Plano de Ação */}
