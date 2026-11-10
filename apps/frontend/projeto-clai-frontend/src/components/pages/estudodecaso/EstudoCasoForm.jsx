@@ -6,6 +6,7 @@ import FormTextarea from "../../forms/FormTextarea";
 import FormCheckboxGroup from "../../forms/FormCheckboxGroup";
 import DocumentList from "../../forms/DocumentList";
 
+import { useNavigate } from "react-router-dom";
 import { useToast } from "../../../hooks/useToast";
 
 import "./EstudoCasoForm.css";
@@ -475,6 +476,7 @@ export default function EstudoCasoForm({
 
   const [cadastroCombinado, setCadastroCombinado] = useState(false);
 
+  const navigate = useNavigate();
   const { success } = useToast();
 
   const alunosDisponiveis = Array.isArray(alunos)
@@ -558,13 +560,13 @@ export default function EstudoCasoForm({
 
       const payloadCombinado = mapearParaEstudoCasoDTOCombinado(
         estudoCaso,
-        alunoData,
-        "INCOMPLETO",
+        alunoData
       );
 
-      onSubmit(payloadCombinado, {
+      onSubmit(payloadCombinado, "combinado", {
         onSuccess: () => {
           success("Aluno e estudo de caso cadastrados com sucesso!");
+          navigate("/planejamento/alunos");
         },
       });
 
@@ -584,6 +586,7 @@ export default function EstudoCasoForm({
             ? "Estudo de caso atualizado com sucesso!"
             : "Estudo de caso cadastrado com sucesso!",
         );
+        navigate(`/planejamento/alunos/${encodeURIComponent(obterMatricula(alunoSelecionado))}`);
       },
     });
   }
