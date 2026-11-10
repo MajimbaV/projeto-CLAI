@@ -332,6 +332,7 @@ export function mapearPayloadParaForm(payload) {
 
   const nes = payload.necessidadesEspecificas || {};
   const anam = payload.anamnese || {};
+  const md = payload.motivoDemanda || {};
   const perf = payload.perfilEstudante || {};
   const ctx = payload.contextoPsicossocial || {};
   const pot = payload.potencialidades || {};
@@ -344,13 +345,12 @@ export function mapearPayloadParaForm(payload) {
     profissionalResponsavel: payload.identificacao?.nomeProfissional || "",
     
     // 2. Motivo
-    motivoPrincipal: payload.motivoDemanda || "",
-    // Campos que não vêm no payload mas existem no formulário
-    origemEncaminhamento: "", 
-    origemOutro: "",
-    demandaEstudante: "",
-    demandaFamilia: "",
-    demandaEquipe: "",
+    motivoPrincipal: md.motivoPrincipal || "",
+    origemEncaminhamento: md.origemEncaminhamento || "",
+    origemOutro: md.outroOrigemEncaminhamento || "",
+    demandaEstudante: md.demandaDoEstudante || "",
+    demandaFamilia: md.demandaDoResponsavel || "",
+    demandaEquipe: md.demandaEquipeEscolar || "",
 
     // 3. Necessidades Específicas
     necessidadeEspecifica: nes.necessidadeInformada || "",
@@ -438,7 +438,7 @@ export function mapearPayloadParaForm(payload) {
       curriculoOutro: chk.curriculoOutro || "",
       
       apoiosInstitucionais: converterApoios(chk.apoiosInstitucionais, mapApoioInstitucional),
-      apoiosInstitucionaisOutro: chk.apoioInstitucionalOutro || "", // Nota: a chave no JSON vem no singular
+      apoiosInstitucionaisOutro: chk.apoioInstitucionalOutro || "",
     },
     
     encaminhamentosExternos: chk.apoiosExternosEncaminhamentos || "",
