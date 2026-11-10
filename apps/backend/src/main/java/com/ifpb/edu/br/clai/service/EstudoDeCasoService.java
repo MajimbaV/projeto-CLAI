@@ -253,4 +253,11 @@ public class EstudoDeCasoService {
         return estudoDeCasoRepository.findAll(spec, pageable)
                 .map(EstudoDeCasoMapper::entityToResponse);
     }
+
+    public EstudoDeCasoResponseDto getEstudoDeCasoById(UUID id) {
+        EstudoDeCaso estudoDeCaso = estudoDeCasoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudo de caso não encontrado com o ID: " + id));
+
+        return EstudoDeCasoMapper.entityToResponse(estudoDeCaso);
+    }
 }
