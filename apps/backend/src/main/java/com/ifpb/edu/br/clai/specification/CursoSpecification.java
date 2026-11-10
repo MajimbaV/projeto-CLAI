@@ -11,7 +11,15 @@ import java.text.Normalizer;
 
 public class CursoSpecification {
 
-    public static Specification<Curso> filtrarPorNome(String nomeCurso) {
+    public static Specification<Curso> comFiltros(String nomeCurso, Boolean statusAtivo, Modalidade modalidade, NivelEnsino nivelEnsino, Turno turno) {
+        return Specification.where(filtrarPorStatusAtivo(statusAtivo))
+                .and(filtrarPorNome(nomeCurso))
+                .and(filtrarPorModalidade(modalidade))
+                .and(filtrarPorNivelEnsino(nivelEnsino))
+                .and(filtrarPorTurno(turno));
+    }
+
+    private static Specification<Curso> filtrarPorNome(String nomeCurso) {
         return (root, query, cb) -> {
             if (nomeCurso == null || nomeCurso.isBlank()) return cb.conjunction();
 
@@ -28,29 +36,28 @@ public class CursoSpecification {
         };
     }
 
-    public static Specification<Curso> filtrarPorStatusAtivo(Boolean statusAtivo){
+    private static Specification<Curso> filtrarPorStatusAtivo(Boolean statusAtivo){
         return (root, query, cb) -> {
             if (statusAtivo == null) return cb.conjunction();
             return cb.equal(root.get("statusAtivo"), statusAtivo);
         };
     }
 
-    public static Specification<Curso> filtrarPorModalidade(Modalidade modalidade) {
+    private static Specification<Curso> filtrarPorModalidade(Modalidade modalidade) {
         return (root, query, cb) -> {
             if (modalidade == null) return cb.conjunction();
             return cb.equal(root.get("cursoModalidade"), modalidade);
         };
     }
 
-
-    public static Specification<Curso> filtrarPorNivelEnsino(NivelEnsino nivelEnsino) {
+    private static Specification<Curso> filtrarPorNivelEnsino(NivelEnsino nivelEnsino) {
         return (root, query, cb) -> {
             if (nivelEnsino == null) return cb.conjunction();
             return cb.equal(root.get("nivelEnsino"), nivelEnsino);
         };
     }
 
-    public static Specification<Curso> filtrarPorTurno(Turno turno) {
+    private static Specification<Curso> filtrarPorTurno(Turno turno) {
         return (root, query, cb) -> {
             if (turno == null) return cb.conjunction();
             return cb.equal(root.get("cursoTurno"), turno);
