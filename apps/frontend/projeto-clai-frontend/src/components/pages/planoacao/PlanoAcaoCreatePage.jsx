@@ -1,18 +1,17 @@
-import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import PlanoAcaoForm from "./PlanoAcaoForm";
 import { useGetTodosAlunos } from "../../../hooks/useGetTodosAlunos";
 import { useCreatePlanoAcao } from "../../../hooks/useCreatePlanoAcao";
-
-import "./PlanoAcaoCreatePage.css";
+import { useToast } from "../../../hooks/useToast";
 
 function PlanoAcaoCreatePage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { success, sucess } = useToast();
+  const notifySuccess = success || sucess;
 
   const matriculaInicial = location.state?.matricula || "";
-  const [mensagemSucesso, setMensagemSucesso] = useState("");
 
   const {
     data: alunos = [],
@@ -26,34 +25,20 @@ function PlanoAcaoCreatePage() {
     error: errorCreate,
   } = useCreatePlanoAcao();
 
-  useEffect(() => {
-    if (!mensagemSucesso) return;
-
-    const timeoutId = window.setTimeout(() => {
-      setMensagemSucesso("");
-      if (matriculaInicial) {
-        navigate(`/planejamento/alunos/${encodeURIComponent(matriculaInicial)}`);
-      } else {
-        navigate("/planejamento/alunos");
-      }
-    }, 1500);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [mensagemSucesso, matriculaInicial, navigate]);
-
   function handleSubmit(payload) {
-    if (createPlano) {
-      createPlano(payload, {
-        onSuccess: () => {
-          setMensagemSucesso("Plano de Ação cadastrado com sucesso!");
-        },
-        onError: () => {
-          setMensagemSucesso("Plano de Ação salvo!");
-        },
-      });
-    } else {
-      setMensagemSucesso("Plano de Ação salvo!");
-    }
+    createPlano(payload, {
+      onSuccess: () => {
+        notifySuccess("Plano de Ação cadastrado com sucesso!");
+        if (matriculaInicial) {
+          navigate(`/planejamento/alunos/${encodeURIComponent(matriculaInicial)}`);
+        } else {
+          navigate("/planejamento/alunos");
+        }
+      },
+      onError: (error) => {
+        console.error("Erro ao cadastrar Plano de Ação:", error);
+      },
+    });
   }
 
   function handleCancel() {
@@ -65,36 +50,16 @@ function PlanoAcaoCreatePage() {
   }
 
   return (
-    <>
-      <PlanoAcaoForm
-        mode="create"
-        defaultValues={{ matricula: matriculaInicial }}
-        alunos={alunos}
-        isLoadingAlunos={isLoadingAlunos}
-        isPending={isCreating}
-        error={errorCreate || errorAlunos}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
-
-      {mensagemSucesso && (
-        <div
-          className="plano-acao-toast"
-          role="status"
-          aria-live="polite"
-        >
-          <span>{mensagemSucesso}</span>
-
-          <button
-            type="button"
-            onClick={() => setMensagemSucesso("")}
-            aria-label="Fechar notificação"
-          >
-            ×
-          </button>
-        </div>
-      )}
-    </>
+    <PlanoAcaoForm
+      mode="create"
+      defaultValues={{ matricula: matriculaInicial }}
+      alunos={alunos}
+      isLoadingAlunos={isLoadingAlunos}
+      isPending={isCreating}
+      error={errorCreate || errorAlunos}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
   );
 }
 
