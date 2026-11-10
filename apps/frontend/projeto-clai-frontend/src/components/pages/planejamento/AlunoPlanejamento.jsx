@@ -4,6 +4,7 @@ import EditImg from "../../../assets/Edit.png";
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useGetEstudosCaso } from "../../../hooks/estudo-caso/useGetEstudosCaso";
 import PlanoAcaoView from "../planoacao/PlanoAcaoView";
+import EstudoCasoView from "../estudodecaso/EstudoCasoView";
 
 import "./AlunoPlanejamento.css";
 
@@ -15,107 +16,107 @@ const ABAS_PLANEJAMENTO = [
   { id: "documentos", titulo: "Outros documentos" },
 ];
 
-const SECOES_ESTUDO_CONFIG = [
-  {
-    titulo: "Identificação",
-    chaves: ["identificacao", "dadosIdentificacao", "identificacaoAluno"],
-  },
-  {
-    titulo: "Encaminhamento",
-    chaves: [
-      "encaminhamento",
-      "motivoEncaminhamento",
-      "descricaoEncaminhamento",
-    ],
-  },
-  {
-    titulo: "Documentação e necessidade específica",
-    chaves: [
-      "documentacaoNecessidade",
-      "documentacao",
-      "necessidadeEspecifica",
-      "necessidadeEspecial",
-      "laudo",
-      "diagnostico",
-    ],
-  },
-  {
-    titulo: "Anamnese",
-    chaves: ["anamnese"],
-  },
-  {
-    titulo: "Perfil de aprendizagem",
-    chaves: ["perfilAprendizagem", "aprendizagem"],
-  },
-  {
-    titulo: "Contexto psicossocial",
-    chaves: ["contextoPsicossocial", "contexto"],
-  },
-  {
-    titulo: "Potencialidades",
-    chaves: ["potencialidades", "pontosFortes"],
-  },
-  {
-    titulo: "Barreiras educacionais",
-    chaves: ["barreirasEducacionais", "barreiras"],
-  },
-  {
-    titulo: "Síntese psicopedagógica",
-    chaves: ["sintesePsicopedagogica", "sintese"],
-  },
-  {
-    titulo: "Apoios e adaptações",
-    chaves: ["apoiosAdaptacoes", "apoios", "adaptacoes"],
-  },
-];
+// const SECOES_ESTUDO_CONFIG = [
+//   {
+//     titulo: "Identificação",
+//     chaves: ["identificacao", "dadosIdentificacao", "identificacaoAluno"],
+//   },
+//   {
+//     titulo: "Encaminhamento",
+//     chaves: [
+//       "encaminhamento",
+//       "motivoEncaminhamento",
+//       "descricaoEncaminhamento",
+//     ],
+//   },
+//   {
+//     titulo: "Documentação e necessidade específica",
+//     chaves: [
+//       "documentacaoNecessidade",
+//       "documentacao",
+//       "necessidadeEspecifica",
+//       "necessidadeEspecial",
+//       "laudo",
+//       "diagnostico",
+//     ],
+//   },
+//   {
+//     titulo: "Anamnese",
+//     chaves: ["anamnese"],
+//   },
+//   {
+//     titulo: "Perfil de aprendizagem",
+//     chaves: ["perfilAprendizagem", "aprendizagem"],
+//   },
+//   {
+//     titulo: "Contexto psicossocial",
+//     chaves: ["contextoPsicossocial", "contexto"],
+//   },
+//   {
+//     titulo: "Potencialidades",
+//     chaves: ["potencialidades", "pontosFortes"],
+//   },
+//   {
+//     titulo: "Barreiras educacionais",
+//     chaves: ["barreirasEducacionais", "barreiras"],
+//   },
+//   {
+//     titulo: "Síntese psicopedagógica",
+//     chaves: ["sintesePsicopedagogica", "sintese"],
+//   },
+//   {
+//     titulo: "Apoios e adaptações",
+//     chaves: ["apoiosAdaptacoes", "apoios", "adaptacoes"],
+//   },
+// ];
 
-const CAMPOS_METADADOS = new Set([
-  "id",
-  "_id",
-  "estudoCasoId",
-  "idEstudoCaso",
-  "titulo",
-  "dataCriacao",
-  "dataAtualizacao",
-  "createdAt",
-  "updatedAt",
-  "status",
-  "situacao",
-  "matriculaAluno",
-  "alunoMatricula",
-  "alunoId",
-  "alunoNome",
-  "nomeAluno",
-  "secoes",
-  "sections",
-]);
+// const CAMPOS_METADADOS = new Set([
+//   "id",
+//   "_id",
+//   "estudoCasoId",
+//   "idEstudoCaso",
+//   "titulo",
+//   "dataCriacao",
+//   "dataAtualizacao",
+//   "createdAt",
+//   "updatedAt",
+//   "status",
+//   "situacao",
+//   "matriculaAluno",
+//   "alunoMatricula",
+//   "alunoId",
+//   "alunoNome",
+//   "nomeAluno",
+//   "secoes",
+//   "sections",
+// ]);
 
-function temConteudo(valor) {
-  if (valor === undefined || valor === null) return false;
+// function temConteudo(valor) {
+//   if (valor === undefined || valor === null) return false;
 
-  if (typeof valor === "string") {
-    return valor.trim() !== "";
-  }
+//   if (typeof valor === "string") {
+//     return valor.trim() !== "";
+//   }
 
-  if (Array.isArray(valor)) {
-    return valor.some(temConteudo);
-  }
+//   if (Array.isArray(valor)) {
+//     return valor.some(temConteudo);
+//   }
 
-  if (typeof valor === "object") {
-    return Object.values(valor).some(temConteudo);
-  }
+//   if (typeof valor === "object") {
+//     return Object.values(valor).some(temConteudo);
+//   }
 
-  return true;
-}
+//   return true;
+// }
 
-function formatarRotulo(chave) {
-  const rotulo = String(chave)
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/[_-]/g, " ")
-    .trim();
+// function formatarRotulo(chave) {
+//   const rotulo = String(chave)
+//     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+//     .replace(/[_-]/g, " ")
+//     .trim();
 
-  return rotulo.charAt(0).toUpperCase() + rotulo.slice(1);
-}
+//   return rotulo.charAt(0).toUpperCase() + rotulo.slice(1);
+// }
 
 function exibir(valor) {
   if (valor === undefined || valor === null || valor === "") {
@@ -140,134 +141,134 @@ function formatarData(data) {
   return `${dia}/${mes}/${ano}`;
 }
 
-function obterSecoesEstudo(estudo) {
-  if (!estudo || typeof estudo !== "object") {
-    return [];
-  }
+// function obterSecoesEstudo(estudo) {
+//   if (!estudo || typeof estudo !== "object") {
+//     return [];
+//   }
 
-  const secoesOriginais = estudo.secoes || estudo.sections;
+//   const secoesOriginais = estudo.secoes || estudo.sections;
 
-  if (Array.isArray(secoesOriginais) && secoesOriginais.length > 0) {
-    return secoesOriginais
-      .filter((secao) => secao && typeof secao === "object")
-      .map((secao) => {
-        const {
-          titulo,
-          nome,
-          campos,
-          conteudo,
-          descricao,
-          respostas,
-          ...outrosCampos
-        } = secao;
+//   if (Array.isArray(secoesOriginais) && secoesOriginais.length > 0) {
+//     return secoesOriginais
+//       .filter((secao) => secao && typeof secao === "object")
+//       .map((secao) => {
+//         const {
+//           titulo,
+//           nome,
+//           campos,
+//           conteudo,
+//           descricao,
+//           respostas,
+//           ...outrosCampos
+//         } = secao;
 
-        return {
-          titulo: titulo || nome || "Informações",
-          valor: campos ?? conteudo ?? descricao ?? respostas ?? outrosCampos,
-        };
-      })
-      .filter((secao) => temConteudo(secao.valor));
-  }
+//         return {
+//           titulo: titulo || nome || "Informações",
+//           valor: campos ?? conteudo ?? descricao ?? respostas ?? outrosCampos,
+//         };
+//       })
+//       .filter((secao) => temConteudo(secao.valor));
+//   }
 
-  const chavesReconhecidas = new Set(
-    SECOES_ESTUDO_CONFIG.flatMap((secao) => secao.chaves),
-  );
+  // const chavesReconhecidas = new Set(
+  //   SECOES_ESTUDO_CONFIG.flatMap((secao) => secao.chaves),
+  // );
 
-  const secoesConhecidas = SECOES_ESTUDO_CONFIG.map((secao) => {
-    const chaveEncontrada = secao.chaves.find((chave) =>
-      temConteudo(estudo[chave]),
-    );
+//   const secoesConhecidas = SECOES_ESTUDO_CONFIG.map((secao) => {
+//     const chaveEncontrada = secao.chaves.find((chave) =>
+//       temConteudo(estudo[chave]),
+//     );
 
-    if (!chaveEncontrada) return null;
+//     if (!chaveEncontrada) return null;
 
-    return {
-      titulo: secao.titulo,
-      valor: estudo[chaveEncontrada],
-    };
-  }).filter(Boolean);
+//     return {
+//       titulo: secao.titulo,
+//       valor: estudo[chaveEncontrada],
+//     };
+//   }).filter(Boolean);
 
-  const outrosCampos = Object.fromEntries(
-    Object.entries(estudo).filter(
-      ([chave, valor]) =>
-        !CAMPOS_METADADOS.has(chave) &&
-        !chavesReconhecidas.has(chave) &&
-        temConteudo(valor),
-    ),
-  );
+//   const outrosCampos = Object.fromEntries(
+//     Object.entries(estudo).filter(
+//       ([chave, valor]) =>
+//         !CAMPOS_METADADOS.has(chave) &&
+//         !chavesReconhecidas.has(chave) &&
+//         temConteudo(valor),
+//     ),
+//   );
 
-  if (Object.keys(outrosCampos).length > 0) {
-    secoesConhecidas.push({
-      titulo: "Outras informações",
-      valor: outrosCampos,
-    });
-  }
+//   if (Object.keys(outrosCampos).length > 0) {
+//     secoesConhecidas.push({
+//       titulo: "Outras informações",
+//       valor: outrosCampos,
+//     });
+//   }
 
-  return secoesConhecidas;
-}
+//   return secoesConhecidas;
+// }
 
-function ValorEstudo({ valor }) {
-  if (!temConteudo(valor)) {
-    return <p className="planejamento-sem-conteudo">Não informado</p>;
-  }
+// function ValorEstudo({ valor }) {
+//   if (!temConteudo(valor)) {
+//     return <p className="planejamento-sem-conteudo">Não informado</p>;
+//   }
 
-  if (typeof valor === "boolean") {
-    return <p>{valor ? "Sim" : "Não"}</p>;
-  }
+//   if (typeof valor === "boolean") {
+//     return <p>{valor ? "Sim" : "Não"}</p>;
+//   }
 
-  if (Array.isArray(valor)) {
-    return (
-      <ul className="planejamento-valor-lista">
-        {valor.filter(temConteudo).map((item, index) => (
-          <li key={index}>
-            {typeof item === "object" && item !== null ? (
-              <ValorEstudo valor={item} />
-            ) : (
-              String(item)
-            )}
-          </li>
-        ))}
-      </ul>
-    );
-  }
+//   if (Array.isArray(valor)) {
+//     return (
+//       <ul className="planejamento-valor-lista">
+//         {valor.filter(temConteudo).map((item, index) => (
+//           <li key={index}>
+//             {typeof item === "object" && item !== null ? (
+//               <ValorEstudo valor={item} />
+//             ) : (
+//               String(item)
+//             )}
+//           </li>
+//         ))}
+//       </ul>
+//     );
+//   }
 
-  if (typeof valor === "object") {
-    const rotulo = valor.label || valor.rotulo || valor.campo || valor.nome;
+//   if (typeof valor === "object") {
+//     const rotulo = valor.label || valor.rotulo || valor.campo || valor.nome;
 
-    const valorInterno =
-      valor.valor ?? valor.value ?? valor.resposta ?? valor.conteudo;
+//     const valorInterno =
+//       valor.valor ?? valor.value ?? valor.resposta ?? valor.conteudo;
 
-    if (rotulo && valorInterno !== undefined) {
-      return (
-        <div className="planejamento-valor-identificado">
-          <span>{rotulo}</span>
-          <ValorEstudo valor={valorInterno} />
-        </div>
-      );
-    }
+//     if (rotulo && valorInterno !== undefined) {
+//       return (
+//         <div className="planejamento-valor-identificado">
+//           <span>{rotulo}</span>
+//           <ValorEstudo valor={valorInterno} />
+//         </div>
+//       );
+//     }
 
-    const campos = Object.entries(valor).filter(
-      ([chave, conteudo]) =>
-        chave !== "id" && chave !== "_id" && temConteudo(conteudo),
-    );
+//     const campos = Object.entries(valor).filter(
+//       ([chave, conteudo]) =>
+//         chave !== "id" && chave !== "_id" && temConteudo(conteudo),
+//     );
 
-    if (campos.length === 0) {
-      return <p className="planejamento-sem-conteudo">Não informado</p>;
-    }
+//     if (campos.length === 0) {
+//       return <p className="planejamento-sem-conteudo">Não informado</p>;
+//     }
 
-    return (
-      <div className="planejamento-campos-aninhados">
-        {campos.map(([chave, conteudo]) => (
-          <div className="planejamento-campo-aninhado" key={chave}>
-            <span>{formatarRotulo(chave)}</span>
-            <ValorEstudo valor={conteudo} />
-          </div>
-        ))}
-      </div>
-    );
-  }
+//     return (
+//       <div className="planejamento-campos-aninhados">
+//         {campos.map(([chave, conteudo]) => (
+//           <div className="planejamento-campo-aninhado" key={chave}>
+//             <span>{formatarRotulo(chave)}</span>
+//             <ValorEstudo valor={conteudo} />
+//           </div>
+//         ))}
+//       </div>
+//     );
+//   }
 
-  return <p className="planejamento-valor-texto">{String(valor)}</p>;
-}
+//   return <p className="planejamento-valor-texto">{String(valor)}</p>;
+// }
 
 function AlunoPlanejamento({
   matriculaAluno,
@@ -364,7 +365,7 @@ function AlunoPlanejamento({
   const listaEstudos = Array.isArray(estudosCaso) ? estudosCaso : [];
   const listaPlanos = Array.isArray(planosAcao) ? planosAcao : [];
 
-  function renderizarEstudosCaso() {
+function renderizarEstudosCaso() {
     if (isLoadingEstudosCaso) {
       return (
         <p className="planejamento-mensagem">Carregando estudos de caso...</p>
@@ -412,45 +413,46 @@ function AlunoPlanejamento({
             estudo.id ??
             estudo._id ??
             estudo.estudoCasoId ??
-            estudo.idEstudoCaso;
-
-          const id = idEstudo ?? `${matricula}-${index}`;
+            estudo.idEstudoCaso ??
+            `${matricula}-${index}`;
 
           const titulo = estudo.titulo || `Estudo de Caso #${index + 1}`;
-
-          const expandido = estudosExpandidos.includes(id);
-          const secoes = obterSecoesEstudo(estudo);
-
-          const dataCriacao = estudo.checklistApoios.data || estudo.createdAt;
-          const status = estudo.status || estudo.situacao;
+          const expandido = estudosExpandidos.includes(idEstudo);
+          const painelId = `estudo-caso-${idEstudo}`;
+          
+          const dataCriacao = estudo.checklistApoios?.data || estudo.createdAt;
+          const status = estudo.status || estudo.situacaoEstudoDeCaso;
 
           return (
-            <article className="planejamento-estudo" key={id}>
-              <div className="planejamento-estudo-cabecalho">
+            <article className="planejamento-estudo planejamento-plano-acao" key={idEstudo}>
+              <div className="planejamento-estudo-cabecalho planejamento-plano-acao-cabecalho">
                 <button
                   type="button"
-                  className="planejamento-estudo-toggle"
-                  onClick={() => alternarEstudo(id)}
+                  className="planejamento-estudo-toggle planejamento-plano-acao-toggle"
+                  onClick={() => alternarEstudo(idEstudo)}
                   aria-expanded={expandido}
+                  aria-controls={painelId}
                 >
-                  <span className="planejamento-estudo-icone">
-                    <span>EC</span>
+                  <span 
+                    className="planejamento-estudo-icone planejamento-plano-acao-icone"
+                    aria-hidden="true"
+                  >
+                    EC
                   </span>
 
-                  <span className="planejamento-estudo-resumo">
+                  <span className="planejamento-estudo-resumo planejamento-plano-acao-resumo">
                     <strong>{titulo}</strong>
 
                     <span className="planejamento-estudo-metadados">
                       {dataCriacao
-                        ? `Criado em ${formatarData(dataCriacao)}`
-                        : "Data de criação não informada"}
-
+                        ? `Data do estudo: ${formatarData(dataCriacao)}`
+                        : "Data do estudo não informada"}
                       {status ? ` · ${status}` : ""}
                     </span>
                   </span>
 
                   <span
-                    className={`planejamento-estudo-seta ${
+                    className={`planejamento-estudo-seta planejamento-plano-acao-seta ${
                       expandido ? "expandido" : ""
                     }`}
                     aria-hidden="true"
@@ -459,39 +461,36 @@ function AlunoPlanejamento({
                   </span>
                 </button>
 
-                <button
-                  type="button"
-                  className="planejamento-estudo-editar"
-                  title="Editar estudo de caso"
-                  aria-label={`Editar ${titulo}`}
-                  disabled={idEstudo == null || !onEditarEstudoCaso}
-                  onClick={() => onEditarEstudoCaso?.(estudo)}
-                >
-                  <img src={EditImg} alt="" />
-                  <span>Editar</span>
-                </button>
+                {expandido && (
+                  <button
+                    type="button"
+                    className="planejamento-estudo-editar planejamento-plano-acao-editar"
+                    title="Editar estudo de caso"
+                    aria-label={`Editar ${titulo}`}
+                    disabled={!onEditarEstudoCaso}
+                    onClick={(evento) => {
+                      evento.stopPropagation();
+                      onEditarEstudoCaso?.(estudo);
+                    }}
+                  >
+                    <img src={EditImg} alt="" />
+                    <span>Editar</span>
+                  </button>
+                )}
               </div>
 
-              {expandido && (
-                <div className="planejamento-estudo-conteudo">
-                  {secoes.length > 0 ? (
-                    secoes.map((secao, secaoIndex) => (
-                      <section
-                        className="planejamento-secao-estudo"
-                        key={`${id}-secao-${secaoIndex}`}
-                      >
-                        <h4>{secao.titulo}</h4>
-                        <ValorEstudo valor={secao.valor} />
-                      </section>
-                    ))
-                  ) : (
-                    <p className="planejamento-sem-conteudo">
-                      Este estudo de caso ainda não possui informações
-                      disponíveis para exibição.
-                    </p>
-                  )}
-                </div>
-              )}
+              <div 
+                className="planejamento-estudo-conteudo planejamento-plano-acao-conteudo"
+                id={painelId}
+                hidden={!expandido}
+              >
+                {expandido && (
+                  <EstudoCasoView 
+                    dados={estudo} 
+                    onEdit={onEditarEstudoCaso} 
+                  />
+                )}
+              </div>
             </article>
           );
         })}
