@@ -8,6 +8,7 @@ public class CursoMapper {
 
     public static void requestToEntity(CursoRequestDto request, Curso curso) {
         curso.setNomeCurso(request.nomeCurso());
+        curso.setCursoSigla(request.cursoSigla());
         curso.setNivelEnsino(request.nivelEnsino());
         curso.setCursoModalidade(request.cursoModalidade());
         curso.setCursoTurno(request.cursoTurno());
@@ -21,6 +22,7 @@ public class CursoMapper {
         return new CursoResponseDto(
                 curso.getId(),
                 curso.getNomeCurso(),
+                curso.getCursoSigla(),
                 curso.getNivelEnsino(),
                 curso.getCursoModalidade(),
                 curso.getCursoTurno(),
