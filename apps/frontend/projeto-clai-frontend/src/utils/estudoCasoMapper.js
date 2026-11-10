@@ -277,3 +277,173 @@ export function mapearParaEstudoCasoDTOCombinado(dadosEstudoCaso, dadosAluno) {
 
   };
 }
+
+export function mapearParaEstudoCasoAtualizacaoDTO(dadosEstudoCaso) {
+  const dto = mapearParaEstudoCasoDTO(dadosEstudoCaso);
+  delete dto.identificacao
+  // Adiciona o campo situacaoEstudoDeCaso para atualização
+  dto.situacaoEstudoDeCaso = "VALIDO";
+
+  return dto;
+}
+
+
+/**
+ * Mapeia o payload da API para o formato de estado esperado pelo formulário EstudoCasoForm.
+ * @param {Object} payload O objeto JSON recebido da API.
+ * @returns {Object} O estado formatado para o form.
+ */
+export function mapearPayloadParaForm(payload) {
+  if (!payload) return {};
+
+  // Função auxiliar para lidar com arrays que viram strings
+  const joinArray = (arr) => (Array.isArray(arr) ? arr.join(", ") : arr || "");
+
+  // Mapeamento de prioridades para o select
+  const mapPrioridade = (prioridade) => {
+    const mapa = { ALTA: "Alta", MEDIA: "Média", BAIXA: "Baixa" };
+    return mapa[prioridade] || "";
+  };
+
+  // Mapeamento das dimensões de barreiras da API para os rótulos do front-end
+  const mapDimensaoBarreira = (dimensaoEnum) => {
+    const mapa = {
+      ACESSO_FISICO_AMBIENTAL: "Acesso físico/ambiental",
+      COMUNICACAO: "Comunicação",
+      CURRICULO_METODOLOGIA: "Currículo/metodologia",
+      AVALIACAO: "Avaliação",
+      ORGANIZACAO_TEMPORALIDADE: "Organização/temporalidade",
+      INTERACAO_PARTICIPACAO: "Interação/participação",
+      TECNOLOGIA_ASSISTIVA_RECURSOS: "Tecnologia assistiva/recursos",
+      OUTRA: "Outra",
+    };
+    return mapa[dimensaoEnum] || dimensaoEnum;
+  };
+
+  // Dicionários para mapear os Enums do Checklist para os rótulos do front-end
+  const mapApoioAcessibilidade = { ACESSO_FISICO: "Acesso físico", LUGAR_SALA: "Lugar em sala", ILUMINACAO: "Iluminação", REDUCAO_ESTIMULOS: "Redução de estímulos" };
+  const mapApoioComunicacao = { MATERIAL_AMPLIADO: "Material ampliado", LIBRAS_INTERPRETE: "Libras/intérprete", LINGUAGEM_OBJETIVA: "Linguagem objetiva", RECURSOS_VISUAIS: "Recursos visuais" };
+  const mapApoioMetodologia = { FRAGMENTACAO_TAREFAS: "Fragmentação de tarefas", MEDIACAO: "Mediação", ANTECIPACAO_ROTINA: "Antecipação de rotina", RECURSOS_CONCRETOS_DIGITAIS: "Recursos concretos/digitais" };
+  const mapApoioAvaliacao = { TEMPO_ADICIONAL: "Tempo adicional", FORMATO_ACESSIVEL: "Formato acessível", AMBIENTE_ADEQUADO: "Ambiente adequado", FORMA_ALTERNATIVA_DE_RESPOSTA: "Forma alternativa de resposta" };
+  const mapApoioCurriculo = { ADAPTACAO_PEQUENO_PORTE: "Adaptação de pequeno porte", ADAPTACAO_GRANDE_PORTE: "Adaptação de grande porte", TEMPORALIDADE: "Temporalidade", PRIORIZACAO_OBJETIVOS: "Priorização de objetivos" };
+  const mapApoioInstitucional = { ASSISTENCIA_ESTUDANTIL: "Assistência estudantil", MONITORIA: "Monitoria", ASSISTENTE_INCLUSIVO: "Assistente inclusivo", CUIDADOR: "Cuidador", PSICOPEDAGOGIA: "Psicopedagogia" };
+
+  const converterApoios = (arr, mapa) => (Array.isArray(arr) ? arr.map((item) => mapa[item] || item) : []);
+
+  const nes = payload.necessidadesEspecificas || {};
+  const anam = payload.anamnese || {};
+  const perf = payload.perfilEstudante || {};
+  const ctx = payload.contextoPsicossocial || {};
+  const pot = payload.potencialidades || {};
+  const chk = payload.checklistApoios || {};
+  const sint = payload.sintesePsicopedagogica || {};
+
+  return {
+    // 1. Identificação
+    dataAtendimentos: joinArray(payload.identificacao?.datasAnamnese),
+    profissionalResponsavel: payload.identificacao?.nomeProfissional || "",
+    
+    // 2. Motivo
+    motivoPrincipal: payload.motivoDemanda || "",
+    // Campos que não vêm no payload mas existem no formulário
+    origemEncaminhamento: "", 
+    origemOutro: "",
+    demandaEstudante: "",
+    demandaFamilia: "",
+    demandaEquipe: "",
+
+    // 3. Necessidades Específicas
+    necessidadeEspecifica: nes.necessidadeInformada || "",
+    diagnosticos: joinArray(nes.diagnosticos),
+    
+    documentosApresentados: Array.isArray(nes.documentos) && nes.documentos.length > 0 ? "sim" : "nao",
+    documentos: nes.documentos || [],
+    documentosQuais: "", // O form preenche a lista, mas pode-se extrair as descrições se necessário
+    documentosDataProfissional: "", // Caso queira agregar
+
+    condicaoAssociada: Array.isArray(nes.condicoesAssociadas) && nes.condicoesAssociadas.length > 0 ? "sim" : "nao",
+    condicaoAssociadaQual: joinArray(nes.condicoesAssociadas),
+
+    medicacaoContinua: Array.isArray(nes.medicacoesContinuas) && nes.medicacoesContinuas.length > 0 ? "sim" : "nao",
+    medicacaoQual: joinArray(nes.medicacoesContinuas),
+
+    encaminhamentosAnteriores: nes.encaminhamentosAnteriores || "",
+    servicosApoio: nes.servicosApoioAtuaisAnteriores || "",
+
+    // 4. Anamnese
+    historicoEscolar: anam.historicoEscolar || "",
+    experienciasPositivas: anam.experienciasEscolaresPositivas || "",
+    experienciasNegativas: anam.experienciasEscolaresNegativas || "",
+    adaptacoesRecursos: anam.adaptacoesRecursosEResultados || "",
+    conhecimentosConsolidados: anam.objetivosConhecimentosConsolidados || "",
+    areasFacilidade: joinArray(anam.areasDisciplinasFacilidade),
+    areasDificuldade: joinArray(anam.areasDisciplinasDificuldade),
+
+    // 5. Perfil
+    comunicacaoCompreensao: perf.comunicacaoCompreensaoOrientacoes || "",
+    leituraEscritaLinguagem: perf.leituraEscritaLinguagem || "",
+    raciocinioLogico: perf.raciocinioLogicoMatematico || "",
+    atencaoMemoria: perf.atencaoMemoriaFuncoesExecutivas || "",
+    organizacaoTarefas: perf.organizacaoPlanejamentoRealizacaoTarefas || "",
+    interacaoSocial: perf.interacaoSocialParticipacaoSala || "",
+    aspectosSensoriais: perf.aspectosSensoriaisRelevantes || "",
+    mobilidadeTecnologia: perf.mobilidadeAcessoTecnologiasRecursos || "",
+    autonomiaFamiliar: perf.autonomiaContextoFamiliar || "",
+    autonomiaEscolar: perf.autonomiaContextoEscolar || "",
+    estrategiasAprendizagem: perf.estrategiasQueFavorecemAprendizagem || "",
+    situacoesDificultam: perf.situacoesQueDificultamAprendizagem || "",
+
+    // 6. Contexto
+    relacaoCursoExpectativas: ctx.relacaoComCursoEExpectativas || "",
+    redeApoio: ctx.redeApoioFamiliarSocial || "",
+    fatoresPsicossociais: ctx.conflitosOuFatoresPsicossociais || "",
+    frequenciaRotina: ctx.observacoesFrequenciaRotinaPermanencia || "",
+
+    // 7. Potencialidades
+    potencialidadesAcademicas: pot.potencialidadesAcademicas || "",
+    interessesHabilidades: pot.interessesHabilidades || "",
+    preferenciasAprendizagem: pot.formasPreferenciaisAprendizagemEDemonstracao || "",
+    recursosPessoaisTecnologicos: pot.recursosQueFavorecemDesempenho || "",
+
+    // 8. Barreiras (Necessidades Educacionais)
+    barreiras: payload.necessidadesEducacionais?.barreiras?.map((b) => ({
+      dimensao: mapDimensaoBarreira(b.dimensao),
+      identificada: b.barreiraNecessidade || "",
+      evidenciasImpactos: b.evidenciasImpactos || "",
+      prioridade: mapPrioridade(b.prioridade),
+    })) || [],
+
+    // 9. Síntese
+    sinteseNecessidades: sint.sinteseNecessidades || "",
+    sinteseAvancos: sint.sinteseAvancos || "",
+    sinteseBarreiras: sint.sinteseBarreiras || "",
+    sintesePotencialidades: sint.sintesePotencialidades || "",
+    sinteseDemandas: sint.sinteseDemandas || "",
+
+    // 10. Checklist de Apoios
+    apoios: {
+      acessibilidade: converterApoios(chk.acessibilidadeAmbiente, mapApoioAcessibilidade),
+      acessibilidadeOutro: chk.acessibilidadeAmbienteOutro || "",
+      
+      comunicacaoMateriais: converterApoios(chk.comunicacaoMateriais, mapApoioComunicacao),
+      comunicacaoMateriaisOutro: chk.comunicacaoMateriaisOutro || "",
+      
+      metodologia: converterApoios(chk.metodologia, mapApoioMetodologia),
+      metodologiaOutro: chk.metodologiaOutro || "",
+      
+      avaliacao: converterApoios(chk.avaliacao, mapApoioAvaliacao),
+      avaliacaoOutro: chk.avaliacaoOutro || "",
+      
+      curriculo: converterApoios(chk.curriculo, mapApoioCurriculo),
+      curriculoOutro: chk.curriculoOutro || "",
+      
+      apoiosInstitucionais: converterApoios(chk.apoiosInstitucionais, mapApoioInstitucional),
+      apoiosInstitucionaisOutro: chk.apoioInstitucionalOutro || "", // Nota: a chave no JSON vem no singular
+    },
+    
+    encaminhamentosExternos: chk.apoiosExternosEncaminhamentos || "",
+    assinaturaPsicopedagogo: chk.psicopedagogoResponsavel || "",
+    assinaturaCoordenador: chk.coordenadorResponsavel || "",
+    dataEstudoCaso: chk.data || "",
+  };
+}
