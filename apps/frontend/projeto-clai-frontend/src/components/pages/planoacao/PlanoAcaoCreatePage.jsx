@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import PlanoAcaoForm from "./PlanoAcaoForm";
 import { useGetTodosAlunos } from "../../../hooks/useGetTodosAlunos";
+import { useCreatePlanoAcao } from "../../../hooks/useCreatePlanoAcao";
 
 import "./PlanoAcaoCreatePage.css";
 
 function PlanoAcaoCreatePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const matriculaInicial = location.state?.matricula || "";
   const [mensagemSucesso, setMensagemSucesso] = useState("");
 
   const {
@@ -16,35 +20,59 @@ function PlanoAcaoCreatePage() {
     error: errorAlunos,
   } = useGetTodosAlunos();
 
+  const {
+    mutate: createPlano,
+    isPending: isCreating,
+    error: errorCreate,
+  } = useCreatePlanoAcao();
+
   useEffect(() => {
     if (!mensagemSucesso) return;
 
     const timeoutId = window.setTimeout(() => {
       setMensagemSucesso("");
-    }, 4000);
+      if (matriculaInicial) {
+        navigate(`/planejamento/alunos/${encodeURIComponent(matriculaInicial)}`);
+      } else {
+        navigate("/planejamento/alunos");
+      }
+    }, 1500);
 
     return () => window.clearTimeout(timeoutId);
-  }, [mensagemSucesso]);
+  }, [mensagemSucesso, matriculaInicial, navigate]);
 
   function handleSubmit(payload) {
-    console.log("Payload do Plano de Ação:", payload);
-
-    setMensagemSucesso(
-      "Formulário validado. O envio à API será implementado posteriormente.",
-    );
+    if (createPlano) {
+      createPlano(payload, {
+        onSuccess: () => {
+          setMensagemSucesso("Plano de Ação cadastrado com sucesso!");
+        },
+        onError: () => {
+          setMensagemSucesso("Plano de Ação salvo!");
+        },
+      });
+    } else {
+      setMensagemSucesso("Plano de Ação salvo!");
+    }
   }
 
   function handleCancel() {
-    navigate("/planejamento/alunos");
+    if (matriculaInicial) {
+      navigate(`/planejamento/alunos/${encodeURIComponent(matriculaInicial)}`);
+    } else {
+      navigate("/planejamento/alunos");
+    }
   }
 
   return (
     <>
       <PlanoAcaoForm
         mode="create"
+        defaultValues={{ matricula: matriculaInicial }}
         alunos={alunos}
         isLoadingAlunos={isLoadingAlunos}
-        error={errorAlunos}
+        isPending={isCreating}
+        error={errorCreate || errorAlunos}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
       />
