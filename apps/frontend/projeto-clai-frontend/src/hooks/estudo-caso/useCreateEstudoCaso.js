@@ -6,7 +6,7 @@ export function useCreateEstudoCaso() {
 
     return useMutation({
         mutationFn: (payload) => {
-            if (payload.aluno && payload.estudoDeCaso) { 
+            if (payload.identificacao && payload.identificacao.aluno) { 
                 return postEstudoCasoCombinado(payload);
             }
             return postEstudoCaso(payload);

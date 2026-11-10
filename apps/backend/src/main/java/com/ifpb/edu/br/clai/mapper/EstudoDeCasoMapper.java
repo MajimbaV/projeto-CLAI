@@ -369,4 +369,17 @@ public class EstudoDeCasoMapper {
     private static <T> ArrayList<T> copyList(List<T> values) {
         return values == null ? new ArrayList<>() : new ArrayList<>(values);
     }
+
+    public static void aplicarUpdate(EstudoDeCasoAtualizacaoRequestDTO dto, EstudoDeCaso estudo) {
+        estudo.setMotivoDemanda(toMotivoDemanda(dto.motivoDemanda()));
+        estudo.setNecessidadesEspecificas(toNecessidadesEspecificas(dto.necessidadesEspecificas()));
+        estudo.setAnamnese(toAnamnese(dto.anamnese()));
+        estudo.setPerfilEstudante(toPerfilEstudante(dto.perfilEstudante()));
+        estudo.setContextoPsicossocial(toContextoPsicossocial(dto.contextoPsicossocial()));
+        estudo.setPotencialidades(toPotencialidades(dto.potencialidades()));
+        estudo.setNecessidadesEducacionais(toNecessidadesEducacionais(dto.necessidadesEducacionais()));
+        estudo.setSintesePsicopedagogica(toSintesePsicopedagogica(dto.sintesePsicopedagogica()));
+        estudo.setChecklistApoios(toChecklistApoios(dto.checklistApoios()));
+        estudo.setSituacaoEstudoDeCaso(dto.situacaoEstudoDeCaso());
+    }
 }

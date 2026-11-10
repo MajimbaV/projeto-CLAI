@@ -4,6 +4,7 @@ import com.ifpb.edu.br.clai.dto.aluno.AlunoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.*;
 import com.ifpb.edu.br.clai.exception.FieldValidationException;
+import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.EstudoDeCasoMapper;
 import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import com.ifpb.edu.br.clai.model.estudodecaso.*;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static com.ifpb.edu.br.clai.mapper.EstudoDeCasoMapper.*;
 
 @Service
 public class EstudoDeCasoService {
@@ -115,7 +118,6 @@ public class EstudoDeCasoService {
     private void validarRegras(MotivoDemandaRequestDto motivoDemanda, NecessidadesEducacionaisRequestDto necessidadesEducacionais, NecessidadesEspecificasRequestDto necessidadesEspecificasRequestDto) {
         Map<String, String> errors = new LinkedHashMap<>();
 
-
         validarOrigemOutro(motivoDemanda, errors);
         validarNecessidadesEducacionais(necessidadesEducacionais, errors);
         validarDocumentosComprobatorios(necessidadesEspecificasRequestDto, errors);
@@ -194,7 +196,6 @@ public class EstudoDeCasoService {
         }
     }
 
-
     private boolean alterarStatusParaArquivado(List<EstudoDeCaso> estudos) {
         boolean sofreuAlteracao = false;
 
@@ -222,6 +223,23 @@ public class EstudoDeCasoService {
         }
     }
 
+    @Transactional
+    public EstudoDeCasoResponseDto updateEstudoDeCaso(UUID id, EstudoDeCasoAtualizacaoRequestDTO dto) {
+        EstudoDeCaso estudoDeCaso = estudoDeCasoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudo de caso não encontrado com o ID: " + id));
+
+        validarRegras(dto.motivoDemanda(), dto.necessidadesEducacionais(), dto.necessidadesEspecificas());
+
+        if (dto.situacaoEstudoDeCaso() == SituacaoEstudoDeCaso.VALIDO) {
+            arquivarEstudosPorMatricula(estudoDeCaso.getIdentificacao().getAlunoId().getAlunoMatricula());
+        }
+
+        EstudoDeCasoMapper.aplicarUpdate(dto, estudoDeCaso);
+
+        EstudoDeCaso estudoAtualizado = estudoDeCasoRepository.save(estudoDeCaso);
+
+        return EstudoDeCasoMapper.entityToResponse(estudoAtualizado);
+    }
 
     public Page<EstudoDeCasoResponseDto> getAllEstudosDeCaso(
             Pageable pageable,
