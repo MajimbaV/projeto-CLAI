@@ -272,12 +272,15 @@ function AlunoPlanejamento({
   matriculaAluno,
   onBack,
   onNovoEstudoCaso,
+  onNovoPlanoAcao,
   onEditarEstudoCaso,
   onEditarPlanoAcao,
   estudosCaso = [],
   planosAcao = [],
   isLoadingEstudosCaso = false,
   erroEstudosCaso = null,
+  isLoadingPlanosAcao = false,
+  erroPlanosAcao = null,
 }) {
   const [abaAtiva, setAbaAtiva] = useState("estudo-caso");
   const [estudosExpandidos, setEstudosExpandidos] = useState([]);
@@ -489,31 +492,63 @@ function AlunoPlanejamento({
   }
 
   function renderizarPlanosAcao() {
+    if (isLoadingPlanosAcao) {
+      return (
+        <p className="planejamento-mensagem">Carregando Planos de Ação...</p>
+      );
+    }
+
+    if (erroPlanosAcao) {
+      return (
+        <p className="planejamento-erro">
+          Erro ao carregar os Planos de Ação:{" "}
+          {erroPlanosAcao.detail ||
+            erroPlanosAcao.message ||
+            String(erroPlanosAcao)}
+        </p>
+      );
+    }
+
     if (listaPlanos.length === 0) {
       return (
         <div className="planejamento-vazio">
+          <div className="planejamento-vazio-icone">+</div>
+
           <h3>Nenhum Plano de Ação cadastrado</h3>
+
           <p>
             Os Planos de Ação deste aluno aparecerão aqui depois de serem
             cadastrados.
           </p>
+
+          {onNovoPlanoAcao && (
+            <button
+              type="button"
+              className="planejamento-botao-principal"
+              onClick={onNovoPlanoAcao}
+            >
+              Criar Plano de Ação
+            </button>
+          )}
         </div>
       );
     }
 
     return (
       <div className="planejamento-lista-planos">
-        {listaPlanos.map((plano) => {
-          const expandido = planosExpandidos.includes(plano.id);
-          const painelId = `plano-acao-${plano.id}`;
+        {listaPlanos.map((plano, index) => {
+          const idPlano =
+            plano.id ?? plano._id ?? plano.planoAcaoId ?? `${matricula}-${index}`;
+          const expandido = planosExpandidos.includes(idPlano);
+          const painelId = `plano-acao-${idPlano}`;
 
           return (
-            <article className="planejamento-plano-acao" key={plano.id}>
+            <article className="planejamento-plano-acao" key={idPlano}>
               <div className="planejamento-plano-acao-cabecalho">
                 <button
                   type="button"
                   className="planejamento-plano-acao-toggle"
-                  onClick={() => alternarPlano(plano.id)}
+                  onClick={() => alternarPlano(idPlano)}
                   aria-expanded={expandido}
                   aria-controls={painelId}
                 >
@@ -549,7 +584,7 @@ function AlunoPlanejamento({
                     className="planejamento-estudo-editar planejamento-plano-acao-editar"
                     title="Editar Plano de Ação"
                     aria-label="Editar Plano de Ação"
-                    disabled={!plano.id || !onEditarPlanoAcao}
+                    disabled={!onEditarPlanoAcao}
                     onClick={(evento) => {
                       evento.stopPropagation();
                       onEditarPlanoAcao?.(plano);
@@ -566,7 +601,12 @@ function AlunoPlanejamento({
                 id={painelId}
                 hidden={!expandido}
               >
-                {expandido && <PlanoAcaoView plano={plano} />}
+                {expandido && (
+                  <PlanoAcaoView
+                    plano={plano}
+                    onEdit={onEditarPlanoAcao}
+                  />
+                )}
               </div>
             </article>
           );
@@ -595,14 +635,25 @@ function AlunoPlanejamento({
           </p>
         </div>
 
-        <button
-          type="button"
-          className="planejamento-botao-principal"
-          onClick={onNovoEstudoCaso}
-        >
-          <span aria-hidden="true">+</span>
-          Novo estudo de caso
-        </button>
+        {abaAtiva === "plano-acao" && onNovoPlanoAcao ? (
+          <button
+            type="button"
+            className="planejamento-botao-principal"
+            onClick={onNovoPlanoAcao}
+          >
+            <span aria-hidden="true">+</span>
+            Novo Plano de Ação
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="planejamento-botao-principal"
+            onClick={onNovoEstudoCaso}
+          >
+            <span aria-hidden="true">+</span>
+            Novo estudo de caso
+          </button>
+        )}
       </div>
 
       <section className="planejamento-aluno-card">
