@@ -5,6 +5,8 @@ import { useGetTodosAlunos } from "../../../hooks/aluno/useGetTodosAlunos";
 import { useCreatePlanoAcao } from "../../../hooks/useCreatePlanoAcao";
 import { useToast } from "../../../hooks/useToast";
 
+import "./PlanoAcaoForm.css";
+
 function PlanoAcaoCreatePage() {
   const navigate = useNavigate();
   const location = useLocation();

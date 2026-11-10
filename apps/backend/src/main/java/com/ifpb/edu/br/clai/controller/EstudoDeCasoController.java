@@ -76,4 +76,11 @@ public class EstudoDeCasoController {
         EstudoDeCasoResponseDto response = estudoDeCasoService.updateEstudoDeCaso(id, dto);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EstudoDeCasoResponseDto> getEstudoDeCasoById(@PathVariable UUID id) {
+        EstudoDeCasoResponseDto response = estudoDeCasoService.getEstudoDeCasoById(id);
+        
+        return ResponseEntity.ok(response);
+    }
 }
