@@ -14,6 +14,8 @@ import "./EstudoCasoForm.css";
 import {
   mapearParaEstudoCasoDTO,
   mapearParaEstudoCasoDTOCombinado,
+  mapearParaEstudoCasoAtualizacaoDTO,
+  mapearPayloadParaForm
 } from "../../../utils/estudoCasoMapper";
 
 const DADOS_ALUNO_VAZIOS = {
@@ -453,6 +455,7 @@ function CampoTextoLongo({ campo, values, onChange, disabled }) {
 export default function EstudoCasoForm({
   modo = "novo",
   alunos = [],
+  defaultValues,
   alunoInicial = null,
   isLoadingAlunos = false,
   isPending = false,
@@ -466,7 +469,7 @@ export default function EstudoCasoForm({
       : () => ({ ...DADOS_ALUNO_VAZIOS }),
   );
 
-  const [estudoCaso, setEstudoCaso] = useState(criarEstudoCasoVazio);
+  const [estudoCaso, setEstudoCaso] = useState(defaultValues? mapearPayloadParaForm(defaultValues) : criarEstudoCasoVazio);
 
   const [idAlunoSelecionado, setIdAlunoSelecionado] = useState(
     obterChaveAluno(alunoInicial),
@@ -573,18 +576,33 @@ export default function EstudoCasoForm({
       return;
     }
 
+    if(modo === "editar") {
+
+      const payloadEstudoCaso = mapearParaEstudoCasoAtualizacaoDTO(
+        estudoCaso,
+      );
+
+      console.log("payloadEstudoCaso", payloadEstudoCaso);
+
+      onSubmit(payloadEstudoCaso, {
+      onSuccess: () => {
+        success("Estudo de caso atualizado com sucesso!"
+        );
+        navigate(`/planejamento/alunos/${encodeURIComponent(obterMatricula(alunoSelecionado))}`);
+      },
+      });
+
+      return;
+    }
+
     const payloadEstudoCaso = mapearParaEstudoCasoDTO(
       estudoCaso,
       alunoSelecionado.id,
-      "INCOMPLETO",
     );
 
     onSubmit(payloadEstudoCaso, {
       onSuccess: () => {
-        success(
-          modo === "editar"
-            ? "Estudo de caso atualizado com sucesso!"
-            : "Estudo de caso cadastrado com sucesso!",
+        success("Estudo de caso cadastrado com sucesso!",
         );
         navigate(`/planejamento/alunos/${encodeURIComponent(obterMatricula(alunoSelecionado))}`);
       },

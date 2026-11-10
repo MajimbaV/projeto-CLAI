@@ -720,7 +720,7 @@ function AlunoPlanejamento({
             >
               {aba.titulo}
             </button>
-          )}
+          ))}
         </div>
 
         <div className="planejamento-conteudo-aba">

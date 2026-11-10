@@ -31,6 +31,7 @@ function AlunoPlanejamentoPage() {
       {
         state: {
           estudoCaso: estudo,
+          matricula: matricula
         },
       },
     );
