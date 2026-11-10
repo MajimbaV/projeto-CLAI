@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getAlunos } from '../services/AlunoService';
+import { getAlunos } from '../../services/AlunoService';
 
 export function useGetAlunos({page = 1, size = 10, sort = 'alunoNome,asc', filters} = {}) {
 

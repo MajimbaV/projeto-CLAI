@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import EstudoCasoForm from "./EstudoCasoForm";
-import { useGetAlunos } from "../../../hooks/useGetAlunos";
-import { useCreateEstudoCaso } from "../../../hooks/useCreateEstudoCaso";
+import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
+import { useCreateEstudoCaso } from "../../../hooks/estudo-caso/useCreateEstudoCaso";
 
 export default function NewEstudoCasoPage({
   modo = "criar",

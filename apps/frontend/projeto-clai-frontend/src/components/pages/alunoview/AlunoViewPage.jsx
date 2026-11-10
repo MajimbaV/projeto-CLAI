@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useParams} from "react-router-dom";
 import AlunoView from "./AlunoView";
-import { useDeleteAluno } from "../../../hooks/useDeleteAluno";
-import { useAtivarAluno } from "../../../hooks/useAtivarAluno";
+import { useDeleteAluno } from "../../../hooks/aluno/useDeleteAluno";
+import { useAtivarAluno } from "../../../hooks/aluno/useAtivarAluno";
 import { ConfirmModal } from "../../modal/confirmationDialog/ConfirmModal";
 
 function AlunoViewPage() {

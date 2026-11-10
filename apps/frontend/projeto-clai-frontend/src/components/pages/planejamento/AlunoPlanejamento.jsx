@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import EditImg from "../../../assets/Edit.png";
-import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
+import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 
 import "./AlunoPlanejamento.css";
 

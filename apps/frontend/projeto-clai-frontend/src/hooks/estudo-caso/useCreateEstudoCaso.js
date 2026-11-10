@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postEstudoCaso, postEstudoCasoCombinado } from '../services/EstudoCasoService';
+import { postEstudoCaso, postEstudoCasoCombinado } from '../../services/EstudoCasoService';
 
 export function useCreateEstudoCaso() {
     const queryCliente = useQueryClient()
