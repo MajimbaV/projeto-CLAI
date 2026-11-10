@@ -869,7 +869,7 @@ export default function EstudoCasoForm({
               value={estudoCaso.dataAtendimentos}
               onChange={handleCasoChange}
               placeholder="Informe uma ou mais datas (Separadas por vírgula)"
-              disabled={isPending}
+              disabled={isPending || modo === "editar"}
             />
 
             <FormField
@@ -877,7 +877,7 @@ export default function EstudoCasoForm({
               label="Profissional responsável pelo estudo de caso"
               value={estudoCaso.profissionalResponsavel}
               onChange={handleCasoChange}
-              disabled={isPending}
+              disabled={isPending || modo === "editar"}
             />
           </div>
         </FormSection>
@@ -971,16 +971,6 @@ export default function EstudoCasoForm({
               options={OPCOES_SIM_NAO}
               disabled={isPending}
             />
-
-            {estudoCaso.documentosApresentados === "sim" && (
-              <FormField
-                name="documentosQuais"
-                label="Quais documentos?"
-                value={estudoCaso.documentosQuais}
-                onChange={handleCasoChange}
-                disabled={isPending}
-              />
-            )}
           </div>
 
           {estudoCaso.documentosApresentados === "sim" && (
@@ -995,16 +985,6 @@ export default function EstudoCasoForm({
                 })
               }
             ></DocumentList>
-          )}
-
-          {estudoCaso.documentosApresentados === "sim" && (
-            <FormField
-              name="documentosDataProfissional"
-              label="Data/profissional dos documentos"
-              value={estudoCaso.documentosDataProfissional}
-              onChange={handleCasoChange}
-              disabled={isPending}
-            />
           )}
 
           <div className="estudo-form-grid">
