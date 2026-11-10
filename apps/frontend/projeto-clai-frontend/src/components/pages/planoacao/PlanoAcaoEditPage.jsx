@@ -1,21 +1,19 @@
-import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PlanoAcaoForm from "./PlanoAcaoForm";
 import { useGetTodosAlunos } from "../../../hooks/useGetTodosAlunos";
 import { useGetPlanoAcaoById } from "../../../hooks/useGetPlanoAcaoById";
 import { useUpdatePlanoAcao } from "../../../hooks/useUpdatePlanoAcao";
-
-import "./PlanoAcaoCreatePage.css";
+import { useToast } from "../../../hooks/useToast";
 
 function PlanoAcaoEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { success, sucess } = useToast();
+  const notifySuccess = success || sucess;
 
   const planoInicial = location.state?.plano || null;
   const matriculaOrigem = location.state?.matricula || planoInicial?.matricula || "";
-
-  const [mensagemSucesso, setMensagemSucesso] = useState("");
 
   const {
     data: planoBuscado,
@@ -39,36 +37,21 @@ function PlanoAcaoEditPage() {
     error: errorUpdate,
   } = useUpdatePlanoAcao(id);
 
-  useEffect(() => {
-    if (!mensagemSucesso) return;
-
-    const timeoutId = window.setTimeout(() => {
-      setMensagemSucesso("");
-      const matriculaRetorno = planoAtual?.matricula || matriculaOrigem;
-      if (matriculaRetorno) {
-        navigate(`/planejamento/alunos/${encodeURIComponent(matriculaRetorno)}`);
-      } else {
-        navigate("/planejamento/alunos");
-      }
-    }, 1500);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [mensagemSucesso, planoAtual, matriculaOrigem, navigate]);
-
   function handleSubmit(payload) {
-    if (updatePlano) {
-      updatePlano(payload, {
-        onSuccess: () => {
-          setMensagemSucesso("Plano de Ação atualizado com sucesso!");
-        },
-        onError: () => {
-          // Se a API estiver offline ou der erro de conexão durante testes, fornece fallback amigável
-          setMensagemSucesso("Plano de Ação validado e atualizado!");
-        },
-      });
-    } else {
-      setMensagemSucesso("Plano de Ação validado e atualizado!");
-    }
+    updatePlano(payload, {
+      onSuccess: () => {
+        notifySuccess("Plano de Ação atualizado com sucesso!");
+        const matriculaRetorno = planoAtual?.matricula || matriculaOrigem;
+        if (matriculaRetorno) {
+          navigate(`/planejamento/alunos/${encodeURIComponent(matriculaRetorno)}`);
+        } else {
+          navigate("/planejamento/alunos");
+        }
+      },
+      onError: (error) => {
+        console.error("Erro ao atualizar Plano de Ação:", error);
+      },
+    });
   }
 
   function handleCancel() {
@@ -105,34 +88,18 @@ function PlanoAcaoEditPage() {
   }
 
   return (
-    <>
-      <PlanoAcaoForm
-        mode="edit"
-        defaultValues={planoAtual}
-        alunos={alunos}
-        isLoadingAlunos={isLoadingAlunos}
-        isLoading={isLoadingPlano}
-        isPending={isUpdating}
-        error={errorUpdate || errorAlunos}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
-
-      {mensagemSucesso && (
-        <div className="plano-acao-toast" role="status" aria-live="polite">
-          <span>{mensagemSucesso}</span>
-          <button
-            type="button"
-            onClick={() => setMensagemSucesso("")}
-            aria-label="Fechar notificação"
-          >
-            ×
-          </button>
-        </div>
-      )}
-    </>
+    <PlanoAcaoForm
+      mode="edit"
+      defaultValues={planoAtual}
+      alunos={alunos}
+      isLoadingAlunos={isLoadingAlunos}
+      isLoading={isLoadingPlano}
+      isPending={isUpdating}
+      error={errorUpdate || errorAlunos}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
   );
 }
 
 export default PlanoAcaoEditPage;
-
