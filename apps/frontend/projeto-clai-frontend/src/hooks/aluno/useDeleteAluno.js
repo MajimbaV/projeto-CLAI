@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteAluno } from '../services/AlunoService';
+import { deleteAluno } from '../../services/AlunoService';
 
 export function useDeleteAluno() {
     const queryClient = useQueryClient();

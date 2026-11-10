@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getAlunoByMatricula } from '../services/AlunoService';
+import { getAlunoByMatricula } from '../../services/AlunoService';
 
 export function useGetAlunoByMatricula(matricula) {
     return useQuery({

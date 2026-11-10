@@ -3,7 +3,7 @@ import "./AlunoList.css";
 import SearchBar from "../../queries/searchBar/SearchBar.jsx";
 import Selector from "../../queries/selector/Selector.jsx";
 import { contemApenasNumeros } from "../../../utils/validations.js";
-import { useGetAlunos } from "../../../hooks/useGetAlunos";
+import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
 import { HiOutlineArchive, HiOutlinePencilAlt, HiChevronLeft, HiChevronRight} from "react-icons/hi";
 
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import ChevronRight from "../../../assets/ChevronRight.png";
-import { useGetAlunos } from "../../../hooks/useGetAlunos";
+import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
 import SearchBar  from "../../queries/searchBar/SearchBar";
 import Selector from "../../queries/selector/Selector";
 import { contemApenasNumeros } from "../../../utils/validations";

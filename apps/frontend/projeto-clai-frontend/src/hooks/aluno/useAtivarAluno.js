@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ativarAluno } from '../services/AlunoService';
+import { ativarAluno } from '../../services/AlunoService';
 
 export function useAtivarAluno() {
     const queryClient = useQueryClient();

@@ -1,4 +1,4 @@
-import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
+import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { HiPencilAlt, HiArchive, HiCheck ,HiChevronLeft } from "react-icons/hi";
 
 import "./AlunoView.css";

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAlunos } from "../services/AlunoService";
+import { getAlunos } from "../../services/AlunoService";
 
 const TAMANHO_PAGINA = 100;
 

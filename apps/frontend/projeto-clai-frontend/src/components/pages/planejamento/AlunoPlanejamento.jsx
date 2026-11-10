@@ -1,7 +1,8 @@
 import { useState } from "react";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import EditImg from "../../../assets/Edit.png";
-import { useGetAlunoByMatricula } from "../../../hooks/useGetAlunoByMatricula";
+import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
+import { useGetEstudosCaso } from "../../../hooks/estudo-caso/useGetEstudosCaso";
 import PlanoAcaoView from "../planoacao/PlanoAcaoView";
 
 import "./AlunoPlanejamento.css";
@@ -275,10 +276,7 @@ function AlunoPlanejamento({
   onNovoPlanoAcao,
   onEditarEstudoCaso,
   onEditarPlanoAcao,
-  estudosCaso = [],
   planosAcao = [],
-  isLoadingEstudosCaso = false,
-  erroEstudosCaso = null,
   isLoadingPlanosAcao = false,
   erroPlanosAcao = null,
 }) {
@@ -291,6 +289,16 @@ function AlunoPlanejamento({
     isLoading,
     error,
   } = useGetAlunoByMatricula(matriculaAluno);
+
+  const {
+    data: estudosCasoData,
+    isLoading: isLoadingEstudosCaso,
+    error: erroEstudosCaso,
+  } = useGetEstudosCaso({
+    sort: "situacaoEstudoDeCaso,desc",
+    filters: { matricula: matriculaAluno },
+  });
+  const estudosCaso = estudosCasoData?.content || [];
 
   function alternarEstudo(id) {
     setEstudosExpandidos((atuais) =>
@@ -408,12 +416,12 @@ function AlunoPlanejamento({
 
           const id = idEstudo ?? `${matricula}-${index}`;
 
-          const titulo = estudo.titulo || `Estudo de caso ${index + 1}`;
+          const titulo = estudo.titulo || `Estudo de Caso #${index + 1}`;
 
           const expandido = estudosExpandidos.includes(id);
           const secoes = obterSecoesEstudo(estudo);
 
-          const dataCriacao = estudo.dataCriacao || estudo.createdAt;
+          const dataCriacao = estudo.checklistApoios.data || estudo.createdAt;
           const status = estudo.status || estudo.situacao;
 
           return (
@@ -712,7 +720,7 @@ function AlunoPlanejamento({
             >
               {aba.titulo}
             </button>
-          ))}
+          )}
         </div>
 
         <div className="planejamento-conteudo-aba">

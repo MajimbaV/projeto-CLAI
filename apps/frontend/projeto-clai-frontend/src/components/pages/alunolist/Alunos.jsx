@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AlunoList from "./AlunoList";
-import { useDeleteAluno } from "../../../hooks/useDeleteAluno";
+import { useDeleteAluno } from "../../../hooks/aluno/useDeleteAluno";
 import { ConfirmModal } from "../../modal/confirmationDialog/ConfirmModal"
 
 function Alunos() {

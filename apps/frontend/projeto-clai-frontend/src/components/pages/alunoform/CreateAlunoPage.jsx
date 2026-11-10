@@ -1,5 +1,5 @@
 import AlunoForm from "./AlunoForm";
-import { useCreateAluno } from "../../../hooks/useCreateAluno";
+import { useCreateAluno } from "../../../hooks/aluno/useCreateAluno";
 
 function CreateAlunoPage() {
   const { mutate: createAluno, isLoading, error, isPending} = useCreateAluno();
