@@ -26,7 +26,7 @@ function AlunoPlanejamentoPage() {
   return (
     <AlunoPlanejamento
       matriculaAluno={matricula}
-      onBack={() => navigate("/alunos")}
+      onBack={() => navigate("/planejamento/alunos")}
       onNovoEstudoCaso={() =>
         navigate(`/alunos/${encodeURIComponent(matricula)}/estudo-caso/novo`)
       }
