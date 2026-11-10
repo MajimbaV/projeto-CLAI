@@ -3,12 +3,17 @@ package com.ifpb.edu.br.clai.service;
 import com.ifpb.edu.br.clai.dto.curso.CursoRequestDto;
 import com.ifpb.edu.br.clai.dto.curso.CursoResponseDto;
 import com.ifpb.edu.br.clai.exception.BusinessRuleException;
+import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.CursoMapper;
 import com.ifpb.edu.br.clai.model.curso.Curso;
 import com.ifpb.edu.br.clai.model.curso.enums.Modalidade;
 import com.ifpb.edu.br.clai.model.curso.enums.NivelEnsino;
 import com.ifpb.edu.br.clai.model.curso.enums.Turno;
 import com.ifpb.edu.br.clai.repository.CursoRepository;
+import com.ifpb.edu.br.clai.specification.CursoSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +57,7 @@ public class CursoService {
         }
     }
 
+    @Transactional
     public CursoResponseDto createCurso(CursoRequestDto request){
         validarRegrasAdicionais(request);
 
@@ -63,5 +69,19 @@ public class CursoService {
         Curso cursoGuardado = cursoRepository.save(curso);
 
         return CursoMapper.entityToResponse(cursoGuardado);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CursoResponseDto> getAllCursos(String nome, Boolean status, Modalidade mod, NivelEnsino nivel, Turno turno, Pageable pageable) {
+
+        Specification<Curso> spec = CursoSpecification.comFiltros(nome, status, mod, nivel, turno);
+        return cursoRepository.findAll(spec, pageable).map(CursoMapper::entityToResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public CursoResponseDto getCursoBySigla(String sigla) {
+        Curso curso = cursoRepository.findByCursoSigla(sigla.toUpperCase())
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com a sigla: " + sigla));
+        return CursoMapper.entityToResponse(curso);
     }
 }
