@@ -1,5 +1,6 @@
 package com.ifpb.edu.br.clai.controller;
 
+import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoAtualizacaoRequestDTO;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoCombinadoRequestDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.response.EstudoDeCasoResponseDto;
 import com.ifpb.edu.br.clai.dto.estudodecaso.request.create.EstudoDeCasoRequestDto;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173") // Alterar isso quando fizer deploy
@@ -56,12 +58,22 @@ public class EstudoDeCasoController {
     }
 
     @GetMapping
-    Page<EstudoDeCasoResponseDto> getAllEstudosDeCaso(
+    public ResponseEntity<Page<EstudoDeCasoResponseDto>> getAllEstudosDeCaso(
             Pageable pageable,
             @RequestParam(value = "nomeAluno", required = false) String nomeAluno,
             @RequestParam(value = "matriculaAluno", required = false) String matriculaAluno,
-            @RequestParam(value = "situacao", required = false)SituacaoEstudoDeCaso situacao) {
-        return estudoDeCasoService.getAllEstudosDeCaso(pageable, nomeAluno, matriculaAluno, situacao);
+            @RequestParam(value = "situacao", required = false) SituacaoEstudoDeCaso situacao
+    ) {
+        Page<EstudoDeCasoResponseDto> response = estudoDeCasoService.getAllEstudosDeCaso(pageable, nomeAluno, matriculaAluno, situacao);
+        return ResponseEntity.ok(response);
     }
-
+  
+      @PutMapping("/{id}")
+    public ResponseEntity<EstudoDeCasoResponseDto> updateEstudoDeCaso(
+            @PathVariable("id") UUID id,
+            @Valid @RequestBody EstudoDeCasoAtualizacaoRequestDTO dto
+    ) {
+        EstudoDeCasoResponseDto response = estudoDeCasoService.updateEstudoDeCaso(id, dto);
+        return ResponseEntity.ok(response);
+    }
 }
