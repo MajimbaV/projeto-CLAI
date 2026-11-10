@@ -1,68 +1,109 @@
 .plano-acao-view {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
+  width: 100%;
   min-width: 0;
   color: #374151;
 }
 
+/* Metadados rápidos */
 .plano-acao-view-metadados {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px 28px;
-  margin: 0;
-  padding: 18px;
+  align-items: center;
+  gap: 16px 32px;
+  padding: 14px 18px;
   border: 1px solid #e5e7eb;
-  border-radius: 9px;
+  border-radius: 8px;
   background-color: #f9fafb;
 }
 
-.plano-acao-view-metadados > div {
+.plano-acao-metadado-item {
   display: flex;
-  flex: 1 1 150px;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
 }
 
-.plano-acao-view-metadados dt {
+.plano-acao-metadado-label {
   color: #6b7280;
-  font-size: 12px;
   font-weight: 500;
 }
 
-.plano-acao-view-metadados dd {
-  margin: 0;
+.plano-acao-metadado-valor {
   color: #111827;
-  font-size: 13px;
-  overflow-wrap: anywhere;
+  font-weight: 600;
 }
 
+.plano-acao-badge-situacao {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.plano-acao-badge-situacao.ativa {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.plano-acao-badge-situacao.inativa {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+/* Blocos principais */
 .plano-acao-view-bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
   min-width: 0;
 }
 
-.plano-acao-view-bloco > h3 {
-  margin: 0 0 14px;
-  color: #111827;
-  font-size: 15px;
-  font-weight: 600;
-  overflow-wrap: anywhere;
+.plano-acao-bloco-cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
+.plano-acao-bloco-cabecalho h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.plano-acao-bloco-subtitulo {
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Grid clínico e de apoio */
 .plano-acao-view-campos-clinicos {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
+  width: 100%;
   min-width: 0;
 }
 
 .plano-acao-view-campo-clinico {
-  min-width: 0;
-  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
   border: 1px solid #e5e7eb;
-  border-radius: 9px;
+  border-radius: 8px;
   background-color: #ffffff;
+  min-width: 0;
 }
 
 .plano-acao-view-campo-cabecalho {
@@ -74,104 +115,176 @@
 }
 
 .plano-acao-view-campo-cabecalho h4 {
-  min-width: 0;
-  margin: 2px 0 0;
-  color: #374151;
+  margin: 0;
+  color: #1f2937;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.5;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .plano-acao-view-resposta {
   flex-shrink: 0;
-  padding: 4px 9px;
-  border-radius: 14px;
+  padding: 3px 10px;
+  border-radius: 12px;
   font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .plano-acao-view-resposta.positiva {
-  background-color: #f0fdf4;
-  color: #166534;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
 }
 
 .plano-acao-view-resposta.negativa {
   background-color: #f3f4f6;
   color: #4b5563;
+  border: 1px solid #e5e7eb;
 }
 
 .plano-acao-view-resposta.indefinida {
   background-color: #fffbeb;
   color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.plano-acao-view-campo-detalhe {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed #e5e7eb;
+  min-width: 0;
 }
 
 .plano-acao-view-lista {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin: 12px 0 0;
+  margin: 0;
   padding-left: 20px;
   color: #4b5563;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-.plano-acao-view-lista li,
-.plano-acao-view-sem-descricao,
-.plano-acao-view-secao p {
-  min-width: 0;
+.plano-acao-view-lista li {
   overflow-wrap: anywhere;
+  word-break: break-word;
   white-space: pre-wrap;
 }
 
 .plano-acao-view-sem-descricao {
-  margin: 10px 0 0;
-  color: #6b7280;
+  margin: 0;
+  color: #9ca3af;
   font-size: 12px;
-  line-height: 1.6;
+  font-style: italic;
 }
 
+/* Seções descritivas em texto longo */
 .plano-acao-view-descritivo {
-  padding-top: 20px;
+  padding-top: 24px;
   border-top: 1px solid #e5e7eb;
 }
 
-.plano-acao-view-secao {
+.plano-acao-view-secoes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
   min-width: 0;
-  padding: 16px 0;
-  border-bottom: 1px solid #f0f1f3;
 }
 
-.plano-acao-view-secao:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
+.plano-acao-view-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #00523d;
+  border-radius: 8px;
+  background-color: #ffffff;
+  min-width: 0;
 }
 
-.plano-acao-view-secao h4 {
-  margin: 0 0 8px;
-  color: #111827;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
+.plano-acao-view-secao-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
-.plano-acao-view-secao p {
+.plano-acao-view-secao-cabecalho h4 {
   margin: 0;
-  color: #4b5563;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.plano-acao-view-secao-conteudo {
+  width: 100%;
+  min-width: 0;
+}
+
+.plano-acao-view-secao-conteudo p {
+  margin: 0;
+  color: #374151;
   font-size: 13px;
   line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-@media (max-width: 640px) {
+/* Rodapé com botão de edição */
+.plano-acao-view-rodape {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.plano-acao-view-btn-editar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.plano-acao-view-btn-editar:hover {
+  background-color: #f9fafb;
+  border-color: #00523d;
+  color: #00523d;
+}
+
+.plano-acao-view-btn-editar img {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
   .plano-acao-view-campos-clinicos {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .plano-acao-view-metadados {
-    gap: 14px 20px;
-    padding: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
