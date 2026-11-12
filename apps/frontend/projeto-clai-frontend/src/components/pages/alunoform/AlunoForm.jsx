@@ -1,0 +1,472 @@
+import { useState } from "react";
+import "./AlunoForm.css";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../../../hooks/useToast";
+
+const TEXTOS_POR_MODO = {
+  create: {
+    title: "Adicionar aluno",
+    submitLabel: "Cadastrar aluno",
+    pendingLabel: "Salvando...",
+    footerNote:
+      "O identificador do aluno será gerado automaticamente ao salvar.",
+    successMessage: "Aluno cadastrado com sucesso!",
+  },
+  edit: {
+    title: "Editar aluno",
+    submitLabel: "Salvar alterações",
+    pendingLabel: "Salvando alterações...",
+    footerNote: "As alterações serão aplicadas ao aluno selecionado.",
+    successMessage: "Aluno atualizado com sucesso!",
+  },
+};
+
+const OPCOES_PARENTESCO = ["Pai", "Mãe", "Irmão", "Irmã", "Outro"];
+
+const OPCOES_CURSO = [
+  "Integrado em Informática",
+  "Integrado em Edificações",
+  "Integrado em Eletromecânica",
+  "Integrado em Meio Ambiente",
+  "Bacharelado em Engenharia de Controle e Automação",
+  "Análise e Desenvolvimento de Sistemas",
+  "Licenciatura em Matemática",
+  "Licenciatura em Química",
+  "Bacharelado em Engenharia Civil",
+  "Tecnologia em Automação Industrial",
+];
+
+const FORM_DATA_VAZIO = {
+  alunoNome: "",
+  alunoNascimento: "",
+  alunoTelefone: "",
+  alunoEmail: "",
+  nomeResponsavel: "",
+  grauParentesco: "",
+  responsavelTelefone: "",
+  responsavelEmail: "",
+  alunoMatricula: "",
+  alunoCurso: "",
+  periodoIngresso: "",
+  periodoAluno: "",
+};
+
+function normalizarDefaultValues(valores) {
+  const normalizado = {};
+
+  for (const chave of Object.keys(FORM_DATA_VAZIO)) {
+    normalizado[chave] = valores?.[chave] ?? "";
+  }
+
+  return normalizado;
+}
+
+function AlunoForm({
+  onSubmit,
+  isPending,
+  isLoading,
+  error,
+  defaultValues,
+  mode = "create",
+}) {
+  const [formData, setFormData] = useState(() =>
+    normalizarDefaultValues(defaultValues),
+  );
+
+  const textos = TEXTOS_POR_MODO[mode] ?? TEXTOS_POR_MODO.create;
+
+  const navigate = useNavigate();
+  const { success } = useToast();
+
+  const previousRedirect =
+    mode === "create"
+      ? "/alunos"
+      : `../alunos/${encodeURIComponent(formData.alunoMatricula)}`;
+
+  const responsavelPreenchido = Boolean(
+    formData.nomeResponsavel.trim() ||
+    formData.responsavelTelefone.trim() ||
+    formData.responsavelEmail.trim(),
+  );
+
+  function handleChangeForm(e) {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const payload = {
+      ...formData,
+      nomeResponsavel: formData.nomeResponsavel.trim() || null,
+      grauParentesco: formData.grauParentesco.trim() || null,
+      responsavelTelefone: formData.responsavelTelefone.trim() || null,
+      responsavelEmail: formData.responsavelEmail.trim() || null,
+    };
+
+    if (onSubmit) {
+      onSubmit(payload, {
+        onSuccess: () => {
+          success(textos.successMessage);
+          navigate(previousRedirect);
+        },
+      });
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="aluno-form-body">
+        <p>Carregando dados do aluno...</p>
+      </div>
+    );
+  }
+
+  const errorResponse = error?.response?.data || {};
+  const invalidFields = errorResponse.invalidFields || {};
+
+  let mensagemErro = null;
+
+  if (error) {
+    if (error.response?.status === 404) {
+      mensagemErro = "Falha ao realizar requisição à API";
+    } else {
+      mensagemErro =
+        errorResponse.detail ||
+        errorResponse.message ||
+        error.message ||
+        "Ocorreu um erro inesperado ao salvar os dados.";
+    }
+  }
+
+  return (
+    <div className="aluno-form-body">
+      <div className="header">
+        <h1 className="header-text">{textos.title}</h1>
+        <span className="header-comment">* Campos obrigatórios</span>
+      </div>
+
+      <form className="aluno-form" onSubmit={handleSubmit}>
+        {mensagemErro && (
+          <div className="error-banner">
+            <p>Erro: {mensagemErro}</p>
+          </div>
+        )}
+
+        <fieldset className="form-section">
+          <legend>Dados do aluno</legend>
+
+          <span className="section-desc">
+            Informações pessoais e canais de contato do aluno.
+          </span>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label htmlFor="alunoNome">Nome do aluno *</label>
+              <input
+                type="text"
+                id="alunoNome"
+                name="alunoNome"
+                placeholder="Ex.: Ana Beatriz Souza"
+                value={formData.alunoNome}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.alunoNome && (
+                <span className="error-message">{invalidFields.alunoNome}</span>
+              )}
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="alunoNascimento">Data de nascimento *</label>
+              <input
+                type="date"
+                id="alunoNascimento"
+                name="alunoNascimento"
+                value={formData.alunoNascimento}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.alunoNascimento && (
+                <span className="error-message">
+                  {invalidFields.alunoNascimento}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label htmlFor="alunoTelefone">Telefone do aluno</label>
+              <input
+                type="text"
+                id="alunoTelefone"
+                name="alunoTelefone"
+                placeholder="DDD000000000 (Apenas os Números)"
+                value={formData.alunoTelefone}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.alunoTelefone && (
+                <span className="error-message">
+                  {invalidFields.alunoTelefone}
+                </span>
+              )}
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="alunoEmail">E-mail do aluno</label>
+              <input
+                type="email"
+                id="alunoEmail"
+                name="alunoEmail"
+                placeholder="Ex.: aluno@email.com"
+                value={formData.alunoEmail}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.alunoEmail && (
+                <span className="error-message">
+                  {invalidFields.alunoEmail}
+                </span>
+              )}
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset className="form-section">
+          <legend>Dados do responsável (opcional)</legend>
+
+          <span className="section-desc">
+            O preenchimento desta seção é opcional, independentemente da idade
+            do aluno. Preencha somente as informações disponíveis.
+          </span>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label htmlFor="nomeResponsavel">Nome do responsável</label>
+              <input
+                type="text"
+                id="nomeResponsavel"
+                name="nomeResponsavel"
+                placeholder="Ex.: Maria Souza"
+                value={formData.nomeResponsavel}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.nomeResponsavel && (
+                <span className="error-message">
+                  {invalidFields.nomeResponsavel}
+                </span>
+              )}
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="grauParentesco">
+                Grau de parentesco {responsavelPreenchido && "*"}
+              </label>
+
+              <select
+                id="grauParentesco"
+                name="grauParentesco"
+                value={formData.grauParentesco}
+                onChange={handleChangeForm}
+                disabled={isPending}
+                required={responsavelPreenchido}
+              >
+                <option value="">
+                  Nenhum
+                </option>
+
+                {OPCOES_PARENTESCO.map((parentesco) => (
+                  <option key={parentesco} value={parentesco}>
+                    {parentesco}
+                  </option>
+                ))}
+              </select>
+
+              {invalidFields.grauParentesco && (
+                <span className="error-message">
+                  {invalidFields.grauParentesco}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label htmlFor="responsavelTelefone">
+                Telefone do responsável
+              </label>
+
+              <input
+                type="text"
+                id="responsavelTelefone"
+                name="responsavelTelefone"
+                placeholder="(00) 00000-0000"
+                value={formData.responsavelTelefone}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.responsavelTelefone && (
+                <span className="error-message">
+                  {invalidFields.responsavelTelefone}
+                </span>
+              )}
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="responsavelEmail">E-mail do responsável</label>
+
+              <input
+                type="email"
+                id="responsavelEmail"
+                name="responsavelEmail"
+                placeholder="Ex.: responsavel@email.com"
+                value={formData.responsavelEmail}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.responsavelEmail && (
+                <span className="error-message">
+                  {invalidFields.responsavelEmail}
+                </span>
+              )}
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset className="form-section">
+          <legend>Dados acadêmicos</legend>
+
+          <span className="section-desc">
+            Informações de matrícula, curso e períodos letivos.
+          </span>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label htmlFor="alunoMatricula">Matrícula *</label>
+              <input
+                type="text"
+                id="alunoMatricula"
+                name="alunoMatricula"
+                placeholder="Ex.: 202601001"
+                value={formData.alunoMatricula}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.alunoMatricula && (
+                <span className="error-message">
+                  {invalidFields.alunoMatricula}
+                </span>
+              )}
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="alunoCurso">Curso *</label>
+
+              <select
+                id="alunoCurso"
+                name="alunoCurso"
+                value={formData.alunoCurso}
+                onChange={handleChangeForm}
+                disabled={isPending}
+                required
+              >
+                <option value="" disabled>
+                  Selecione um curso...
+                </option>
+
+                {OPCOES_CURSO.map((curso) => (
+                  <option key={curso} value={curso}>
+                    {curso}
+                  </option>
+                ))}
+              </select>
+
+              {invalidFields.alunoCurso && (
+                <span className="error-message">
+                  {invalidFields.alunoCurso}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label htmlFor="periodoIngresso">Período de ingresso *</label>
+              <input
+                type="text"
+                id="periodoIngresso"
+                name="periodoIngresso"
+                placeholder="Ex.: 2026.1"
+                value={formData.periodoIngresso}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.periodoIngresso && (
+                <span className="error-message">
+                  {invalidFields.periodoIngresso}
+                </span>
+              )}
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="periodoAluno">Período letivo do aluno *</label>
+              <input
+                type="text"
+                id="periodoAluno"
+                name="periodoAluno"
+                placeholder="Ex.: 2026.2"
+                value={formData.periodoAluno}
+                onChange={handleChangeForm}
+                disabled={isPending}
+              />
+
+              {invalidFields.periodoAluno && (
+                <span className="error-message">
+                  {invalidFields.periodoAluno}
+                </span>
+              )}
+            </div>
+          </div>
+        </fieldset>
+
+        <div className="form-actions">
+          <span className="footer-note">{textos.footerNote}</span>
+
+          <div className="buttons-group">
+            <button
+              type="button"
+              className="btn-cancel"
+              disabled={isPending}
+              onClick={() => navigate(previousRedirect)}
+            >
+              Cancelar
+            </button>
+
+            <button type="submit" className="btn-submit" disabled={isPending}>
+              {isPending ? textos.pendingLabel : textos.submitLabel}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default AlunoForm;

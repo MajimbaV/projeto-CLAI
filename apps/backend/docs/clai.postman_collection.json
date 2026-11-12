@@ -1,0 +1,95 @@
+{
+  "info": {
+    "_postman_id": "b5d7eacd-e652-4c6c-8380-050528fdc04f",
+    "name": "clai",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52573825",
+    "_collection_link": "https://go.postman.co/collection/52573825-b5d7eacd-e652-4c6c-8380-050528fdc04f?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "alunos",
+      "item": [
+        {
+          "name": "listar alunos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "aluno por matricula",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "criar aluno",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{                           \r\n    \"alunoNome\": \"João da Silva\",\r\n    \"alunoNascimento\": \"2009-03-15\",                             \r\n    \"alunoTelefone\": \"83999998888\",\r\n    \"alunoEmail\": \"joao.silva@email.com\",\r\n    \"nomeResponsavel\": \"Maria da Silva\",\r\n    \"grauParentesco\": \"Mãe\",\r\n    \"responsavelTelefone\": \"83988887777\",\r\n    \"responsavelEmail\": \"maria.silva@email.com\",\r\n    \"alunoMatricula\": \"2026101234\",\r\n    \"alunoCurso\": \"Informática\",\r\n    \"periodoIngresso\": \"2026.1\",\r\n    \"periodoAluno\": \"1º período\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/alunos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "alunos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "atualizar aluno",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{                           \r\n    \"alunoNome\": \"Eduardo da Silva\",\r\n    \"alunoNascimento\": \"2009-03-15\",                             \r\n    \"alunoTelefone\": \"83999998888\",\r\n    \"alunoEmail\": \"joao.silva@email.com\",\r\n    \"nomeResponsavel\": \"Maria da Silva\",\r\n    \"grauParentesco\": \"Mãe\",\r\n    \"responsavelTelefone\": \"83988887777\",\r\n    \"responsavelEmail\": \"maria.silva@email.com\",\r\n    \"alunoMatricula\": \"2026101234\",\r\n    \"alunoCurso\": \"Informática\",\r\n    \"periodoIngresso\": \"2026.1\",\r\n    \"periodoAluno\": \"1º período\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/alunos/ddbadc13-83d5-496f-82b4-b7a1765b9ad6",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "alunos",
+                "ddbadc13-83d5-496f-82b4-b7a1765b9ad6"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

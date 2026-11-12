@@ -1,0 +1,275 @@
+/* EstudoCasoView.css */
+
+.estudo-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  color: #374151;
+}
+
+/* Metadados */
+.estudo-view-metadados {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+  padding: 16px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.estudo-view-metadados-grupo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.estudo-view-metadado-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.estudo-view-metadado-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.estudo-view-metadado-valor {
+  color: #111827;
+  font-weight: 600;
+}
+
+.estudo-view-badge-situacao {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.estudo-view-badge-situacao.valido {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.estudo-view-badge-situacao.arquivado {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+/* Sanfona (Accordion) */
+.estudo-view-section {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.estudo-view-section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  border: none;
+  background: #ffffff;
+  color: #111827;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.estudo-view-section-toggle:hover {
+  background: #f9fafb;
+}
+
+.estudo-view-section-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.estudo-view-section-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #00523d;
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.estudo-view-section-chevron.expandido {
+  transform: rotate(180deg);
+}
+
+.estudo-view-section-panel {
+  padding: 0 20px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Campos de texto e Grids internos */
+.estudo-view-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 24px;
+  margin-top: 20px;
+}
+
+.estudo-view-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.estudo-view-campo-largo {
+  grid-column: 1 / -1;
+}
+
+.estudo-view-label {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.estudo-view-valor {
+  color: #1f2937;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.estudo-view-valor-vazio {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Listas e Badges */
+.estudo-view-lista {
+  margin: 0;
+  padding-left: 20px;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.estudo-view-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.estudo-view-tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Cards de Barreiras (Igual ao form) */
+.estudo-view-barreiras {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.estudo-view-barreira-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #00523d;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.estudo-view-barreira-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.estudo-view-barreira-header h4 {
+  margin: 0;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.estudo-view-prioridade {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.estudo-view-prioridade.baixa { background-color: #f3f4f6; color: #4b5563; }
+.estudo-view-prioridade.media { background-color: #fef3c7; color: #92400e; }
+.estudo-view-prioridade.alta { background-color: #fee2e2; color: #991b1b; }
+
+.estudo-view-rodape {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.estudo-view-btn-editar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.estudo-view-btn-editar:hover {
+  background-color: #f0fdf4;
+  border-color: #00523d;
+  color: #00523d;
+}
+
+
+.action-icon {
+  color: #000000;
+  font-size: 18px; 
+  flex-shrink: 0;
+  transition: color 0.2s ease-in-out;
+}
+
+.estudo-view-btn-editar:hover .action-icon {
+  color: #00523d;
+}
+
+@media (max-width: 768px) {
+  .estudo-view-grid {
+    grid-template-columns: 1fr;
+  }
+}
