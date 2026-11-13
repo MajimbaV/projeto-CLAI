@@ -109,4 +109,12 @@ public class CursoService {
         curso.setStatusAtivo(true);
         cursoRepository.save(curso);
     }
+
+    @Transactional
+    public void deleteCurso(UUID id) {
+        Curso curso = buscarOuFalhar(id);
+        validarCursoInativo(curso, "inativar");
+        curso.setStatusAtivo(false);
+        cursoRepository.save(curso);
+    }
 }
