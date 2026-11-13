@@ -14,7 +14,6 @@ import com.ifpb.edu.br.clai.specification.CursoSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,9 +51,15 @@ public class CursoService {
         }
     }
 
-    public void validarCursoAtivo(Curso curso, String operacao){
+    public void validarCursoInativo(Curso curso, String operacao){
         if (Boolean.FALSE.equals(curso.getStatusAtivo())) {
             throw new BusinessRuleException("Não é possível " + operacao + " porque o curso encontra-se inativo (arquivado).");
+        }
+    }
+
+    public void validarCursoAtivo(Curso curso, String operacao){
+        if (!Boolean.FALSE.equals(curso.getStatusAtivo())) {
+            throw new BusinessRuleException("Não é possível " + operacao + " porque o curso encontra-se ativo.");
         }
     }
 
@@ -97,4 +102,11 @@ public class CursoService {
         return CursoMapper.entityToResponse(curso);
     }
 
+    @Transactional
+    public void ativarCurso(UUID id) {
+        Curso curso = buscarOuFalhar(id);
+        validarCursoAtivo(curso, "ativar");
+        curso.setStatusAtivo(true);
+        cursoRepository.save(curso);
+    }
 }
