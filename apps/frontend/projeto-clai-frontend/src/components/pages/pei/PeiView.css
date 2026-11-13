@@ -1,0 +1,214 @@
+.pei-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  color: #374151;
+}
+
+/* Metadados */
+.pei-view-metadados {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+  padding: 16px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.pei-view-metadados-grupo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.pei-view-metadado-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.pei-view-metadado-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.pei-view-metadado-valor {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* Sanfona (Accordion) */
+.pei-view-section {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.pei-view-section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  border: none;
+  background: #ffffff;
+  color: #111827;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pei-view-section-toggle:hover {
+  background: #f9fafb;
+}
+
+.pei-view-section-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pei-view-section-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #00523d;
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.pei-view-section-chevron.expandido {
+  transform: rotate(180deg);
+}
+
+.pei-view-section-panel {
+  padding: 0 20px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Campos de texto e Grids internos */
+.pei-view-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 24px;
+  margin-top: 20px;
+}
+
+.pei-view-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pei-view-campo-largo {
+  grid-column: 1 / -1;
+}
+
+.pei-view-label {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pei-view-valor {
+  color: #1f2937;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.pei-view-valor-vazio {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Orientações e documentos */
+.pei-view-note {
+  margin: 18px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid #00523d;
+  border-radius: 4px;
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.pei-view-document-note {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.pei-view-document-note strong {
+  color: #374151;
+  font-size: 13px;
+}
+
+.pei-view-document-note p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Rodapé e botão de edição */
+.pei-view-rodape {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pei-view-btn-editar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.pei-view-btn-editar:hover {
+  background-color: #f0fdf4;
+  border-color: #00523d;
+  color: #00523d;
+}
+
+.action-icon {
+  color: #000000;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: color 0.2s ease-in-out;
+}
+
+.pei-view-btn-editar:hover .action-icon {
+  color: #00523d;
+}
+
+@media (max-width: 768px) {
+  .pei-view-grid {
+    grid-template-columns: 1fr;
+  }
+}
