@@ -7,20 +7,11 @@ import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatric
 import { useCreatePei } from "../../../hooks/pei/useCreatePei";
 
 const VALORES_INICIAIS = {
-  nomeEstudante: "",
-  matricula: "",
-  curso: "",
-  semestreAno: "",
   historico: "",
   necessidadesEspecificas: "",
   conhecimentosHabilidadesCapacidadesInteressesNecessidades: "",
   dificuldadesApresentadas: "",
   propostasAdaptacoesCurriculares: "",
-  assinaturaClai: "",
-  assinaturaSetorPedagogico: "",
-  assinaturaCoordenadorCurso: "",
-  assinaturaEstudanteResponsavel: "",
-  assinaturaDocente: "",
 };
 
 export default function AddPeiPage() {
@@ -55,10 +46,6 @@ export default function AddPeiPage() {
 
     const payload = {
       ...formData,
-      nomeEstudante: aluno?.alunoNome ?? aluno?.nome ?? formData.nomeEstudante,
-      matricula: aluno?.alunoMatricula ?? matricula ?? formData.matricula,
-      curso: aluno?.alunoCurso ?? aluno?.curso ?? formData.curso,
-      semestreAno: aluno?.periodoAluno ?? formData.semestreAno,
     };
 
     createPei(payload, {
