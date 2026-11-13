@@ -7,7 +7,7 @@ CREATE TABLE PUBLIC.pei (
                             conhecimentos_habilidades_interesses TEXT,
                             dificuldades_apresentadas TEXT,
                             propostas_adaptacoes TEXT,
-                            aluno_id BIGINT NOT NULL,
+                            aluno_id UUID NOT NULL,
                             ativo BOOLEAN DEFAULT TRUE,
 
                             CONSTRAINT pk_pei PRIMARY KEY (pei_id),
