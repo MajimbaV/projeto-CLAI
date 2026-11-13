@@ -64,4 +64,12 @@ public class CursoController {
         CursoResponseDto response = cursoService.getCursoById(id);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CursoResponseDto> updateCurso(
+            @PathVariable("id") UUID id,
+            @Valid @RequestBody CursoRequestDto dto) {
+        CursoResponseDto response = cursoService.updateCurso(id, dto);
+        return ResponseEntity.ok(response);
+    }
 }
