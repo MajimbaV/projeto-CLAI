@@ -17,6 +17,10 @@ import AlunoPlanejamentoPage from "./components/pages/planejamento/AlunoPlanejam
 import PlanoAcaoCreatePage from "./components/pages/planoacao/PlanoAcaoCreatePage";
 import PlanoAcaoEditPage from "./components/pages/planoacao/PlanoAcaoEditPage";
 
+import AddPeiPage from "./components/pages/pei/AddPeiPage";
+import EditPeiPage from "./components/pages/pei/EditPeiPage";
+import NewPeiPage from "./components/pages/pei/NewPeiPage";
+
 function App() {
   return (
     <Routes>
@@ -56,19 +60,22 @@ function App() {
         />
 
         {/* Rotas do Plano de Ação */}
-        <Route
-          path="plano-acao/novo"
-          element={<PlanoAcaoCreatePage />}
-        />
-        <Route
-          path="plano-acao/editar/:id"
-          element={<PlanoAcaoEditPage />}
-        />
-        <Route
-          path="plano-acao/:id/editar"
-          element={<PlanoAcaoEditPage />}
-        />
+        <Route path="plano-acao/novo" element={<PlanoAcaoCreatePage />} />
+        <Route path="plano-acao/editar/:id" element={<PlanoAcaoEditPage />} />
+        <Route path="plano-acao/:id/editar" element={<PlanoAcaoEditPage />} />
       </Route>
+      {/* PEI */}
+      <Route path="planejamento/pei/novo" element={<NewPeiPage />} />
+
+      <Route
+        path="planejamento/alunos/:matricula/pei/novo"
+        element={<AddPeiPage />}
+      />
+
+      <Route
+        path="planejamento/alunos/:matricula/pei/:id/editar"
+        element={<EditPeiPage />}
+      />
     </Routes>
   );
 }
