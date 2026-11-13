@@ -79,4 +79,10 @@ public class CursoController {
         cursoService.deleteCurso(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativarCurso(@PathVariable("id") UUID id) {
+        cursoService.ativarCurso(id);
+        return ResponseEntity.noContent().build();
+    }
 }
