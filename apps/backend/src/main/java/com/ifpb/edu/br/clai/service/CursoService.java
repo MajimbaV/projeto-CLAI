@@ -117,4 +117,16 @@ public class CursoService {
         curso.setStatusAtivo(false);
         cursoRepository.save(curso);
     }
+
+    @Transactional
+    public CursoResponseDto updateCurso(UUID id, CursoRequestDto request) {
+        Curso curso = buscarOuFalhar(id);
+
+        validarRegrasAdicionais(request);
+
+        CursoMapper.requestToEntity(request, curso);
+
+        Curso cursoAtualizado = cursoRepository.save(curso);
+        return CursoMapper.entityToResponse(cursoAtualizado);
+    }
 }

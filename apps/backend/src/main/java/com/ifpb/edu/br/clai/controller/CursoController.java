@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173") //Alterar isso quando fizer deploy
@@ -55,6 +56,12 @@ public class CursoController {
     @GetMapping("/sigla/{sigla}")
     public ResponseEntity<CursoResponseDto> getCursoBySigla(@PathVariable String sigla) {
         CursoResponseDto response = cursoService.getCursoBySigla(sigla);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CursoResponseDto> getCursoById(@PathVariable("id") UUID id) {
+        CursoResponseDto response = cursoService.getCursoById(id);
         return ResponseEntity.ok(response);
     }
 
