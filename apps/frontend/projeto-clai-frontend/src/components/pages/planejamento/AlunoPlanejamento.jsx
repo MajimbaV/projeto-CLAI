@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import EditImg from "../../../assets/Edit.png";
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
@@ -288,6 +289,8 @@ function AlunoPlanejamento({
   onNovoPei,
   onEditarPei,
 }) {
+  const navigate = useNavigate();
+
   const [abaAtiva, setAbaAtiva] = useState("estudo-caso");
 
   const [estudosExpandidos, setEstudosExpandidos] = useState([]);
@@ -332,6 +335,24 @@ function AlunoPlanejamento({
       atuais.includes(id)
         ? atuais.filter((item) => item !== id)
         : [...atuais, id],
+    );
+  }
+
+  function adicionarPea(pei) {
+    if (!pei?.id) {
+      return;
+    }
+
+    navigate(
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(pei.id)}/pea/novo`,
+      {
+        state: {
+          aluno,
+          pei,
+          matriculaAluno: matricula,
+          returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
+        },
+      },
     );
   }
 
@@ -754,6 +775,16 @@ function AlunoPlanejamento({
                 {expandido && (
                   <div className="planejamento-pei-detalhes">
                     <PeiView dados={pei} onEdit={onEditarPei} />
+
+                    <button
+                      type="button"
+                      className="planejamento-botao-principal"
+                      disabled={!pei.id}
+                      onClick={() => adicionarPea(pei)}
+                    >
+                      <span aria-hidden="true">+</span>
+                      Adicionar PEA
+                    </button>
 
                     {/*
                       O PEI funciona como documento principal deste conjunto.
