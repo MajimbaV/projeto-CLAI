@@ -3,7 +3,6 @@ package com.ifpb.edu.br.clai.dto.aluno;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public record AlunoRequestDto(
         @NotBlank(message = "O nome do aluno é obrigatório")
@@ -31,8 +30,9 @@ public record AlunoRequestDto(
         @Pattern(regexp = "^\\d+$", message = "A matrícula deve conter apenas números")
         @Size(min = 5, max = 100, message = "A matrícula deve ter entre 5 e 100 caracteres")
         String alunoMatricula,
-        @NotNull(message = "O curso do aluno é obrigatório")
-        UUID cursoId,
+        @NotBlank(message = "O curso do aluno é obrigatório")
+        @Size(max = 100, message = "O curso deve ter no máximo 100 caracteres")
+        String alunoCurso,
         @NotBlank(message = "O período de ingresso é obrigatório")
         @Pattern(
                 regexp = "^\\d{4}\\.[1-2]$",

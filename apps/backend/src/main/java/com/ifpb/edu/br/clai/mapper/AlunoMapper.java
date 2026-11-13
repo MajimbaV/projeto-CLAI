@@ -11,6 +11,7 @@ public class AlunoMapper {
         aluno.setAlunoTelefone(request.alunoTelefone());
         aluno.setAlunoEmail(request.alunoEmail());
         aluno.setAlunoMatricula(request.alunoMatricula());
+        aluno.setAlunoCurso(request.alunoCurso());
         aluno.setPeriodoIngresso(request.periodoIngresso());
         aluno.setPeriodoAluno(request.periodoAluno());
         aluno.setNomeResponsavel(request.nomeResponsavel());
@@ -35,11 +36,7 @@ public class AlunoMapper {
                 aluno.getResponsavelTelefone(),
                 aluno.getResponsavelEmail(),
                 aluno.getAlunoMatricula(),
-                aluno.getCurso() == null ? null : new AlunoResponseDto.CursoDto(
-                        aluno.getCurso().getId(),
-                        aluno.getCurso().getNomeCurso()
-                ),
-                aluno.getCurso() == null ? null : aluno.getCurso().getNomeCurso(),
+                aluno.getAlunoCurso(),
                 aluno.getPeriodoIngresso(),
                 aluno.getPeriodoAluno(),
                 aluno.getStatusAtivo()
