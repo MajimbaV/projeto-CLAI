@@ -64,5 +64,4 @@ public class CursoController {
         CursoResponseDto response = cursoService.getCursoById(id);
         return ResponseEntity.ok(response);
     }
-
 }
