@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,6 +58,11 @@ public class CursoService {
         }
     }
 
+    public Curso buscarOuFalhar(UUID id) {
+        return cursoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com o ID: " + id));
+    }
+
     @Transactional
     public CursoResponseDto createCurso(CursoRequestDto request){
         validarRegrasAdicionais(request);
@@ -84,4 +90,11 @@ public class CursoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com a sigla: " + sigla));
         return CursoMapper.entityToResponse(curso);
     }
+
+    @Transactional(readOnly = true)
+    public CursoResponseDto getCursoById(UUID id) {
+        Curso curso = buscarOuFalhar(id);
+        return CursoMapper.entityToResponse(curso);
+    }
+
 }
