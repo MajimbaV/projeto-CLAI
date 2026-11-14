@@ -1,5 +1,6 @@
 package com.ifpb.edu.br.clai.model.aluno;
 
+import com.ifpb.edu.br.clai.model.curso.Curso;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,8 +45,9 @@ public class Aluno {
     @Column(name = "al_matricula",nullable = false, unique = true, length = 100)
     private String alunoMatricula;
 
-    @Column(name="al_curso", nullable = false, length = 100)
-    private String alunoCurso;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curso_id", nullable = false)
+    private Curso curso;
 
     @Column(name = "al_periodo_ingresso", nullable = false)
     private String periodoIngresso;

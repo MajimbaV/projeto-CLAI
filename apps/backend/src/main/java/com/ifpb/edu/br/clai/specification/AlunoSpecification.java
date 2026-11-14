@@ -1,11 +1,13 @@
 package com.ifpb.edu.br.clai.specification;
 
 import com.ifpb.edu.br.clai.model.aluno.Aluno;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Expression;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public final class AlunoSpecification {
 
@@ -41,8 +43,21 @@ public final class AlunoSpecification {
                 return cb.conjunction();
             }
 
-            String termoBusca = "%" + curso.toLowerCase() + "%";
-            return cb.like(cb.lower(root.get("alunoCurso")), termoBusca);
+            String termo = Normalizer.normalize(curso.toLowerCase(), Normalizer.Form.NFD)
+                    .replaceAll("\\p{M}+", "");
+            Expression<String> nomeCurso = cb.lower(root.join("curso", JoinType.LEFT).get("nomeCurso"));
+            Expression<String> nomeCursoTratado = cb.function(
+                    "translate", String.class, nomeCurso,
+                    cb.literal("áéíóúãõâêîôûç"), cb.literal("aeiouaoaeiouc")
+            );
+            return cb.like(nomeCursoTratado, "%" + termo + "%");
+        };
+    }
+
+    public static Specification<Aluno> filtrarPorCursoId(UUID cursoId) {
+        return (root, query, cb) -> {
+            if (cursoId == null) return cb.conjunction();
+            return cb.equal(root.get("curso").get("id"), cursoId);
         };
     }
 

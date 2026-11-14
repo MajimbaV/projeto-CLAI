@@ -7,12 +7,16 @@ import com.ifpb.edu.br.clai.exception.FieldValidationException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.AlunoMapper;
 import com.ifpb.edu.br.clai.model.aluno.Aluno;
+import com.ifpb.edu.br.clai.model.curso.Curso;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
+import com.ifpb.edu.br.clai.repository.CursoRepository;
 import com.ifpb.edu.br.clai.specification.AlunoSpecification;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -27,9 +31,11 @@ import java.util.UUID;
 public class AlunoService {
 
     private final AlunoRepository alunoRepository;
+    private final CursoRepository cursoRepository;
 
-    public AlunoService(AlunoRepository alunoRepository) {
+    public AlunoService(AlunoRepository alunoRepository, CursoRepository cursoRepository) {
         this.alunoRepository = alunoRepository;
+        this.cursoRepository = cursoRepository;
     }
 
     private void validarRegrasAdicionais(AlunoRequestDto dto) {
@@ -126,6 +132,7 @@ public class AlunoService {
 
         Aluno aluno = new Aluno();
         AlunoMapper.requestToEntity(dto, aluno);
+        aluno.setCurso(buscarCursoAtivo(dto.cursoId()));
 
         aluno.setStatusAtivo(true);
 
@@ -134,7 +141,7 @@ public class AlunoService {
     }
 
 
-    public Page<AlunoResponseDto> getAllAlunos(String nome, String matricula, String curso, String periodo, Boolean maioridade, Boolean statusAtivo, Pageable pageable) {
+    public Page<AlunoResponseDto> getAllAlunos(String nome, String matricula, String curso, UUID cursoId, String periodo, Boolean maioridade, Boolean statusAtivo, Pageable pageable) {
 
         if (statusAtivo == null) {
             statusAtivo = true;
@@ -143,11 +150,12 @@ public class AlunoService {
         Specification<Aluno> spec = Specification.where(AlunoSpecification.filtrarPorNome(nome))
                 .and(AlunoSpecification.filtrarPorMatricula(matricula))
                 .and(AlunoSpecification.filtrarPorCurso(curso))
+                .and(AlunoSpecification.filtrarPorCursoId(cursoId))
                 .and(AlunoSpecification.filtrarPorPeriodo(periodo))
                 .and(AlunoSpecification.filtrarPorMaioridade(maioridade))
                 .and(AlunoSpecification.filtrarPorStatusAtivo(statusAtivo));
 
-        return alunoRepository.findAll(spec, pageable)
+        return alunoRepository.findAll(spec, mapearOrdenacaoCurso(pageable))
                 .map(AlunoMapper::entityToResponse);
     }
 
@@ -164,8 +172,31 @@ public class AlunoService {
         validarMatriculaUnica(dto.alunoMatricula(), id);
 
         AlunoMapper.requestToEntity(dto, aluno);
+        aluno.setCurso(buscarCursoAtivo(dto.cursoId()));
         Aluno alunoAtualizado = alunoRepository.save(aluno);
         return AlunoMapper.entityToResponse(alunoAtualizado);
+    }
+
+    private Curso buscarCursoAtivo(UUID cursoId) {
+        Curso curso = cursoRepository.findById(cursoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com o ID: " + cursoId));
+        if (Boolean.FALSE.equals(curso.getStatusAtivo())) {
+            throw new BusinessRuleException("Não é possível associar o aluno porque o curso encontra-se inativo (arquivado).");
+        }
+        return curso;
+    }
+
+    private Pageable mapearOrdenacaoCurso(Pageable pageable) {
+        Sort sort = Sort.by(pageable.getSort().stream()
+                .map(order -> "alunoCurso".equals(order.getProperty())
+                        ? order.withProperty("curso.nomeCurso")
+                        : order)
+                .toList());
+
+        if (pageable.isUnpaged()) {
+            return Pageable.unpaged(sort);
+        }
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
     }
 
     @Transactional
