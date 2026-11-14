@@ -5,6 +5,7 @@ import PeiForm from "./PeiForm";
 
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useCreatePei } from "../../../hooks/pei/useCreatePei";
+import { mapearParaPeiDTO } from "../../../utils/peiMapper";
 
 const VALORES_INICIAIS = {
   historico: "",
@@ -44,9 +45,7 @@ export default function AddPeiPage() {
   function handleSubmit(event) {
     event.preventDefault();
 
-    const payload = {
-      ...formData,
-    };
+    const payload = mapearParaPeiDTO(formData, aluno.id);
 
     createPei(payload, {
       onSuccess: () => navigate(caminhoDeVolta),
