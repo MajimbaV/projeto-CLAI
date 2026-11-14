@@ -6,22 +6,14 @@ import FormSelect from "../../forms/FormSelect";
 
 import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
 import { useCreatePei } from "../../../hooks/pei/useCreatePei";
+import { mapearParaPeiDTO } from "../../../utils/peiMapper";
 
 const VALORES_INICIAIS = {
-  nomeEstudante: "",
-  matricula: "",
-  curso: "",
-  semestreAno: "",
   historico: "",
   necessidadesEspecificas: "",
   conhecimentosHabilidadesCapacidadesInteressesNecessidades: "",
   dificuldadesApresentadas: "",
   propostasAdaptacoesCurriculares: "",
-  assinaturaClai: "",
-  assinaturaSetorPedagogico: "",
-  assinaturaCoordenadorCurso: "",
-  assinaturaEstudanteResponsavel: "",
-  assinaturaDocente: "",
 };
 
 function obterChaveAluno(aluno) {
@@ -34,10 +26,6 @@ function obterMatricula(aluno) {
 
 function obterNomeAluno(aluno) {
   return aluno?.alunoNome ?? aluno?.nome ?? "";
-}
-
-function obterCursoAluno(aluno) {
-  return aluno?.alunoCurso ?? aluno?.curso ?? "";
 }
 
 export default function NewPeiPage() {
@@ -90,13 +78,7 @@ export default function NewPeiPage() {
       return;
     }
 
-    const payload = {
-      ...formData,
-      nomeEstudante: obterNomeAluno(alunoSelecionado),
-      matricula: obterMatricula(alunoSelecionado),
-      curso: obterCursoAluno(alunoSelecionado),
-      semestreAno: formData.semestreAno || alunoSelecionado.periodoAluno || "",
-    };
+    const payload = mapearParaPeiDTO(formData, alunoSelecionado.id);
 
     createPei(payload, {
       onSuccess: () => navigate(caminhoDeVolta),

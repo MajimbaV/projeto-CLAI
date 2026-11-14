@@ -1,7 +1,7 @@
 import api from './api'
 
-export function postPei(data) {
-    const response = api.post('/peis', data);
+export async function postPei(data) {
+    const response = await api.post('/peis', data);
     return response.data;
 }
 

@@ -5,22 +5,14 @@ import PeiForm from "./PeiForm";
 
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useCreatePei } from "../../../hooks/pei/useCreatePei";
+import { mapearParaPeiDTO } from "../../../utils/peiMapper";
 
 const VALORES_INICIAIS = {
-  nomeEstudante: "",
-  matricula: "",
-  curso: "",
-  semestreAno: "",
   historico: "",
   necessidadesEspecificas: "",
   conhecimentosHabilidadesCapacidadesInteressesNecessidades: "",
   dificuldadesApresentadas: "",
   propostasAdaptacoesCurriculares: "",
-  assinaturaClai: "",
-  assinaturaSetorPedagogico: "",
-  assinaturaCoordenadorCurso: "",
-  assinaturaEstudanteResponsavel: "",
-  assinaturaDocente: "",
 };
 
 export default function AddPeiPage() {
@@ -53,13 +45,7 @@ export default function AddPeiPage() {
   function handleSubmit(event) {
     event.preventDefault();
 
-    const payload = {
-      ...formData,
-      nomeEstudante: aluno?.alunoNome ?? aluno?.nome ?? formData.nomeEstudante,
-      matricula: aluno?.alunoMatricula ?? matricula ?? formData.matricula,
-      curso: aluno?.alunoCurso ?? aluno?.curso ?? formData.curso,
-      semestreAno: aluno?.periodoAluno ?? formData.semestreAno,
-    };
+    const payload = mapearParaPeiDTO(formData, aluno.id);
 
     createPei(payload, {
       onSuccess: () => navigate(caminhoDeVolta),
