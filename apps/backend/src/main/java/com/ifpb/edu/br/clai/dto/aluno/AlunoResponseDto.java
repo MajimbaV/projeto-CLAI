@@ -14,8 +14,11 @@ public record AlunoResponseDto(
         String responsavelTelefone,
         String responsavelEmail,
         String alunoMatricula,
+        CursoDto curso,
         String alunoCurso,
         String periodoIngresso,
         String periodoAluno,
         Boolean statusAtivo
-) {}
+) {
+    public record CursoDto(UUID id, String nomeCurso) {}
+}

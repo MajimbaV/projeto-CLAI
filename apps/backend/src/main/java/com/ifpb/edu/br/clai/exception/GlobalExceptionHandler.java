@@ -2,6 +2,7 @@ package com.ifpb.edu.br.clai.exception;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,25 +25,27 @@ import java.util.UUID;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex) {
+    public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setTitle("Recurso não encontrado");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/not-found"));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         return problemDetail;
     }
 
     @ExceptionHandler(BusinessRuleException.class)
-    public ProblemDetail handleBusinessRule(BusinessRuleException ex) {
+    public ProblemDetail handleBusinessRule(BusinessRuleException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
         problemDetail.setTitle("Violação de regra de negócio");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/business-rule"));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         return problemDetail;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
+    public ProblemDetail handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Falha na validação dos campos.");
         problemDetail.setTitle("Dados inválidos");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/invalid-data"));
@@ -54,21 +57,23 @@ public class GlobalExceptionHandler {
 
         problemDetail.setProperty("invalidFields", errors);
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         return problemDetail;
     }
 
     @ExceptionHandler(FieldValidationException.class)
-    public ProblemDetail handleFieldValidation(FieldValidationException ex) {
+    public ProblemDetail handleFieldValidation(FieldValidationException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Falha na validação dos campos condicionais.");
         problemDetail.setTitle("Dados inválidos");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/invalid-data"));
         problemDetail.setProperty("invalidFields", ex.getInvalidFields());
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         return problemDetail;
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ProblemDetail handleConstraintViolation(ConstraintViolationException ex) {
+    public ProblemDetail handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Falha na validação dos parâmetros de consulta.");
         problemDetail.setTitle("Parâmetros inválidos");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/invalid-parameters"));
@@ -82,11 +87,12 @@ public class GlobalExceptionHandler {
 
         problemDetail.setProperty("invalidFields", errors);
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         return problemDetail;
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         String paramName = ex.getName();
         String expectedType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "tipo esperado";
         String message = String.format("O parâmetro '%s' recebeu o valor '%s', que é inválido para o tipo %s.",
@@ -97,17 +103,18 @@ public class GlobalExceptionHandler {
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/type-mismatch"));
         problemDetail.setProperty("invalidFields", Map.of(paramName, message));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         return problemDetail;
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ProblemDetail handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    public ProblemDetail handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
         InvalidFormatException invalidFormat = findInvalidFormatException(ex);
         if (invalidFormat != null && invalidFormat.getTargetType() == UUID.class) {
             String field = formatFieldPath(invalidFormat.getPath());
             String fieldName = field.isBlank() ? "identificacao.alunoId" : field;
             ProblemDetail problemDetail = invalidPayloadProblem(
-                    "O campo " + fieldName + " deve conter um UUID válido."
+                    "O campo " + fieldName + " deve conter um UUID válido.", request
             );
             problemDetail.setProperty("invalidFields", Map.of(fieldName, "Informe um UUID válido."));
             return problemDetail;
@@ -118,14 +125,14 @@ public class GlobalExceptionHandler {
             String detail = field.isBlank()
                     ? "Data inválida. Use o formato AAAA-MM-DD."
                     : "O campo " + field + " deve conter uma data válida no formato AAAA-MM-DD.";
-            ProblemDetail problemDetail = invalidPayloadProblem(detail);
+            ProblemDetail problemDetail = invalidPayloadProblem(detail, request);
             if (!field.isBlank()) {
                 problemDetail.setProperty("invalidFields", Map.of(field, "Use uma data válida no formato AAAA-MM-DD."));
             }
             return problemDetail;
         }
 
-        return invalidPayloadProblem("Formato do JSON ou valor de algum campo inválido.");
+        return invalidPayloadProblem("Formato do JSON ou valor de algum campo inválido.", request);
     }
 
     private InvalidFormatException findInvalidFormatException(Throwable exception) {
@@ -154,29 +161,32 @@ public class GlobalExceptionHandler {
         return fieldPath.toString();
     }
 
-    private ProblemDetail invalidPayloadProblem(String detail) {
+    private ProblemDetail invalidPayloadProblem(String detail, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
         problemDetail.setTitle("Erro de Formato / Sintaxe");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/bad-request"));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         return problemDetail;
     }
 
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-    public ProblemDetail handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex) {
+    public ProblemDetail handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "A operação não pôde ser concluída devido a um conflito de dados.");
         problemDetail.setTitle("Conflito de Integridade de Dados");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/data-conflict"));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         return problemDetail;
     }
 
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleAllUncaughtException(Exception ex) {
+    public ProblemDetail handleAllUncaughtException(Exception ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro interno inesperado no servidor.");
         problemDetail.setTitle("Erro Interno do Servidor");
         problemDetail.setType(URI.create("https://api.clai.ifpb.edu.br/errors/internal-server-error"));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
 
         System.err.println("Erro inesperado: " + ex.getMessage());
 
