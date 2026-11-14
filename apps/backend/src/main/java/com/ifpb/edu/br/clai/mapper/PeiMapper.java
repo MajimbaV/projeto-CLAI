@@ -15,6 +15,7 @@ public final class PeiMapper {
         pei.setHistorico(request.historico());
         pei.setNecessidadesEspecificas(request.necessidadesEspecificas());
         pei.setConhecimentosHabilidadesInteresses(request.conhecimentosHabilidadesInteresses());
+        pei.setPeriodoPei(aluno.getPeriodoAluno());
         pei.setDificuldadesApresentadas(request.dificuldadesApresentadas());
         pei.setPropostasAdaptacoes(request.propostasAdaptacoes());
         pei.setAtivo(request.ativo() != null ? request.ativo() : true);
@@ -33,7 +34,8 @@ public final class PeiMapper {
                 pei.getConhecimentosHabilidadesInteresses(),
                 pei.getDificuldadesApresentadas(),
                 pei.getPropostasAdaptacoes(),
-                pei.getAtivo()
+                pei.getAtivo(),
+                pei.getPeriodoPei()
         );
     }
 }

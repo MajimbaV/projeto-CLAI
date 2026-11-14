@@ -41,4 +41,8 @@ public class Pei {
 
     @Column(name = "ativo")
     private Boolean ativo = true;
+
+
+    @Column(name = "pei_periodo", nullable = false)
+    private String periodoPei;
 }
