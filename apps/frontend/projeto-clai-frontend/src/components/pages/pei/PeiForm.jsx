@@ -1,23 +1,13 @@
-import FormField from "../../forms/FormField";
 import FormTextarea from "../../forms/FormTextarea";
 
 import "./PeiForm.css";
 
 const VALORES_PADRAO = {
-  nomeEstudante: "",
-  matricula: "",
-  curso: "",
-  semestreAno: "",
   historico: "",
   necessidadesEspecificas: "",
   conhecimentosHabilidadesCapacidadesInteressesNecessidades: "",
   dificuldadesApresentadas: "",
   propostasAdaptacoesCurriculares: "",
-  assinaturaClai: "",
-  assinaturaSetorPedagogico: "",
-  assinaturaCoordenadorCurso: "",
-  assinaturaEstudanteResponsavel: "",
-  assinaturaDocente: "",
 };
 
 function FormSection({ title, description, note, children }) {
@@ -65,22 +55,22 @@ export default function PeiForm({
 
   const identificacao = {
     nomeEstudante:
-      alunoSelecionado?.alunoNome ??
-      alunoSelecionado?.nome ??
-      valores.nomeEstudante,
+      alunoSelecionado?.alunoNome ?? alunoSelecionado?.nome ?? "Não informado",
 
     matricula:
       alunoSelecionado?.alunoMatricula ??
       alunoSelecionado?.matricula ??
-      valores.matricula,
+      "Não informada",
 
     curso:
-      alunoSelecionado?.alunoCurso ?? alunoSelecionado?.curso ?? valores.curso,
+      alunoSelecionado?.alunoCurso ??
+      alunoSelecionado?.curso ??
+      "Não informado",
 
     semestreAno:
-      alunoSelecionado?.semestreAno ??
       alunoSelecionado?.periodoAluno ??
-      valores.semestreAno,
+      alunoSelecionado?.semestreAno ??
+      "Não informado",
   };
 
   return (
@@ -113,64 +103,30 @@ export default function PeiForm({
             <div className="pei-student-summary">
               <div>
                 <span>Nome do estudante</span>
-                <strong>
-                  {identificacao.nomeEstudante || "Não informado"}
-                </strong>
+                <strong>{identificacao.nomeEstudante}</strong>
               </div>
 
               <div>
                 <span>Matrícula</span>
-                <strong>{identificacao.matricula || "Não informada"}</strong>
+                <strong>{identificacao.matricula}</strong>
               </div>
 
               <div>
                 <span>Curso</span>
-                <strong>{identificacao.curso || "Não informado"}</strong>
+                <strong>{identificacao.curso}</strong>
               </div>
 
               <div>
                 <span>Semestre/Ano</span>
-                <strong>{identificacao.semestreAno || "Não informado"}</strong>
+                <strong>{identificacao.semestreAno}</strong>
               </div>
             </div>
           ) : (
-            <div className="pei-form-grid">
-              <FormField
-                name="nomeEstudante"
-                label="Nome do estudante"
-                value={valores.nomeEstudante}
-                onChange={handleChange}
-                disabled={isLoading}
-                error={fieldErrors.nomeEstudante}
-              />
-
-              <FormField
-                name="matricula"
-                label="Matrícula"
-                value={valores.matricula}
-                onChange={handleChange}
-                disabled={isLoading}
-                error={fieldErrors.matricula}
-              />
-
-              <FormField
-                name="curso"
-                label="Curso"
-                value={valores.curso}
-                onChange={handleChange}
-                disabled={isLoading}
-                error={fieldErrors.curso}
-              />
-
-              <FormField
-                name="semestreAno"
-                label="Semestre/Ano"
-                value={valores.semestreAno}
-                onChange={handleChange}
-                placeholder="Ex.: 2026.2"
-                disabled={isLoading}
-                error={fieldErrors.semestreAno}
-              />
+            <div className="pei-document-note">
+              <p>
+                Nenhum estudante selecionado. Selecione um aluno para visualizar
+                seus dados e preencher o Plano Educacional Individualizado.
+              </p>
             </div>
           )}
         </FormSection>
@@ -270,58 +226,6 @@ export default function PeiForm({
           {/* Os componentes internos de PEA e RAI serão integrados posteriormente. */}
         </FormSection>
 
-        <FormSection
-          title="7. Assinaturas"
-          description="Identificação dos responsáveis pela elaboração e validação do Plano Educacional Individualizado."
-        >
-          <div className="pei-form-grid">
-            <FormField
-              name="assinaturaClai"
-              label="Assinatura da CLAI"
-              value={valores.assinaturaClai}
-              onChange={handleChange}
-              disabled={isLoading}
-              error={fieldErrors.assinaturaClai}
-            />
-
-            <FormField
-              name="assinaturaSetorPedagogico"
-              label="Assinatura do Setor Pedagógico (responsável)"
-              value={valores.assinaturaSetorPedagogico}
-              onChange={handleChange}
-              disabled={isLoading}
-              error={fieldErrors.assinaturaSetorPedagogico}
-            />
-
-            <FormField
-              name="assinaturaCoordenadorCurso"
-              label="Assinatura do(a) Coordenador(a) de Curso"
-              value={valores.assinaturaCoordenadorCurso}
-              onChange={handleChange}
-              disabled={isLoading}
-              error={fieldErrors.assinaturaCoordenadorCurso}
-            />
-
-            <FormField
-              name="assinaturaEstudanteResponsavel"
-              label="Assinatura do Estudante ou Responsável"
-              value={valores.assinaturaEstudanteResponsavel}
-              onChange={handleChange}
-              disabled={isLoading}
-              error={fieldErrors.assinaturaEstudanteResponsavel}
-            />
-
-            <FormField
-              name="assinaturaDocente"
-              label="Assinatura do Docente"
-              value={valores.assinaturaDocente}
-              onChange={handleChange}
-              disabled={isLoading}
-              error={fieldErrors.assinaturaDocente}
-            />
-          </div>
-        </FormSection>
-
         <div className="pei-form-actions">
           <p className="pei-footer-note">
             As informações registradas devem estar relacionadas às necessidades
@@ -343,7 +247,7 @@ export default function PeiForm({
             <button
               type="submit"
               className="pei-btn-submit"
-              disabled={isLoading}
+              disabled={isLoading || !alunoSelecionado}
             >
               {isLoading ? "Salvando..." : "Salvar PEI"}
             </button>
