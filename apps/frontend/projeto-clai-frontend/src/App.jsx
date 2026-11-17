@@ -63,19 +63,20 @@ function App() {
         <Route path="plano-acao/novo" element={<PlanoAcaoCreatePage />} />
         <Route path="plano-acao/editar/:id" element={<PlanoAcaoEditPage />} />
         <Route path="plano-acao/:id/editar" element={<PlanoAcaoEditPage />} />
+
+        {/* PEI */}
+        <Route path="planejamento/pei/novo" element={<NewPeiPage />} />
+
+        <Route
+          path="planejamento/alunos/:matricula/pei/novo"
+          element={<AddPeiPage />}
+        />
+
+        <Route
+          path="planejamento/alunos/:matricula/pei/:id/editar"
+          element={<EditPeiPage />}
+        />
       </Route>
-      {/* PEI */}
-      <Route path="planejamento/pei/novo" element={<NewPeiPage />} />
-
-      <Route
-        path="planejamento/alunos/:matricula/pei/novo"
-        element={<AddPeiPage />}
-      />
-
-      <Route
-        path="planejamento/alunos/:matricula/pei/:id/editar"
-        element={<EditPeiPage />}
-      />
     </Routes>
   );
 }
