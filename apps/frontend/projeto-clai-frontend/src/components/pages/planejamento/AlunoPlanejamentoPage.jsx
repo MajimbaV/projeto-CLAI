@@ -31,7 +31,7 @@ function AlunoPlanejamentoPage() {
       {
         state: {
           estudoCaso: estudo,
-          matricula: matricula
+          matricula: matricula,
         },
       },
     );
@@ -57,6 +57,14 @@ function AlunoPlanejamentoPage() {
     });
   }
 
+  function novoPei() {
+    navigate(`/planejamento/alunos/${encodeURIComponent(matricula)}/pei/novo`, {
+      state: {
+        matricula,
+      },
+    });
+  }
+
   return (
     <AlunoPlanejamento
       matriculaAluno={matricula}
@@ -68,6 +76,7 @@ function AlunoPlanejamentoPage() {
         navigate(`/alunos/${encodeURIComponent(matricula)}/estudo-caso/novo`)
       }
       onNovoPlanoAcao={novoPlanoAcao}
+      onNovoPei={novoPei}
       onEditarEstudoCaso={editarEstudoCaso}
       onEditarPlanoAcao={editarPlanoAcao}
     />
