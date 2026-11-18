@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import EditImg from "../../../assets/Edit.png";
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
@@ -248,9 +247,8 @@ function AlunoPlanejamento({
   erroPeis = null,
   onNovoPei,
   onEditarPei,
+  onNovoPea,
 }) {
-  const navigate = useNavigate();
-
   const [abaAtiva, setAbaAtiva] = useState("estudo-caso");
   const [estudosExpandidos, setEstudosExpandidos] = useState([]);
   const [planosExpandidos, setPlanosExpandidos] = useState([]);
@@ -290,7 +288,6 @@ function AlunoPlanejamento({
         : [...atuais, id],
     );
   }
-
   if (isLoading) {
     return (
       <div className="aluno-planejamento-body">
@@ -337,27 +334,6 @@ function AlunoPlanejamento({
     : Array.isArray(peisData?.content)
       ? peisData.content
       : [];
-
-  function adicionarPea(pei) {
-    const idPei = pei?.id ?? pei?._id;
-
-    if (!idPei || !aluno) {
-      return;
-    }
-
-    navigate(
-      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/pea/novo`,
-      {
-        state: {
-          aluno,
-          pei,
-          peiId: idPei,
-          matriculaAluno: matricula,
-          returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
-        },
-      },
-    );
-  }
   function renderizarEstudosCaso() {
     if (isLoadingEstudosCaso) {
       return (
@@ -680,25 +656,23 @@ function AlunoPlanejamento({
                 {expandido && (
                   <div className="planejamento-pei-detalhes">
                     <PeiView dados={pei} onEdit={onEditarPei} />
-
                     <button
                       type="button"
                       className="planejamento-botao-principal"
-                      disabled={!pei.id && !pei._id}
-                      onClick={() => adicionarPea(pei)}
+                      disabled={!onNovoPea || !(pei?.id ?? pei?._id)}
+                      onClick={() => onNovoPea?.(pei, aluno)}
                     >
                       <span aria-hidden="true">+</span>
                       Adicionar PEA
                     </button>
-
                     {/*
-       O PEI funciona como documento principal deste conjunto.
+                      O PEI funciona como documento principal deste conjunto.
 
-      Os PEA e RAI vinculados a este PEI serão apresentados nesta área.
+                      Os PEA e RAI vinculados a este PEI serão apresentados nesta área.
 
-      Cada documento deverá utilizar o identificador do PEI
-      correspondente para manter o vínculo entre os registros.
-    */}
+                      Cada documento deverá utilizar o identificador do PEI
+                      correspondente para manter o vínculo entre os registros.
+                    */}
                   </div>
                 )}
               </div>

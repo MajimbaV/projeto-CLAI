@@ -65,6 +65,25 @@ function AlunoPlanejamentoPage() {
     });
   }
 
+  function adicionarPea(pei, aluno) {
+    const idPei = pei?.id ?? pei?._id;
+
+    if (!idPei || !aluno) return;
+
+    navigate(
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/pea/novo`,
+      {
+        state: {
+          aluno,
+          pei,
+          peiId: idPei,
+          matriculaAluno: matricula,
+          returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
+        },
+      },
+    );
+  }
+
   return (
     <AlunoPlanejamento
       matriculaAluno={matricula}
@@ -77,6 +96,7 @@ function AlunoPlanejamentoPage() {
       }
       onNovoPlanoAcao={novoPlanoAcao}
       onNovoPei={novoPei}
+      onAdicionarPea={adicionarPea}
       onEditarEstudoCaso={editarEstudoCaso}
       onEditarPlanoAcao={editarPlanoAcao}
     />
