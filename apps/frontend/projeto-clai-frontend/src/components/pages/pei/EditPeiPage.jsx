@@ -8,20 +8,11 @@ import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatric
 import { useGetPei } from "../../../hooks/pei/useGetPei";
 
 const VALORES_INICIAIS = {
-  nomeEstudante: "",
-  matricula: "",
-  curso: "",
-  semestreAno: "",
   historico: "",
   necessidadesEspecificas: "",
   conhecimentosHabilidadesCapacidadesInteressesNecessidades: "",
   dificuldadesApresentadas: "",
   propostasAdaptacoesCurriculares: "",
-  assinaturaClai: "",
-  assinaturaSetorPedagogico: "",
-  assinaturaCoordenadorCurso: "",
-  assinaturaEstudanteResponsavel: "",
-  assinaturaDocente: "",
 };
 
 export default function EditPeiPage() {
@@ -53,6 +44,17 @@ export default function EditPeiPage() {
 
   if (isLoadingPei || isLoadingAluno) {
     return <div>Carregando dados...</div>;
+  }
+
+  if (!peiAtual || !aluno) {
+    return (
+      <div>
+        <p>Não foi possível carregar os dados do PEI ou do estudante.</p>
+        <button type="button" onClick={() => navigate(caminhoDeVolta)}>
+          Voltar
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -93,12 +95,12 @@ function EditPeiForm({
     event.preventDefault();
 
     const payload = {
-      ...formData,
-      nomeEstudante: aluno?.alunoNome ?? aluno?.nome ?? formData.nomeEstudante,
-      matricula:
-        aluno?.alunoMatricula ?? aluno?.matricula ?? formData.matricula,
-      curso: aluno?.alunoCurso ?? aluno?.curso ?? formData.curso,
-      semestreAno: aluno?.periodoAluno ?? formData.semestreAno,
+      historico: formData.historico,
+      necessidadesEspecificas: formData.necessidadesEspecificas,
+      conhecimentosHabilidadesCapacidadesInteressesNecessidades:
+        formData.conhecimentosHabilidadesCapacidadesInteressesNecessidades,
+      dificuldadesApresentadas: formData.dificuldadesApresentadas,
+      propostasAdaptacoesCurriculares: formData.propostasAdaptacoesCurriculares,
     };
 
     updatePei(payload);

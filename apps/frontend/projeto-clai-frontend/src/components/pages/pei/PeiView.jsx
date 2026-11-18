@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import { HiOutlinePencilAlt } from "react-icons/hi";
 
 import "./PeiView.css";
@@ -11,7 +10,6 @@ const ValorNulo = () => (
 const CampoExibicao = ({ label, valor, largo = false }) => (
   <div className={`pei-view-campo ${largo ? "pei-view-campo-largo" : ""}`}>
     <span className="pei-view-label">{label}</span>
-
     <div className="pei-view-valor">
       {valor !== null && valor !== undefined && valor !== "" ? (
         valor
@@ -34,7 +32,6 @@ const SecaoSanfona = ({ titulo, children, padraoAberto = false }) => {
         aria-expanded={aberta}
       >
         <span className="pei-view-section-title">{titulo}</span>
-
         <span
           className={`pei-view-section-chevron ${aberta ? "expandido" : ""}`}
         >
@@ -68,11 +65,11 @@ export default function PeiView({ dados, onEdit }) {
 
   return (
     <div className="pei-view-container">
+      {/* Cabeçalho / Metadados */}
       <div className="pei-view-metadados">
         <div className="pei-view-metadados-grupo">
           <div className="pei-view-metadado-item">
             <span className="pei-view-metadado-label">Estudante</span>
-
             <span className="pei-view-metadado-valor">
               {nomeEstudante || "N/A"}
             </span>
@@ -80,7 +77,6 @@ export default function PeiView({ dados, onEdit }) {
 
           <div className="pei-view-metadado-item">
             <span className="pei-view-metadado-label">Matrícula</span>
-
             <span className="pei-view-metadado-valor">
               {matricula || "N/A"}
             </span>
@@ -88,13 +84,11 @@ export default function PeiView({ dados, onEdit }) {
 
           <div className="pei-view-metadado-item">
             <span className="pei-view-metadado-label">Curso</span>
-
             <span className="pei-view-metadado-valor">{curso || "N/A"}</span>
           </div>
 
           <div className="pei-view-metadado-item">
             <span className="pei-view-metadado-label">Semestre/Ano</span>
-
             <span className="pei-view-metadado-valor">
               {semestreAno || "N/A"}
             </span>
@@ -102,19 +96,7 @@ export default function PeiView({ dados, onEdit }) {
         </div>
       </div>
 
-      <SecaoSanfona titulo="1. Identificação do(a) estudante" padraoAberto>
-        <div className="pei-view-grid">
-          <CampoExibicao label="Nome do estudante" valor={nomeEstudante} />
-
-          <CampoExibicao label="Matrícula" valor={matricula} />
-
-          <CampoExibicao label="Curso" valor={curso} />
-
-          <CampoExibicao label="Semestre/Ano" valor={semestreAno} />
-        </div>
-      </SecaoSanfona>
-
-      <SecaoSanfona titulo="2. Histórico (antes e na instituição)">
+      <SecaoSanfona titulo="1. Histórico (antes e na instituição)" padraoAberto>
         <div className="pei-view-grid">
           <CampoExibicao
             label="Histórico do estudante"
@@ -128,7 +110,7 @@ export default function PeiView({ dados, onEdit }) {
         </p>
       </SecaoSanfona>
 
-      <SecaoSanfona titulo="3. Necessidades Específicas">
+      <SecaoSanfona titulo="2. Necessidades Específicas">
         <div className="pei-view-grid">
           <CampoExibicao
             label="Descrição das necessidades específicas"
@@ -142,7 +124,7 @@ export default function PeiView({ dados, onEdit }) {
         </p>
       </SecaoSanfona>
 
-      <SecaoSanfona titulo="4. Conhecimentos, Habilidades, Capacidades, Interesses e Necessidades">
+      <SecaoSanfona titulo="3. Conhecimentos, Habilidades, Capacidades, Interesses e Necessidades">
         <div className="pei-view-grid">
           <CampoExibicao
             label="Conhecimentos, habilidades, capacidades, interesses e necessidades"
@@ -158,7 +140,7 @@ export default function PeiView({ dados, onEdit }) {
         </p>
       </SecaoSanfona>
 
-      <SecaoSanfona titulo="5. Dificuldades apresentadas">
+      <SecaoSanfona titulo="4. Dificuldades apresentadas">
         <div className="pei-view-grid">
           <CampoExibicao
             label="Descrição das dificuldades"
@@ -172,7 +154,7 @@ export default function PeiView({ dados, onEdit }) {
         </p>
       </SecaoSanfona>
 
-      <SecaoSanfona titulo="6. Propostas de Adaptações Curriculares">
+      <SecaoSanfona titulo="5. Propostas de Adaptações Curriculares">
         <div className="pei-view-grid">
           <CampoExibicao
             label="Propostas de adaptações curriculares"
@@ -183,7 +165,6 @@ export default function PeiView({ dados, onEdit }) {
 
         <div className="pei-view-document-note">
           <strong>Planos de Ensino Adaptados (PEA)</strong>
-
           <p>
             Devem ser anexados os Planos de Ensino Adaptados dos componentes
             curriculares que necessitaram de alguma adaptação curricular.
@@ -193,35 +174,6 @@ export default function PeiView({ dados, onEdit }) {
         <p className="pei-view-note">
           Preenchido pela Equipe Pedagógica, CLAI e docentes.
         </p>
-      </SecaoSanfona>
-
-      <SecaoSanfona titulo="7. Assinaturas">
-        <div className="pei-view-grid">
-          <CampoExibicao
-            label="Assinatura da CLAI"
-            valor={dados.assinaturaClai}
-          />
-
-          <CampoExibicao
-            label="Assinatura do Setor Pedagógico (responsável)"
-            valor={dados.assinaturaSetorPedagogico}
-          />
-
-          <CampoExibicao
-            label="Assinatura do(a) Coordenador(a) de Curso"
-            valor={dados.assinaturaCoordenadorCurso}
-          />
-
-          <CampoExibicao
-            label="Assinatura do Estudante ou Responsável"
-            valor={dados.assinaturaEstudanteResponsavel}
-          />
-
-          <CampoExibicao
-            label="Assinatura do Docente"
-            valor={dados.assinaturaDocente}
-          />
-        </div>
       </SecaoSanfona>
 
       {typeof onEdit === "function" && (

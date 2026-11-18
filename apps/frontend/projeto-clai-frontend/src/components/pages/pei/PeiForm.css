@@ -1,50 +1,60 @@
 .pei-body {
   width: 100%;
-  margin-top: -30px;
+  margin: 0;
+  color: #111827;
 }
 
 .pei-header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 20px;
   margin-bottom: 24px;
 }
 
 .pei-title {
-  margin: 0 0 8px;
+  margin: 0;
   color: #111827;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 450;
 }
 
 .pei-subtitle {
-  margin: 0;
+  margin: 8px 0 0;
   color: #6b7280;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .pei-private-label {
-  padding: 7px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 20px;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 16px;
+  background: #f3f4f6;
   color: #4b5563;
-  background-color: #f9fafb;
   font-size: 12px;
-  white-space: nowrap;
 }
 
 .pei-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
 }
 
 .pei-section {
+  display: block;
+  min-width: 0;
+  margin: 0;
   padding: 24px;
+  overflow: hidden;
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background-color: #ffffff;
+  border-radius: 8px;
+  background: #ffffff;
 }
 
 .pei-section-heading {
@@ -54,15 +64,16 @@
 .pei-section-title {
   margin: 0 0 8px;
   color: #111827;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 600;
+  line-height: 1.5;
 }
 
 .pei-section-description {
   margin: 0;
   color: #6b7280;
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .pei-section-note {
@@ -79,29 +90,34 @@
 .pei-section-content {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
+  min-width: 0;
 }
 
 .pei-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 18px 24px;
+  min-width: 0;
 }
 
 .pei-student-summary {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
-  padding: 18px;
-  border: 1px solid #e5e7eb;
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  background-color: #f9fafb;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .pei-student-summary div {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .pei-student-summary span {
@@ -117,13 +133,15 @@
 
 .pei-document-note {
   padding: 14px 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  background-color: #f9fafb;
+  background: #f9fafb;
+  color: #374151;
+  overflow-wrap: anywhere;
 }
 
 .pei-document-note strong {
-  color: #374151;
+  color: #111827;
   font-size: 14px;
 }
 
@@ -135,20 +153,23 @@
 }
 
 .pei-alert {
-  padding: 12px 16px;
+  padding: 12px 14px;
   border: 1px solid #fecaca;
   border-radius: 8px;
-  background-color: #fef2f2;
-  color: #b91c1c;
-  font-size: 14px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .pei-form-actions {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 20px;
-  padding: 18px 0;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
 }
 
 .pei-footer-note {
@@ -160,38 +181,41 @@
 
 .pei-buttons-group {
   display: flex;
+  flex-shrink: 0;
   gap: 12px;
 }
 
 .pei-btn-cancel,
 .pei-btn-submit {
-  min-width: 110px;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
+  padding: 9px 16px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .pei-btn-cancel {
   border: 1px solid #d1d5db;
-  background-color: #ffffff;
+  background: #ffffff;
   color: #374151;
 }
 
 .pei-btn-cancel:hover:not(:disabled) {
-  background-color: #f3f4f6;
+  background: #f9fafb;
 }
 
 .pei-btn-submit {
-  background-color: #00523d;
+  border: 1px solid #00523d;
+  background: #00523d;
   color: #ffffff;
 }
 
 .pei-btn-submit:hover:not(:disabled) {
-  background-color: #003f2f;
+  border-color: #00402e;
+  background: #00402e;
 }
 
 .pei-btn-cancel:disabled,
@@ -200,18 +224,22 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
   .pei-header {
     flex-direction: column;
   }
 
-  .pei-form-grid,
-  .pei-student-summary {
-    grid-template-columns: 1fr;
+  .pei-form {
+    padding: 16px;
   }
 
   .pei-section {
     padding: 18px;
+  }
+
+  .pei-form-grid,
+  .pei-student-summary {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .pei-form-actions {
@@ -220,6 +248,21 @@
   }
 
   .pei-buttons-group {
-    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .pei-title {
+    font-size: 22px;
+  }
+
+  .pei-buttons-group {
+    flex-direction: column-reverse;
+  }
+
+  .pei-btn-cancel,
+  .pei-btn-submit {
+    width: 100%;
   }
 }
