@@ -41,14 +41,16 @@ export default function PeiForm({
     ...VALORES_PADRAO,
     ...initialValues,
   };
+  const errorResponse = errors?.response?.data || {};
 
-  const fieldErrors = errors?.invalidFields || errors || {};
+  const fieldErrors =
+    errorResponse?.invalidFields || errors?.invalidFields || errors || {};
 
   const errorMessage =
-    typeof errors === "string"
+    errorResponse?.detail ||
+    (typeof errors === "string"
       ? errors
-      : errors?.detail || errors?.message || "";
-
+      : errors?.detail || errors?.message || "");
   const handleChange = (event) => {
     onChange?.(event);
   };
