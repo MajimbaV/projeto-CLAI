@@ -11,6 +11,10 @@ import com.ifpb.edu.br.clai.model.pea.Pea;
 import com.ifpb.edu.br.clai.model.pei.Pei;
 import com.ifpb.edu.br.clai.repository.PeaRepository;
 import com.ifpb.edu.br.clai.repository.PeiRepository;
+import com.ifpb.edu.br.clai.specification.PeaSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +44,29 @@ public class PeaService {
         public Pei buscarPeiOuFalhar(UUID id) {
             return peiRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("PEI não encontrado com o ID: " + id));
+        }
+
+        public Page<PeaResponseDto> getAllPeas(
+                String nomeAluno,
+                String matriculaAluno,
+                UUID peiId,
+                Boolean statusAtivo,
+                Pageable pageable
+        ) {
+            Specification<Pea> spec = PeaSpecification.comFiltros(
+                    nomeAluno,
+                    matriculaAluno,
+                    peiId,
+                    statusAtivo
+            );
+
+            return peaRepository.findAll(spec, pageable)
+                    .map(PeaMapper::entityToResponse);
+        }
+
+        public PeaResponseDto getPeaById(UUID id) {
+            Pea pea = buscarOuFalhar(id);
+            return PeaMapper.entityToResponse(pea);
         }
 
         private void validarPeaAtivo(Pea pea, String operacao) {
