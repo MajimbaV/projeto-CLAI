@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+
 import PeaForm from "./PeaForm";
+import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
+import { useGetPei } from "../../../hooks/pei/useGetPei";
+
+function obterRegistro(data) {
+  if (Array.isArray(data)) return data[0] ?? null;
+  if (Array.isArray(data?.content)) return data.content[0] ?? null;
+
+  return data?.data ?? data ?? null;
+}
 
 export default function AddPeaPage({
   aluno: alunoProp = null,
@@ -18,28 +28,65 @@ export default function AddPeaPage({
 
   const [feedback, setFeedback] = useState("");
 
-  // Recupera os dados enviados pela navegação ou recebidos por props.
-  const aluno = alunoProp ?? location.state?.aluno ?? null;
-  const pei = peiProp ?? location.state?.pei ?? null;
-  // eslint-disable-next-line no-unused-vars
   const matricula =
     matriculaParam ??
     location.state?.matriculaAluno ??
-    aluno?.alunoMatricula ??
-    aluno?.matricula ??
+    alunoProp?.alunoMatricula ??
+    alunoProp?.matricula ??
+    location.state?.aluno?.alunoMatricula ??
+    location.state?.aluno?.matricula ??
     "";
 
-  const peiId = peiIdParam ?? location.state?.peiId ?? pei?.id ?? "";
+  const peiId =
+    peiIdParam ??
+    location.state?.peiId ??
+    peiProp?.id ??
+    peiProp?._id ??
+    location.state?.pei?.id ??
+    location.state?.pei?._id ??
+    "";
+
+  const {
+    data: alunoData,
+    isLoading: isLoadingAluno,
+    error: erroAluno,
+  } = useGetAlunoByMatricula(matricula);
+
+  const {
+    data: peiData,
+    isLoading: isLoadingPei,
+    error: erroPei,
+  } = useGetPei(peiId);
+
+  // Prioriza os dados recebidos pela navegação ou por props.
+  // Caso não existam, utiliza os dados recuperados pelos hooks.
+  const aluno = alunoProp ?? location.state?.aluno ?? obterRegistro(alunoData);
+
+  const pei = peiProp ?? location.state?.pei ?? obterRegistro(peiData);
+
+  const carregandoAssociacoes =
+    isLoadingAssociacoes ||
+    (!aluno && isLoadingAluno) ||
+    (!pei && isLoadingPei);
+
+  const erroAssociacoes =
+    associacoesError || (!aluno && erroAluno) || (!pei && erroPei);
 
   const defaultValues = {
     ...location.state?.defaultValues,
-    alunoId: location.state?.defaultValues?.alunoId ?? aluno?.id ?? "",
+    alunoId:
+      location.state?.defaultValues?.alunoId ?? aluno?.id ?? aluno?._id ?? "",
     peiId: location.state?.defaultValues?.peiId ?? peiId,
   };
 
   function voltarAoPlanejamento() {
     if (location.state?.returnTo) {
       navigate(location.state.returnTo);
+      return;
+    }
+
+    if (matricula) {
+      navigate(`/planejamento/alunos/${encodeURIComponent(matricula)}`);
       return;
     }
 
@@ -64,7 +111,7 @@ export default function AddPeaPage({
     );
   }
 
-  if (isLoadingAssociacoes) {
+  if (carregandoAssociacoes) {
     return (
       <div className="pea-page-body">
         <p className="pea-page-message">
@@ -74,14 +121,14 @@ export default function AddPeaPage({
     );
   }
 
-  if (associacoesError) {
+  if (erroAssociacoes) {
     return (
       <div className="pea-page-body">
         <div className="pea-alert pea-alert-error" role="alert">
           Erro ao carregar as informações associadas:{" "}
-          {associacoesError?.response?.data?.detail ||
-            associacoesError?.detail ||
-            associacoesError?.message ||
+          {erroAssociacoes?.response?.data?.detail ||
+            erroAssociacoes?.detail ||
+            erroAssociacoes?.message ||
             "Não foi possível carregar o aluno ou o PEI."}
         </div>
 
@@ -96,15 +143,12 @@ export default function AddPeaPage({
     );
   }
 
-  if (!aluno || !peiId) {
+  if (!aluno || !peiId || !pei) {
     return (
       <div className="pea-page-body">
         <div className="pea-alert pea-alert-error" role="alert">
           Não foi possível identificar o aluno ou o PEI associado.
-          <p>
-            Acesse a criação do PEA diretamente pelo PEI correspondente no
-            planejamento do aluno.
-          </p>
+          <p>Verifique se o aluno e o PEI informados na rota existem.</p>
         </div>
 
         <button
@@ -130,7 +174,7 @@ export default function AddPeaPage({
         mode="create"
         defaultValues={defaultValues}
         aluno={aluno}
-        pei={pei ?? { id: peiId }}
+        pei={pei}
         isPending={isPending}
         error={error}
         onSubmit={handleSubmit}

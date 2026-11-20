@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import AlunoPlanejamento from "./AlunoPlanejamento";
 import { useGetPlanosAcaoByMatricula } from "../../../hooks/useGetPlanosAcaoByMatricula";
+import { useGetPeis } from "../../../hooks/pei/useGetPeis";
 
 function AlunoPlanejamentoPage() {
   const { matricula } = useParams();
@@ -12,10 +13,26 @@ function AlunoPlanejamentoPage() {
     error: erroPlanos,
   } = useGetPlanosAcaoByMatricula(matricula);
 
+  const {
+    data: peisData,
+    isLoading: isLoadingPeis,
+    error: erroPeis,
+  } = useGetPeis({
+    filters: {
+      alunoMatricula: matricula,
+    },
+  });
+
   const planosAcao = Array.isArray(planosData)
     ? planosData
     : Array.isArray(planosData?.content)
       ? planosData.content
+      : [];
+
+  const peis = Array.isArray(peisData)
+    ? peisData
+    : Array.isArray(peisData?.content)
+      ? peisData.content
       : [];
 
   function editarEstudoCaso(estudo) {
@@ -65,6 +82,21 @@ function AlunoPlanejamentoPage() {
     });
   }
 
+  function editarPei(pei) {
+    const idPei = pei?.id ?? pei?._id;
+    if (!idPei) return;
+
+    navigate(
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/editar`,
+      {
+        state: {
+          pei,
+          matricula,
+        },
+      },
+    );
+  }
+
   function novoPea(pei, aluno) {
     const idPei = pei?.id ?? pei?._id;
 
@@ -90,6 +122,9 @@ function AlunoPlanejamentoPage() {
       planosAcao={planosAcao}
       isLoadingPlanosAcao={isLoadingPlanos}
       erroPlanosAcao={erroPlanos}
+      peisData={peis}
+      isLoadingPeis={isLoadingPeis}
+      erroPeis={erroPeis}
       onBack={() => navigate("/planejamento/alunos")}
       onNovoEstudoCaso={() =>
         navigate(`/alunos/${encodeURIComponent(matricula)}/estudo-caso/novo`)
@@ -97,6 +132,7 @@ function AlunoPlanejamentoPage() {
       onNovoPlanoAcao={novoPlanoAcao}
       onNovoPei={novoPei}
       onNovoPea={novoPea}
+      onEditarPei={editarPei}
       onEditarEstudoCaso={editarEstudoCaso}
       onEditarPlanoAcao={editarPlanoAcao}
     />
