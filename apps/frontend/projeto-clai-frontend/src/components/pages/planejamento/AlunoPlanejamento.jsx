@@ -604,12 +604,13 @@ function AlunoPlanejamento({
     return (
       <div className="planejamento-lista-planos planejamento-lista-peis">
         {listaPeis.map((pei, index) => {
-          const idPei = pei.id ?? `${matricula}-pei-${index}`;
+          const identificadorPei = pei?.id ?? pei?._id;
+          const idPei = identificadorPei ?? `${matricula}-pei-${index}`;
           const expandido = peisExpandidos.includes(idPei);
           const painelId = `pei-${idPei}`;
           const titulo =
-            pei.id != null
-              ? `Plano de Ensino Individualizado #${pei.id}`
+            identificadorPei != null
+              ? `Plano de Ensino Individualizado #${identificadorPei}`
               : `Plano de Ensino Individualizado ${index + 1}`;
           return (
             <article
@@ -633,7 +634,7 @@ function AlunoPlanejamento({
                   <span className="planejamento-plano-acao-resumo">
                     <strong>{titulo}</strong>
                     <span>
-                      Identificador: {exibir(pei.id)}
+                      Identificador: {exibir(identificadorPei)}
                       {" · "}
                       Situação: {exibir(pei.status)}
                     </span>
@@ -659,7 +660,7 @@ function AlunoPlanejamento({
                     <button
                       type="button"
                       className="planejamento-botao-principal"
-                      disabled={!onNovoPea || !(pei?.id ?? pei?._id)}
+                      disabled={!onNovoPea || identificadorPei == null}
                       onClick={() => onNovoPea?.(pei, aluno)}
                     >
                       <span aria-hidden="true">+</span>

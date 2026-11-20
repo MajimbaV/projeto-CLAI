@@ -65,7 +65,7 @@ function AlunoPlanejamentoPage() {
     });
   }
 
-  function adicionarPea(pei, aluno) {
+  function novoPea(pei, aluno) {
     const idPei = pei?.id ?? pei?._id;
 
     if (!idPei || !aluno) return;
@@ -96,7 +96,7 @@ function AlunoPlanejamentoPage() {
       }
       onNovoPlanoAcao={novoPlanoAcao}
       onNovoPei={novoPei}
-      onAdicionarPea={adicionarPea}
+      onNovoPea={novoPea}
       onEditarEstudoCaso={editarEstudoCaso}
       onEditarPlanoAcao={editarPlanoAcao}
     />
