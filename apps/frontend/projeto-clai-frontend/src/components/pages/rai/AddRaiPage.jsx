@@ -2,8 +2,11 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import RaiForm from "./RaiForm";
+
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useGetPei } from "../../../hooks/pei/useGetPei";
+
+import { postRai } from "../../../services/RaiServiceMock";
 
 function obterRegistro(data) {
   if (Array.isArray(data)) return data[0] ?? null;
@@ -101,14 +104,31 @@ export default function AddRaiPage({
       return;
     }
 
+    const dadosRai = {
+      ...payload,
+      alunoId: aluno.id ?? aluno._id,
+      peiId: pei.id ?? pei._id,
+      alunoNome: aluno.alunoNome || aluno.nome,
+      alunoMatricula: aluno.alunoMatricula || aluno.matricula,
+    };
+
     if (onSubmit) {
-      onSubmit(payload);
+      onSubmit(dadosRai);
       return;
     }
 
-    setFeedback(
-      "Formulário preenchido. A integração para salvar o RAI ainda não foi conectada.",
-    );
+    try {
+      const novoRai = postRai(dadosRai);
+
+      if (!novoRai) {
+        setFeedback("Não foi possível cadastrar o RAI.");
+        return;
+      }
+
+      voltarAoPlanejamento();
+    } catch (erro) {
+      setFeedback(erro?.message || "Ocorreu um erro ao cadastrar o RAI.");
+    }
   }
 
   if (carregandoAssociacoes) {
