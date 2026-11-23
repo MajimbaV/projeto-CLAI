@@ -55,21 +55,9 @@ const raisMock = [
         nivelAprendizado: "Bom",
         observacoes: "Apresenta progresso na leitura compartilhada.",
       },
-      {
-        habilidade: "",
-        nivelAprendizado: "",
-        observacoes: "",
-      },
-      {
-        habilidade: "",
-        nivelAprendizado: "",
-        observacoes: "",
-      },
-      {
-        habilidade: "",
-        nivelAprendizado: "",
-        observacoes: "",
-      },
+      { habilidade: "", nivelAprendizado: "", observacoes: "" },
+      { habilidade: "", nivelAprendizado: "", observacoes: "" },
+      { habilidade: "", nivelAprendizado: "", observacoes: "" },
     ],
 
     parecer:
@@ -129,26 +117,10 @@ const raisMock = [
         nivelAprendizado: "Satisfatório",
         observacoes: "Necessita de orientações em algumas etapas.",
       },
-      {
-        habilidade: "",
-        nivelAprendizado: "",
-        observacoes: "",
-      },
-      {
-        habilidade: "",
-        nivelAprendizado: "",
-        observacoes: "",
-      },
-      {
-        habilidade: "",
-        nivelAprendizado: "",
-        observacoes: "",
-      },
-      {
-        habilidade: "",
-        nivelAprendizado: "",
-        observacoes: "",
-      },
+      { habilidade: "", nivelAprendizado: "", observacoes: "" },
+      { habilidade: "", nivelAprendizado: "", observacoes: "" },
+      { habilidade: "", nivelAprendizado: "", observacoes: "" },
+      { habilidade: "", nivelAprendizado: "", observacoes: "" },
     ],
 
     parecer:
@@ -159,12 +131,24 @@ const raisMock = [
   },
 ];
 
+function gerarId() {
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  return `rai-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export function postRai(data) {
-  return {
+  const novoRai = {
     ...raisMock[0],
     ...data,
-    id: "660e8400-e29b-41d4-a716-446655440002",
+    id: gerarId(),
   };
+
+  raisMock.push(novoRai);
+
+  return novoRai;
 }
 
 export function getRais({ page = 0, size = 20, filters = {} } = {}) {
@@ -199,10 +183,27 @@ export function getRaiById(id) {
 }
 
 export function putRai(id, data) {
-  const rai = getRaiById(id);
-  return rai ? { ...rai, ...data, id } : null;
+  const index = raisMock.findIndex((rai) => rai.id === id);
+
+  if (index === -1) return null;
+
+  const raiAtualizado = {
+    ...raisMock[index],
+    ...data,
+    id,
+  };
+
+  raisMock[index] = raiAtualizado;
+
+  return raiAtualizado;
 }
 
 export function deleteRai(id) {
-  return getRaiById(id) !== null;
+  const index = raisMock.findIndex((rai) => rai.id === id);
+
+  if (index === -1) return false;
+
+  raisMock.splice(index, 1);
+
+  return true;
 }
