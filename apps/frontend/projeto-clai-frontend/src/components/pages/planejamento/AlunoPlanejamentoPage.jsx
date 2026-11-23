@@ -116,6 +116,47 @@ function AlunoPlanejamentoPage() {
     );
   }
 
+  function novoRai(pei, aluno) {
+    const idPei = pei?.id ?? pei?._id;
+
+    if (!idPei || !aluno) return;
+
+    navigate(
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/rai/novo`,
+      {
+        state: {
+          aluno,
+          pei,
+          peiId: idPei,
+          matriculaAluno: matricula,
+          returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
+        },
+      },
+    );
+  }
+
+  function editarRai(rai, pei, aluno) {
+    const idRai = rai?.id ?? rai?._id;
+    const idPei = pei?.id ?? pei?._id;
+
+    if (!idRai || !idPei || !aluno) return;
+
+    navigate(
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/rai/${encodeURIComponent(idRai)}/editar`,
+      {
+        state: {
+          rai,
+          pei,
+          aluno,
+          raiId: idRai,
+          peiId: idPei,
+          matriculaAluno: matricula,
+          returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
+        },
+      },
+    );
+  }
+
   return (
     <AlunoPlanejamento
       matriculaAluno={matricula}
@@ -135,6 +176,8 @@ function AlunoPlanejamentoPage() {
       onEditarPei={editarPei}
       onEditarEstudoCaso={editarEstudoCaso}
       onEditarPlanoAcao={editarPlanoAcao}
+      onNovoRai={novoRai}
+      onEditarRai={editarRai}
     />
   );
 }
