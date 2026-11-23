@@ -1,0 +1,314 @@
+.rai-body {
+  width: 100%;
+  margin: 0;
+  color: #111827;
+}
+
+.rai-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.rai-title {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 450;
+}
+
+.rai-subtitle {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rai-private-label {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 16px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 12px;
+}
+
+.rai-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.rai-section {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.rai-section-header {
+  margin-bottom: 20px;
+}
+
+.rai-section-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.rai-section-header p {
+  margin: 7px 0 0;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.rai-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.rai-associacoes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.rai-associacao-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.rai-associacao-card strong {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rai-associacao-label {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.rai-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+  min-width: 0;
+}
+
+.rai-form-grid-full {
+  grid-column: 1 / -1;
+}
+
+.rai-checkbox-area {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.rai-checkbox-item {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.rai-checkbox-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.rai-habilidade-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.rai-habilidade-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.rai-habilidade-card h3 {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rai-habilidade-full {
+  grid-column: 1 / -1;
+}
+
+.rai-assinatura {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rai-field-error {
+  color: #b91c1c;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.rai-alert {
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.rai-alert-error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.rai-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rai-footer-note {
+  max-width: 520px;
+  margin: 0;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.rai-buttons-group {
+  display: flex;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.rai-btn-cancel,
+.rai-btn-submit {
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.rai-btn-cancel {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.rai-btn-cancel:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.rai-btn-submit {
+  border: 1px solid #00523d;
+  background: #00523d;
+  color: #ffffff;
+}
+
+.rai-btn-submit:hover:not(:disabled) {
+  border-color: #00402e;
+  background: #00402e;
+}
+
+.rai-btn-cancel:disabled,
+.rai-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .rai-header {
+    flex-direction: column;
+  }
+
+  .rai-form {
+    padding: 16px;
+  }
+
+  .rai-section {
+    padding: 16px;
+  }
+
+  .rai-associacoes,
+  .rai-form-grid,
+  .rai-habilidade-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rai-form-grid-full,
+  .rai-habilidade-full,
+  .rai-habilidade-card h3 {
+    grid-column: auto;
+  }
+
+  .rai-form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rai-buttons-group {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .rai-title {
+    font-size: 22px;
+  }
+
+  .rai-buttons-group {
+    flex-direction: column-reverse;
+  }
+
+  .rai-btn-cancel,
+  .rai-btn-submit {
+    width: 100%;
+  }
+}
