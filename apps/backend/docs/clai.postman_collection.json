@@ -92,6 +92,72 @@
       ]
     },
     {
+      "name": "peis",
+      "item": [
+        {
+          "name": "listar PEIs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/peis?nomeAluno=&matriculaAluno=&statusAtivo=&page=0&size=20",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "peis"
+              ],
+              "query": [
+                {
+                  "key": "nomeAluno",
+                  "value": ""
+                },
+                {
+                  "key": "matriculaAluno",
+                  "value": ""
+                },
+                {
+                  "key": "statusAtivo",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PEI por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/peis/00000000-0000-0000-0000-000000000000",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "peis",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "peas",
       "item": [
         {

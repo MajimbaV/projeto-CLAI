@@ -62,6 +62,13 @@ export default function PeiView({ dados, onEdit }) {
 
   const semestreAno =
     identificacao.semestreAno || aluno.periodoAluno || dados.semestreAno;
+  const conhecimentosHabilidades =
+    dados.conhecimentosHabilidadesCapacidadesInteressesNecessidades ||
+    dados.conhecimentosHabilidadesInteresses ||
+    dados.conhecimentosHabilidadesCapacidadesInteresses;
+  const propostasAdaptacoes =
+    dados.propostasAdaptacoesCurriculares ||
+    dados.propostasAdaptacoes;
 
   return (
     <div className="pei-view-container">
@@ -128,9 +135,7 @@ export default function PeiView({ dados, onEdit }) {
         <div className="pei-view-grid">
           <CampoExibicao
             label="Conhecimentos, habilidades, capacidades, interesses e necessidades"
-            valor={
-              dados.conhecimentosHabilidadesCapacidadesInteressesNecessidades
-            }
+            valor={conhecimentosHabilidades}
             largo
           />
         </div>
@@ -158,7 +163,7 @@ export default function PeiView({ dados, onEdit }) {
         <div className="pei-view-grid">
           <CampoExibicao
             label="Propostas de adaptações curriculares"
-            valor={dados.propostasAdaptacoesCurriculares}
+            valor={propostasAdaptacoes}
             largo
           />
         </div>
