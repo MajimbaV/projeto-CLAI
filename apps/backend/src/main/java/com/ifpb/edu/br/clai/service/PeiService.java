@@ -9,6 +9,10 @@ import com.ifpb.edu.br.clai.model.aluno.Aluno;
 import com.ifpb.edu.br.clai.model.pei.Pei;
 import com.ifpb.edu.br.clai.repository.AlunoRepository;
 import com.ifpb.edu.br.clai.repository.PeiRepository;
+import com.ifpb.edu.br.clai.specification.PeiSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,5 +42,34 @@ public class PeiService {
 
         Pei pei = peiRepository.save(PeiMapper.requestToEntity(request, aluno));
         return PeiMapper.entityToResponse(pei);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PeiResponseDto> getAllPeis(
+            String nomeAluno,
+            String matriculaAluno,
+            Boolean statusAtivo,
+            Pageable pageable
+    ) {
+        Specification<Pei> spec = PeiSpecification.comFiltros(nomeAluno, matriculaAluno, statusAtivo);
+        return peiRepository.findAll(spec, pageable)
+                .map(PeiMapper::entityToResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PeiResponseDto> getAllPeis(
+            Pageable pageable,
+            String nomeAluno,
+            String matriculaAluno,
+            Boolean statusAtivo
+    ) {
+        return getAllPeis(nomeAluno, matriculaAluno, statusAtivo, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public PeiResponseDto getPeiById(UUID id) {
+        return peiRepository.findById(id)
+                .map(PeiMapper::entityToResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("PEI não encontrado com o ID: " + id));
     }
 }
