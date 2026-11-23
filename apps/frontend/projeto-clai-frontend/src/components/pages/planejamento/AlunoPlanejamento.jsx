@@ -6,6 +6,8 @@ import { useGetEstudosCaso } from "../../../hooks/estudo-caso/useGetEstudosCaso"
 import PlanoAcaoView from "../planoacao/PlanoAcaoView";
 import EstudoCasoView from "../estudodecaso/EstudoCasoView";
 import PeiView from "../pei/PeiView";
+import RaiView from "../rai/RaiView";
+import { getRais } from "../../../services/RaiServiceMock";
 import "./AlunoPlanejamento.css";
 const ABAS_PLANEJAMENTO = [
   { id: "estudo-caso", titulo: "Estudo de caso" },
@@ -248,11 +250,14 @@ function AlunoPlanejamento({
   onNovoPei,
   onEditarPei,
   onNovoPea,
+  onNovoRai,
+  onEditarRai,
 }) {
   const [abaAtiva, setAbaAtiva] = useState("estudo-caso");
   const [estudosExpandidos, setEstudosExpandidos] = useState([]);
   const [planosExpandidos, setPlanosExpandidos] = useState([]);
   const [peisExpandidos, setPeisExpandidos] = useState([]);
+  const [raisExpandidos, setRaisExpandidos] = useState([]);
   const {
     data: aluno,
     isLoading,
@@ -288,6 +293,13 @@ function AlunoPlanejamento({
         : [...atuais, id],
     );
   }
+  function alternarRai(id) {
+    setRaisExpandidos((atuais) =>
+      atuais.includes(id)
+        ? atuais.filter((item) => item !== id)
+        : [...atuais, id],
+    );
+  }
   if (isLoading) {
     return (
       <div className="aluno-planejamento-body">
@@ -302,6 +314,7 @@ function AlunoPlanejamento({
           Erro ao carregar o aluno:{" "}
           {error.detail || error.message || String(error)}
         </p>
+
         <button type="button" className="planejamento-voltar" onClick={onBack}>
           <img src={ChevronLeft} alt="" />
           Voltar para alunos
@@ -313,6 +326,7 @@ function AlunoPlanejamento({
     return (
       <div className="aluno-planejamento-body">
         <p className="planejamento-mensagem">Aluno não encontrado.</p>
+
         <button type="button" className="planejamento-voltar" onClick={onBack}>
           <img src={ChevronLeft} alt="" />
           Voltar para alunos
@@ -354,11 +368,14 @@ function AlunoPlanejamento({
       return (
         <div className="planejamento-vazio">
           <div className="planejamento-vazio-icone">+</div>
+
           <h3>Nenhum estudo de caso cadastrado</h3>
+
           <p>
             Os estudos de caso deste aluno aparecerão aqui depois de serem
             cadastrados.
           </p>
+
           <button
             type="button"
             className="planejamento-botao-principal"
@@ -402,24 +419,27 @@ function AlunoPlanejamento({
                   >
                     EC
                   </span>
+
                   <span className="planejamento-estudo-resumo planejamento-plano-acao-resumo">
                     <strong>{titulo}</strong>
+
                     <span className="planejamento-estudo-metadados">
                       {dataCriacao
                         ? `Data do estudo: ${formatarData(dataCriacao)}`
                         : "Data do estudo não informada"}
+
                       {status ? ` · ${status}` : ""}
                     </span>
                   </span>
+
                   <span
-                    className={`planejamento-estudo-seta planejamento-plano-acao-seta ${
-                      expandido ? "expandido" : ""
-                    }`}
+                    className={`planejamento-estudo-seta planejamento-plano-acao-seta ${expandido ? "expandido" : ""}`}
                     aria-hidden="true"
                   >
                     ⌄
                   </span>
                 </button>
+
                 {expandido && (
                   <button
                     type="button"
@@ -433,10 +453,12 @@ function AlunoPlanejamento({
                     }}
                   >
                     <img src={EditImg} alt="" />
+
                     <span>Editar</span>
                   </button>
                 )}
               </div>
+
               <div
                 className="planejamento-estudo-conteudo planejamento-plano-acao-conteudo"
                 id={painelId}
@@ -472,11 +494,14 @@ function AlunoPlanejamento({
       return (
         <div className="planejamento-vazio">
           <div className="planejamento-vazio-icone">+</div>
+
           <h3>Nenhum Plano de Ação cadastrado</h3>
+
           <p>
             Os Planos de Ação deste aluno aparecerão aqui depois de serem
             cadastrados.
           </p>
+
           {onNovoPlanoAcao && (
             <button
               type="button"
@@ -515,23 +540,25 @@ function AlunoPlanejamento({
                   >
                     PA
                   </span>
+
                   <span className="planejamento-plano-acao-resumo">
                     <strong>Plano de Ação</strong>
+
                     <span>
                       {plano.dataPlano
                         ? `Data do plano: ${formatarData(plano.dataPlano)}`
                         : "Data do plano não informada"}
                     </span>
                   </span>
+
                   <span
-                    className={`planejamento-plano-acao-seta ${
-                      expandido ? "expandido" : ""
-                    }`}
+                    className={`planejamento-plano-acao-seta ${expandido ? "expandido" : ""}`}
                     aria-hidden="true"
                   >
                     ⌄
                   </span>
                 </button>
+
                 {expandido && (
                   <button
                     type="button"
@@ -545,10 +572,12 @@ function AlunoPlanejamento({
                     }}
                   >
                     <img src={EditImg} alt="" />
+
                     <span>Editar</span>
                   </button>
                 )}
               </div>
+
               <div
                 className="planejamento-plano-acao-conteudo"
                 id={painelId}
@@ -584,11 +613,14 @@ function AlunoPlanejamento({
       return (
         <div className="planejamento-vazio">
           <div className="planejamento-vazio-icone">+</div>
+
           <h3>Nenhum PEI cadastrado</h3>
+
           <p>
             Os Planos de Ensino Individualizado deste aluno aparecerão aqui
             depois de serem cadastrados.
           </p>
+
           {onNovoPei && (
             <button
               type="button"
@@ -612,6 +644,10 @@ function AlunoPlanejamento({
             identificadorPei != null
               ? `Plano de Ensino Individualizado #${identificadorPei}`
               : `Plano de Ensino Individualizado ${index + 1}`;
+          const listaRais =
+            identificadorPei != null
+              ? getRais({ filters: { peiId: identificadorPei } })?.content || []
+              : [];
           return (
             <article
               className="planejamento-plano-acao planejamento-pei-item"
@@ -631,24 +667,26 @@ function AlunoPlanejamento({
                   >
                     PEI
                   </span>
+
                   <span className="planejamento-plano-acao-resumo">
                     <strong>{titulo}</strong>
+
                     <span>
                       Identificador: {exibir(identificadorPei)}
                       {" · "}
                       Situação: {exibir(pei.status)}
                     </span>
                   </span>
+
                   <span
-                    className={`planejamento-plano-acao-seta ${
-                      expandido ? "expandido" : ""
-                    }`}
+                    className={`planejamento-plano-acao-seta ${expandido ? "expandido" : ""}`}
                     aria-hidden="true"
                   >
                     ⌄
                   </span>
                 </button>
               </div>
+
               <div
                 className="planejamento-plano-acao-conteudo planejamento-pei-conteudo"
                 id={painelId}
@@ -657,6 +695,7 @@ function AlunoPlanejamento({
                 {expandido && (
                   <div className="planejamento-pei-detalhes">
                     <PeiView dados={pei} onEdit={onEditarPei} />
+
                     <button
                       type="button"
                       className="planejamento-botao-principal"
@@ -666,14 +705,101 @@ function AlunoPlanejamento({
                       <span aria-hidden="true">+</span>
                       Adicionar PEA
                     </button>
-                    {/*
-                      O PEI funciona como documento principal deste conjunto.
+                    <div className="planejamento-lista-header">
+                      <div>
+                        <h2>Relatórios de Acompanhamento Individualizado</h2>
+                        <p>Consulte os relatórios vinculados a este PEI.</p>
+                      </div>
+                      <span className="planejamento-contador">
+                        {listaRais.length}{" "}
+                        {listaRais.length === 1 ? "registro" : "registros"}
+                      </span>
+                    </div>
 
-                      Os PEA e RAI vinculados a este PEI serão apresentados nesta área.
+                    <button
+                      type="button"
+                      className="planejamento-botao-principal"
+                      disabled={!onNovoRai || identificadorPei == null}
+                      onClick={() => onNovoRai?.(pei, aluno)}
+                    >
+                      <span aria-hidden="true">+</span>
+                      Adicionar RAI
+                    </button>
 
-                      Cada documento deverá utilizar o identificador do PEI
-                      correspondente para manter o vínculo entre os registros.
-                    */}
+                    {listaRais.length === 0 ? (
+                      <p className="planejamento-mensagem">
+                        Nenhum Relatório de Acompanhamento Individualizado
+                        cadastrado para este PEI.
+                      </p>
+                    ) : (
+                      <div className="planejamento-lista-planos">
+                        {listaRais.map((rai, raiIndex) => {
+                          const identificadorRai = rai?.id ?? rai?._id;
+                          const idRai =
+                            identificadorRai ?? `${idPei}-rai-${raiIndex}`;
+                          const raiExpandido = raisExpandidos.includes(idRai);
+                          const painelRaiId = `rai-${idRai}`;
+                          return (
+                            <article
+                              className="planejamento-plano-acao"
+                              key={idRai}
+                            >
+                              <div className="planejamento-plano-acao-cabecalho">
+                                <button
+                                  type="button"
+                                  className="planejamento-plano-acao-toggle"
+                                  onClick={() => alternarRai(idRai)}
+                                  aria-expanded={raiExpandido}
+                                  aria-controls={painelRaiId}
+                                >
+                                  <span
+                                    className="planejamento-plano-acao-icone"
+                                    aria-hidden="true"
+                                  >
+                                    RAI
+                                  </span>
+
+                                  <span className="planejamento-plano-acao-resumo">
+                                    <strong>
+                                      {rai.componenteCurricular ||
+                                        `Relatório de Acompanhamento #${raiIndex + 1}`}
+                                    </strong>
+                                    <span>
+                                      Período letivo:{" "}
+                                      {exibir(rai.periodoLetivo)}
+                                      {" · "}
+                                      Data: {formatarData(rai.data)}
+                                    </span>
+                                  </span>
+
+                                  <span
+                                    className={`planejamento-plano-acao-seta ${raiExpandido ? "expandido" : ""}`}
+                                    aria-hidden="true"
+                                  >
+                                    ⌄
+                                  </span>
+                                </button>
+                              </div>
+
+                              <div
+                                className="planejamento-plano-acao-conteudo"
+                                id={painelRaiId}
+                                hidden={!raiExpandido}
+                              >
+                                {raiExpandido && (
+                                  <RaiView
+                                    dados={rai}
+                                    onEdit={() =>
+                                      onEditarRai?.(rai, pei, aluno)
+                                    }
+                                  />
+                                )}
+                              </div>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -695,11 +821,14 @@ function AlunoPlanejamento({
             <img src={ChevronLeft} alt="" />
             Voltar para alunos
           </button>
+
           <h1>Planejamento do aluno</h1>
+
           <p>
             Consulte os estudos de caso e os documentos relacionados ao aluno.
           </p>
         </div>
+
         {abaAtiva === "estudo-caso" && onNovoEstudoCaso && (
           <button
             type="button"
@@ -710,6 +839,7 @@ function AlunoPlanejamento({
             Novo estudo de caso
           </button>
         )}
+
         {abaAtiva === "plano-acao" && onNovoPlanoAcao && (
           <button
             type="button"
@@ -720,6 +850,7 @@ function AlunoPlanejamento({
             Novo Plano de Ação
           </button>
         )}
+
         {abaAtiva === "pei" && onNovoPei && (
           <button
             type="button"
@@ -731,41 +862,51 @@ function AlunoPlanejamento({
           </button>
         )}
       </div>
+
       <section className="planejamento-aluno-card">
         <div className="planejamento-aluno-perfil">
           <div className="planejamento-aluno-avatar">
             {(nome || "A").trim().charAt(0).toUpperCase()}
           </div>
+
           <div className="planejamento-aluno-identificacao">
             <h2>{exibir(nome)}</h2>
+
             <p>Matrícula: {exibir(matricula)}</p>
           </div>
+
           {possuiStatus && (
             <span
-              className={`planejamento-status ${
-                aluno.ativo ? "ativo" : "arquivado"
-              }`}
+              className={`planejamento-status ${aluno.ativo ? "ativo" : "arquivado"}`}
             >
               <span className="planejamento-status-ponto" />
+
               {aluno.ativo ? "Ativo" : "Arquivado"}
             </span>
           )}
         </div>
+
         <div className="planejamento-aluno-dados">
           <div className="planejamento-dado">
             <span>Curso</span>
+
             <p>{exibir(curso)}</p>
           </div>
+
           <div className="planejamento-dado">
             <span>Período de ingresso</span>
+
             <p>{exibir(periodoIngresso)}</p>
           </div>
+
           <div className="planejamento-dado">
             <span>Período letivo</span>
+
             <p>{exibir(periodoAluno)}</p>
           </div>
         </div>
       </section>
+
       <section className="planejamento-documentos">
         <div
           className="planejamento-abas"
@@ -780,96 +921,115 @@ function AlunoPlanejamento({
               id={`aba-${aba.id}`}
               aria-controls={`painel-${aba.id}`}
               aria-selected={abaAtiva === aba.id}
-              className={`planejamento-aba ${
-                abaAtiva === aba.id ? "ativa" : ""
-              }`}
+              className={`planejamento-aba ${abaAtiva === aba.id ? "ativa" : ""}`}
               onClick={() => setAbaAtiva(aba.id)}
             >
               {aba.titulo}
             </button>
           ))}
         </div>
+
         <div className="planejamento-conteudo-aba">
           {abaAtiva === "estudo-caso" && (
             <>
               <div className="planejamento-lista-header">
                 <div>
                   <h2>Estudos de caso</h2>
+
                   <p>
                     Consulte os registros e abra um estudo para ver seu conteúdo
                     completo.
                   </p>
                 </div>
+
                 <span className="planejamento-contador">
                   {listaEstudos.length}{" "}
                   {listaEstudos.length === 1 ? "registro" : "registros"}
                 </span>
               </div>
+
               {renderizarEstudosCaso()}
             </>
           )}
+
           {abaAtiva === "pei" && (
             <>
               <div className="planejamento-lista-header">
                 <div>
                   <h2>Planos de Ensino Individualizado</h2>
+
                   <p>
                     Consulte os PEIs cadastrados para este aluno e abra um
                     registro para visualizar suas informações.
                   </p>
                 </div>
+
                 <span className="planejamento-contador">
                   {listaPeis.length}{" "}
                   {listaPeis.length === 1 ? "registro" : "registros"}
                 </span>
               </div>
+
               {renderizarPeis()}
             </>
           )}
+
           {abaAtiva === "plano-acao" && (
             <>
               <div className="planejamento-lista-header">
                 <div>
                   <h2>Planos de Ação</h2>
+
                   <p>
                     Consulte as informações clínicas, necessidades e propostas
                     de intervenção do aluno.
                   </p>
                 </div>
+
                 <span className="planejamento-contador">
                   {listaPlanos.length}{" "}
                   {listaPlanos.length === 1 ? "registro" : "registros"}
                 </span>
               </div>
+
               {renderizarPlanosAcao()}
             </>
           )}
+
           {abaAtiva === "plano-atendimento" && (
             <div className="planejamento-em-breve">
               <h2>Plano de atendimento</h2>
+
               <p>
                 Esta área poderá reunir os planos de acompanhamento do aluno.
               </p>
+
               <span>Funcionalidade a ser implementada</span>
             </div>
           )}
+
           {abaAtiva === "adaptacoes" && (
             <div className="planejamento-em-breve">
               <h2>Adaptações</h2>
+
               <p>
                 Esta área poderá reunir as adaptações e os apoios educacionais
                 do aluno.
               </p>
+
               <span>Funcionalidade a ser implementada</span>
             </div>
           )}
+
           {abaAtiva === "documentos" && (
             <div className="planejamento-em-breve">
               <h2>Outros documentos</h2>
+
               <p>
                 Outros documentos relacionados ao aluno poderão ser consultados
                 nesta área.
               </p>
+
               <span>Funcionalidade a ser implementada</span>
             </div>
           )}
