@@ -80,6 +80,14 @@ function EditPeiForm({
   const [formData, setFormData] = useState(() => ({
     ...VALORES_INICIAIS,
     ...peiAtual,
+    conhecimentosHabilidadesCapacidadesInteressesNecessidades:
+      peiAtual.conhecimentosHabilidadesCapacidadesInteressesNecessidades ||
+      peiAtual.conhecimentosHabilidadesInteresses ||
+      "",
+    propostasAdaptacoesCurriculares:
+      peiAtual.propostasAdaptacoesCurriculares ||
+      peiAtual.propostasAdaptacoes ||
+      "",
   }));
 
   function handleChange(event) {
@@ -97,10 +105,10 @@ function EditPeiForm({
     const payload = {
       historico: formData.historico,
       necessidadesEspecificas: formData.necessidadesEspecificas,
-      conhecimentosHabilidadesCapacidadesInteressesNecessidades:
+      conhecimentosHabilidadesInteresses:
         formData.conhecimentosHabilidadesCapacidadesInteressesNecessidades,
       dificuldadesApresentadas: formData.dificuldadesApresentadas,
-      propostasAdaptacoesCurriculares: formData.propostasAdaptacoesCurriculares,
+      propostasAdaptacoes: formData.propostasAdaptacoesCurriculares,
     };
 
     updatePei(payload);
