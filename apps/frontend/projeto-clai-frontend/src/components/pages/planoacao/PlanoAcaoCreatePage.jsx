@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import PlanoAcaoForm from "./PlanoAcaoForm";
 import { useGetTodosAlunos } from "../../../hooks/aluno/useGetTodosAlunos";
-import { useCreatePlanoAcao } from "../../../hooks/useCreatePlanoAcao";
+import { useCreatePlanoAcao } from "../../../hooks/plano-acao/useCreatePlanoAcao";
 import { useToast } from "../../../hooks/useToast";
 
 import "./PlanoAcaoForm.css";

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPlanosAcao } from '../services/PlanoAcaoService';
+import { getPlanosAcao } from '../../services/PlanoAcaoService';
 
 export function useGetPlanosAcaoByMatricula(matriculaAluno, options = {}) {
   return useQuery({
