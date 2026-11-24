@@ -359,7 +359,7 @@ function obterNomeAluno(aluno) {
 }
 
 function obterCursoAluno(aluno) {
-  return aluno?.alunoCurso ?? aluno?.curso ?? "";
+  return aluno?.curso?.nomeCurso ?? aluno?.alunoCurso ?? aluno?.curso ?? "Não informado";
 }
 
 function estudanteMenorDeIdade(dataNascimento) {
@@ -710,7 +710,7 @@ export default function EstudoCasoForm({
               </span>
 
               <span>
-                Curso/turma:{" "}
+                Curso:{" "}
                 {obterCursoAluno(alunoSelecionado) || "Não informado"}
               </span>
 
