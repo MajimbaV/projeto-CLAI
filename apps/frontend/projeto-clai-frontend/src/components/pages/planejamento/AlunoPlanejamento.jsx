@@ -322,7 +322,7 @@ function AlunoPlanejamento({
   }
   const nome = aluno.alunoNome || aluno.nome;
   const matricula = aluno.alunoMatricula || aluno.matricula;
-  const curso = aluno.alunoCurso || aluno.curso;
+  const curso = aluno?.curso?.nomeCurso ?? aluno?.alunoCurso ?? aluno?.curso ?? "Não informado"
   const periodoIngresso = aluno.periodoIngresso || aluno.log;
   const periodoAluno = aluno.periodoAluno;
   const possuiStatus = typeof aluno.ativo === "boolean";
