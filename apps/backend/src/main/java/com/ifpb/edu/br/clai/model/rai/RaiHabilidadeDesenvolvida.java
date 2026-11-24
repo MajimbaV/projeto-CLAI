@@ -15,9 +15,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.JoinColumn;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "rai_habilidade_desenvolvida")
+@Getter @Setter
+@NoArgsConstructor
 public class RaiHabilidadeDesenvolvida {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
