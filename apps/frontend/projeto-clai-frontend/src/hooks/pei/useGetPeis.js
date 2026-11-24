@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPeis } from '../../services/PeiServiceMock';
+import { getPeis } from '../../services/PeiService';
 
 export function useGetPeis({page = 1, size = 10, sort = 'id,asc', filters} = {}) {
 
