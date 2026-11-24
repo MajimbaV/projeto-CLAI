@@ -12,6 +12,10 @@ public record PeiResponseDto(
         String conhecimentosHabilidadesInteresses,
         String dificuldadesApresentadas,
         String propostasAdaptacoes,
-        Boolean ativo,
+        Boolean statusAtivo,
         String periodoPei
-) {}
+) {
+    public Boolean ativo() {
+        return statusAtivo;
+    }
+}

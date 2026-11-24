@@ -247,6 +247,7 @@ function AlunoPlanejamento({
   erroPeis = null,
   onNovoPei,
   onEditarPei,
+  onNovoPea,
 }) {
   const [abaAtiva, setAbaAtiva] = useState("estudo-caso");
   const [estudosExpandidos, setEstudosExpandidos] = useState([]);
@@ -603,12 +604,13 @@ function AlunoPlanejamento({
     return (
       <div className="planejamento-lista-planos planejamento-lista-peis">
         {listaPeis.map((pei, index) => {
-          const idPei = pei.id ?? `${matricula}-pei-${index}`;
+          const identificadorPei = pei?.id ?? pei?._id;
+          const idPei = identificadorPei ?? `${matricula}-pei-${index}`;
           const expandido = peisExpandidos.includes(idPei);
           const painelId = `pei-${idPei}`;
           const titulo =
-            pei.id != null
-              ? `Plano de Ensino Individualizado #${pei.id}`
+            identificadorPei != null
+              ? `Plano de Ensino Individualizado #${identificadorPei}`
               : `Plano de Ensino Individualizado ${index + 1}`;
           return (
             <article
@@ -632,7 +634,7 @@ function AlunoPlanejamento({
                   <span className="planejamento-plano-acao-resumo">
                     <strong>{titulo}</strong>
                     <span>
-                      Identificador: {exibir(pei.id)}
+                      Identificador: {exibir(identificadorPei)}
                       {" · "}
                       Situação: {exibir(pei.status)}
                     </span>
@@ -655,10 +657,20 @@ function AlunoPlanejamento({
                 {expandido && (
                   <div className="planejamento-pei-detalhes">
                     <PeiView dados={pei} onEdit={onEditarPei} />
+                    <button
+                      type="button"
+                      className="planejamento-botao-principal"
+                      disabled={!onNovoPea || identificadorPei == null}
+                      onClick={() => onNovoPea?.(pei, aluno)}
+                    >
+                      <span aria-hidden="true">+</span>
+                      Adicionar PEA
+                    </button>
                     {/*
                       O PEI funciona como documento principal deste conjunto.
-                      Futuramente, os PEA e RAI vinculados a este PEI
-                      serão apresentados nesta área.
+
+                      Os PEA e RAI vinculados a este PEI serão apresentados nesta área.
+
                       Cada documento deverá utilizar o identificador do PEI
                       correspondente para manter o vínculo entre os registros.
                     */}
