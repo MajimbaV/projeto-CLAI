@@ -5,7 +5,7 @@ import Selector from "../../queries/selector/Selector.jsx";
 import { contemApenasNumeros } from "../../../utils/validations.js";
 import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
 import { useGetCursos } from "../../../hooks/curso/useGetCursos";
-import { HiOutlineArchive, HiOutlinePencilAlt, HiChevronLeft, HiChevronRight} from "react-icons/hi";
+import { HiOutlineArchive, HiOutlinePencilAlt, HiOutlineCheck, HiChevronLeft, HiChevronRight} from "react-icons/hi";
 
 
 const filtrosIniciais = {
@@ -37,7 +37,7 @@ const opcoesPeriodo = [
   {value: "2023.1", label: "2023.1"},
 ]
 
-function AlunoList({ onDelete, onEdit, onView, onAdd }) {
+function AlunoList({ onDelete, onEdit, onView, onAdd, onActivate}) {
   const [filtros, setFiltros] = useState(filtrosIniciais);
   const [sort, setSort] = useState("alunoNome,asc");
   const [tabAtual, setTabAtual] = useState("ativos"); 
@@ -73,6 +73,10 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
 
   function handleAdd() {
     onAdd();
+  }
+
+  function handleActivate(aluno) {
+    onActivate(aluno);
   }
 
   function handleSearch (termoDebounced) {
@@ -227,17 +231,30 @@ function AlunoList({ onDelete, onEdit, onView, onAdd }) {
 
                   <td>{aluno?.curso?.nomeCurso ?? aluno?.alunoCurso ?? aluno?.curso ?? "Não informado"}</td>
 
-                  <td>
-                    <div className="action-buttons">
-                      <button onClick={() => handleEdit(aluno)}>
-                        {<HiOutlinePencilAlt className="action-icon"/>} 
-                      </button>
+                  {!(tabAtual === "arquivados") && (
+                    <td>
+                      <div className="action-buttons">
+                        <button onClick={() => handleEdit(aluno)}>
+                          {<HiOutlinePencilAlt className="action-icon"/>} 
+                        </button>
 
-                      <button onClick={() => handleDelete(aluno)}>
-                        {<HiOutlineArchive className="action-icon archive-icon"/>}
-                      </button>
-                    </div>
+                        <button onClick={() => handleDelete(aluno)}>
+                          {<HiOutlineArchive className="action-icon archive-icon"/>}
+                        </button>
+                      </div>
                   </td>
+                  )}
+
+                  {tabAtual === "arquivados" && (
+                    <td>
+                      <div className="action-buttons">
+                        <button onClick={() => handleActivate(aluno)}>
+                          {<HiOutlineCheck className="action-icon"/>}
+                        </button>
+                      </div>
+                    </td>
+                  )}
+
                 </tr>
               ))
             ) : (
