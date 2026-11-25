@@ -127,7 +127,6 @@ const opcoesPeriodo = [
 function PlanejamentoAlunos({
   onViewPlanning,
   onNovoEstudoCaso,
-  onNovoPlanoAcao,
 }) {
   const [filtros, setFiltros] = useState(filtrosIniciais);
   const [sort, setSort] = useState("alunoNome,asc");
@@ -187,14 +186,6 @@ function PlanejamentoAlunos({
               onClick={onNovoEstudoCaso}
             >
               + Novo estudo de caso
-            </button>
-
-            <button
-              type="button"
-              className="btn-add"
-              onClick={onNovoPlanoAcao}
-            >
-              + Novo Plano de Ação
             </button>
           </div>
         )}
