@@ -1,8 +1,6 @@
 import { useState } from "react";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import EditImg from "../../../assets/Edit.png";
-import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
-import { useGetEstudosCaso } from "../../../hooks/estudo-caso/useGetEstudosCaso";
 import PlanoAcaoView from "../planoacao/PlanoAcaoView";
 import EstudoCasoView from "../estudodecaso/EstudoCasoView";
 import PeiView from "../pei/PeiView";
@@ -233,40 +231,27 @@ function formatarData(data) {
 //   return <p className="planejamento-valor-texto">{String(valor)}</p>;
 // }
 function AlunoPlanejamento({
-  matriculaAluno,
+  aluno = {},
+  documentos = {},
+  errors = {},
+  loadings = {},
   onBack,
   onNovoEstudoCaso,
   onNovoPlanoAcao,
   onEditarEstudoCaso,
   onEditarPlanoAcao,
-  planosAcao = [],
-  isLoadingPlanosAcao = false,
-  erroPlanosAcao = null,
-  peisData = null,
-  isLoadingPeis = false,
-  erroPeis = null,
   onNovoPei,
   onEditarPei,
   onNovoPea,
 }) {
+
+
   const [abaAtiva, setAbaAtiva] = useState("estudo-caso");
   const [estudosExpandidos, setEstudosExpandidos] = useState([]);
   const [planosExpandidos, setPlanosExpandidos] = useState([]);
   const [peisExpandidos, setPeisExpandidos] = useState([]);
-  const {
-    data: aluno,
-    isLoading,
-    error,
-  } = useGetAlunoByMatricula(matriculaAluno);
-  const {
-    data: estudosCasoData,
-    isLoading: isLoadingEstudosCaso,
-    error: erroEstudosCaso,
-  } = useGetEstudosCaso({
-    sort: "situacaoEstudoDeCaso,desc",
-    filters: { matriculaAluno: matriculaAluno },
-  });
-  const estudosCaso = estudosCasoData?.content || [];
+  
+
   function alternarEstudo(id) {
     setEstudosExpandidos((atuais) =>
       atuais.includes(id)
@@ -288,19 +273,21 @@ function AlunoPlanejamento({
         : [...atuais, id],
     );
   }
-  if (isLoading) {
+
+
+  if (loadings.aluno) {
     return (
       <div className="aluno-planejamento-body">
         <p className="planejamento-mensagem">Carregando dados do aluno...</p>
       </div>
     );
   }
-  if (error) {
+  if (errors.aluno) {
     return (
       <div className="aluno-planejamento-body">
         <p className="planejamento-mensagem">
           Erro ao carregar o aluno:{" "}
-          {error.detail || error.message || String(error)}
+          {errors.aluno.detail || errors.aluno.message || String(errors.aluno)}
         </p>
         <button type="button" className="planejamento-voltar" onClick={onBack}>
           <img src={ChevronLeft} alt="" />
@@ -309,6 +296,7 @@ function AlunoPlanejamento({
       </div>
     );
   }
+
   if (!aluno) {
     return (
       <div className="aluno-planejamento-body">
@@ -320,36 +308,37 @@ function AlunoPlanejamento({
       </div>
     );
   }
+  
   const nome = aluno.alunoNome || aluno.nome;
   const matricula = aluno.alunoMatricula || aluno.matricula;
   const curso = aluno.alunoCurso || aluno.curso;
   const periodoIngresso = aluno.periodoIngresso || aluno.log;
   const periodoAluno = aluno.periodoAluno;
   const possuiStatus = typeof aluno.ativo === "boolean";
-  const listaEstudos = Array.isArray(estudosCaso) ? estudosCaso : [];
-  const listaPlanos = Array.isArray(planosAcao) ? planosAcao : [];
-  // Aceita tanto uma lista quanto uma resposta paginada.
-  const listaPeis = Array.isArray(peisData)
-    ? peisData
-    : Array.isArray(peisData?.content)
-      ? peisData.content
-      : [];
+
+  const listaEstudos = Array.isArray(documentos?.estudosCaso) ? documentos.estudosCaso : []
+  const listaPlanos = Array.isArray(documentos?.planosAcao) ? documentos.planosAcao : [];
+  const listaPeis = Array.isArray(documentos?.peis) ? documentos.peis : [];
+  
+    
   function renderizarEstudosCaso() {
-    if (isLoadingEstudosCaso) {
+    if (loadings.estudosCaso) {
       return (
         <p className="planejamento-mensagem">Carregando estudos de caso...</p>
       );
     }
-    if (erroEstudosCaso) {
+
+    if (errors.estudosCaso) {
       return (
         <p className="planejamento-erro">
           Erro ao carregar os estudos de caso:{" "}
-          {erroEstudosCaso.detail ||
-            erroEstudosCaso.message ||
-            String(erroEstudosCaso)}
+          {errors.estudosCaso.detail ||
+            errors.estudosCaso.message ||
+            String(errors.estudosCaso)}
         </p>
       );
     }
+    
     if (listaEstudos.length === 0) {
       return (
         <div className="planejamento-vazio">
@@ -453,18 +442,18 @@ function AlunoPlanejamento({
     );
   }
   function renderizarPlanosAcao() {
-    if (isLoadingPlanosAcao) {
+    if (loadings.planosAcao) {
       return (
         <p className="planejamento-mensagem">Carregando Planos de Ação...</p>
       );
     }
-    if (erroPlanosAcao) {
+    if (errors.planosAcao) {
       return (
         <p className="planejamento-erro">
           Erro ao carregar os Planos de Ação:{" "}
-          {erroPlanosAcao.detail ||
-            erroPlanosAcao.message ||
-            String(erroPlanosAcao)}
+          {errors.planosAcao.detail ||
+            errors.planosAcao.message ||
+            String(errors.planosAcao)}
         </p>
       );
     }
@@ -565,18 +554,18 @@ function AlunoPlanejamento({
     );
   }
   function renderizarPeis() {
-    if (isLoadingPeis) {
+    if (loadings.peis) {
       return (
         <p className="planejamento-mensagem">
           Carregando Planos de Ensino Individualizado...
         </p>
       );
     }
-    if (erroPeis) {
+    if (errors.peis) {
       return (
         <p className="planejamento-erro">
           Erro ao carregar os PEIs:{" "}
-          {erroPeis.detail || erroPeis.message || String(erroPeis)}
+          {errors.peis.detail || errors.peis.message || String(errors.peis)}
         </p>
       );
     }
