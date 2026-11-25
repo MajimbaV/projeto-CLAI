@@ -59,12 +59,12 @@ function obterNomePei(pei) {
   return pei.titulo
     ? pei.titulo
     : pei.id
-      ? `PEI #${pei.id}`
+      ? `PEI #${pei.id.toString().slice(-6)}`
       : "PEI não identificado";
 }
 
-function obterErroCampo(campo, invalidFields, errors) {
-  const erro = errors?.[campo] ?? invalidFields?.[campo];
+function obterErroCampo(campo, invalidFields) {
+  const erro = invalidFields?.[campo];
 
   if (Array.isArray(erro)) {
     return erro.join(", ");
@@ -88,10 +88,8 @@ function PeaFormContent({
   mode = "create",
   onSubmit,
   onCancel,
-  isPending = false,
-  isLoading = false,
   error = null,
-  errors = {},
+  isPending = false,
   aluno = null,
   pei = null,
 }) {
@@ -102,17 +100,14 @@ function PeaFormContent({
   const [errosLocais, setErrosLocais] = useState({});
 
   const modoEdicao = mode === "edit" || mode === "editar";
-  const formularioDesabilitado = isPending || isLoading;
+  const formularioDesabilitado = isPending;
 
   const alunoId = aluno?.id ?? defaultValues?.alunoId ?? formData.alunoId;
   const peiId = pei?.id ?? defaultValues?.peiId ?? formData.peiId;
 
-  const errorResponse = error?.response?.data || error?.data || {};
+  const mensagemErro = error?.detail || error?.message || "";
 
-  const mensagemErro =
-    errorResponse.detail || error?.detail || error?.message || "";
-
-  const invalidFields = errorResponse.invalidFields || {};
+  const invalidFields = error?.invalidFields || {};
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -244,11 +239,7 @@ function PeaFormContent({
               value={formData.componenteCurricular}
               onChange={handleChange}
               disabled={formularioDesabilitado}
-              error={obterErroCampo(
-                "componenteCurricular",
-                invalidFields,
-                errors,
-              )}
+              error={obterErroCampo("componenteCurricular", invalidFields,)}
             />
 
             <FormField
@@ -258,7 +249,7 @@ function PeaFormContent({
               onChange={handleChange}
               placeholder="Ex.: 2026.1"
               disabled={formularioDesabilitado}
-              error={obterErroCampo("semestreAno", invalidFields, errors)}
+              error={obterErroCampo("semestreAno", invalidFields)}
             />
 
             <div className="pea-form-grid-full">
@@ -268,7 +259,7 @@ function PeaFormContent({
                 value={formData.docente}
                 onChange={handleChange}
                 disabled={formularioDesabilitado}
-                error={obterErroCampo("docente", invalidFields, errors)}
+                error={obterErroCampo("docente", invalidFields)}
               />
             </div>
           </div>
@@ -292,7 +283,7 @@ function PeaFormContent({
               onChange={handleChange}
               disabled={formularioDesabilitado}
               rows={4}
-              error={obterErroCampo("objetivoGeral", invalidFields, errors)}
+              error={obterErroCampo("objetivoGeral", invalidFields)}
             />
 
             <FormTextarea
@@ -302,11 +293,7 @@ function PeaFormContent({
               onChange={handleChange}
               disabled={formularioDesabilitado}
               rows={4}
-              error={obterErroCampo(
-                "objetivosEspecificos",
-                invalidFields,
-                errors,
-              )}
+              error={obterErroCampo("objetivosEspecificos", invalidFields)}
             />
 
             <FormTextarea
@@ -316,11 +303,7 @@ function PeaFormContent({
               onChange={handleChange}
               disabled={formularioDesabilitado}
               rows={4}
-              error={obterErroCampo(
-                "conteudosProgramaticos",
-                invalidFields,
-                errors,
-              )}
+              error={obterErroCampo("conteudosProgramaticos", invalidFields)}
             />
 
             <FormTextarea
@@ -330,7 +313,7 @@ function PeaFormContent({
               onChange={handleChange}
               disabled={formularioDesabilitado}
               rows={4}
-              error={obterErroCampo("metodologia", invalidFields, errors)}
+              error={obterErroCampo("metodologia", invalidFields)}
             />
 
             <FormTextarea
@@ -340,7 +323,7 @@ function PeaFormContent({
               onChange={handleChange}
               disabled={formularioDesabilitado}
               rows={4}
-              error={obterErroCampo("avaliacao", invalidFields, errors)}
+              error={obterErroCampo("avaliacao", invalidFields)}
             />
           </div>
         </section>
@@ -365,8 +348,7 @@ function PeaFormContent({
               rows={3}
               error={obterErroCampo(
                 "bibliografiaBasica",
-                invalidFields,
-                errors,
+                invalidFields
               )}
             />
 
@@ -379,8 +361,7 @@ function PeaFormContent({
               rows={3}
               error={obterErroCampo(
                 "bibliografiaComplementar",
-                invalidFields,
-                errors,
+                invalidFields
               )}
             />
           </div>

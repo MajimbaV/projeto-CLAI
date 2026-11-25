@@ -49,28 +49,39 @@ export default function AddPeaPage() {
     error: erroPei,
   } = useGetPei(peiId);
 
-  const { mutate: createPea} = useCreatePea();
+  const { mutate: createPea, isPending: isCreatingPea, error: erroCreatePea } = useCreatePea();
   const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   // Prioriza os dados recebidos pela navegação.
   // Caso não existam, utiliza os dados recuperados pelos hooks.
   const aluno = location.state?.aluno ?? obterRegistro(alunoData);
-
   const pei = location.state?.pei ?? obterRegistro(peiData);
-
-  const carregandoAssociacoes =
-    (!aluno && isLoadingAluno) ||
-    (!pei && isLoadingPei);
-
-  const erroAssociacoes =
-    (!aluno && erroAluno) || (!pei && erroPei);
 
   const defaultValues = {
     ...location.state?.defaultValues,
-    alunoId:
-      location.state?.defaultValues?.alunoId ?? aluno?.id ?? aluno?._id ?? "",
+    alunoId: location.state?.defaultValues?.alunoId ?? aluno?.id ?? aluno?._id ?? "",
     peiId: location.state?.defaultValues?.peiId ?? peiId,
   };
+
+  function getInactivity() {
+    const inactivity = {};
+
+    if (isLoadingAluno) inactivity.aluno = true;
+    if (isLoadingPei) inactivity.pei = true;
+    if (isCreatingPea) inactivity.createPea = true;
+
+    return inactivity;
+  }
+
+  function getErrors(){
+    const errors = {};
+
+    if (erroAluno) errors.aluno = erroAluno?.response?.data|| erroAluno;
+    if (erroPei) errors.pei = erroPei?.response?.data || erroPei;
+    if (erroCreatePea) errors.createPea = erroCreatePea?.response?.data || erroCreatePea;
+
+    return errors;
+  }
 
   function voltarAoPlanejamento() {
     if (location.state?.returnTo) {
@@ -112,7 +123,7 @@ export default function AddPeaPage() {
     });
   }
 
-  if (carregandoAssociacoes) {
+  if (getInactivity().aluno || getInactivity().pei) {
     return (
       <div className="pea-page-body">
         <p className="pea-page-message">
@@ -122,14 +133,15 @@ export default function AddPeaPage() {
     );
   }
 
-  if (erroAssociacoes) {
+  if (getErrors().aluno || getErrors().pei) {
     return (
       <div className="pea-page-body">
         <div className="pea-alert pea-alert-error" role="alert">
-          Erro ao carregar as informações associadas:{" "}
-          {erroAssociacoes?.response?.data?.detail ||
-            erroAssociacoes?.detail ||
-            erroAssociacoes?.message ||
+          Erro ao carregar as informações associadas:{""}
+          { getErrors().aluno?.detail ||
+            getErrors().aluno?.message ||
+            getErrors().pei?.detail ||
+            getErrors().pei?.message ||
             "Não foi possível carregar o aluno ou o PEI."}
         </div>
 
@@ -176,8 +188,8 @@ export default function AddPeaPage() {
         defaultValues={defaultValues}
         aluno={aluno}
         pei={pei}
-        isPending={null}
-        error={null}
+        error={getErrors().createPea}
+        isPending={getInactivity().createPea}
         onSubmit={handleSubmit}
         onCancel={voltarAoPlanejamento}
       />
