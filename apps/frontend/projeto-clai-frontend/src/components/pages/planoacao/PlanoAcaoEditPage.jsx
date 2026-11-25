@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PlanoAcaoForm from "./PlanoAcaoForm";
-import { useGetTodosAlunos } from "../../../hooks/aluno/useGetTodosAlunos";
+import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useGetPlanoAcaoById } from "../../../hooks/plano-acao/useGetPlanoAcaoById";
 import { useUpdatePlanoAcao } from "../../../hooks/plano-acao/useUpdatePlanoAcao";
 import { useToast } from "../../../hooks/useToast";
@@ -26,10 +26,10 @@ function PlanoAcaoEditPage() {
   const planoAtual = planoInicial || planoBuscado;
 
   const {
-    data: alunos = [],
+    data: alunoSelecionado,
     isLoading: isLoadingAlunos,
     error: errorAlunos,
-  } = useGetTodosAlunos();
+  } = useGetAlunoByMatricula(planoAtual?.matricula || matriculaOrigem);
 
   const {
     mutate: updatePlano,
@@ -91,9 +91,8 @@ function PlanoAcaoEditPage() {
     <PlanoAcaoForm
       mode="edit"
       defaultValues={planoAtual}
-      alunos={alunos}
-      isLoadingAlunos={isLoadingAlunos}
-      isLoading={isLoadingPlano}
+      alunoSelecionado={alunoSelecionado}
+      isLoading={isLoadingPlano || isLoadingAlunos}
       isPending={isUpdating}
       error={errorUpdate || errorAlunos}
       onSubmit={handleSubmit}

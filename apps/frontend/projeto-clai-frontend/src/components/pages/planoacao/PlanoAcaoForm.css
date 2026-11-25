@@ -104,6 +104,59 @@
   font-size: 14px;
 }
 
+.plano-acao-student-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.plano-acao-student-summary div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.plano-acao-student-summary span {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.plano-acao-student-summary strong {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.plano-acao-document-note {
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #374151;
+  overflow-wrap: anywhere;
+}
+
+.plano-acao-document-note strong {
+  color: #111827;
+  font-size: 14px;
+}
+
+.plano-acao-document-note p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+
 .plano-acao-actions {
   display: flex;
   justify-content: space-between;

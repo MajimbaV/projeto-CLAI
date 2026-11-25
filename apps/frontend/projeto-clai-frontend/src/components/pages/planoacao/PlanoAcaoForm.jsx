@@ -103,6 +103,7 @@ function normalizarDefaultValues(valores) {
 }
 
 function PlanoAcaoForm({
+  alunoSelecionado = null,
   onSubmit,
   onCancel,
   isPending = false,
@@ -110,8 +111,6 @@ function PlanoAcaoForm({
   error = null,
   defaultValues,
   mode = "create",
-  alunos = [],
-  isLoadingAlunos = false,
 }) {
   const [formData, setFormData] = useState(() =>
     normalizarDefaultValues(defaultValues),
@@ -169,14 +168,14 @@ function PlanoAcaoForm({
   function handleSubmit(event) {
     event.preventDefault();
 
-    const erros = validarPlanoAcao(formData);
+    const erros = validarPlanoAcao(formData, alunoSelecionado?.alunoMatricula || alunoSelecionado?.matricula);
     setErrosLocais(erros);
 
     if (Object.keys(erros).length > 0) {
       return;
     }
 
-    onSubmit?.(prepararPayloadPlanoAcao(formData));
+    onSubmit?.(prepararPayloadPlanoAcao(formData, alunoSelecionado?.alunoMatricula || alunoSelecionado?.matricula));
   }
 
   if (isLoading) {
@@ -187,6 +186,26 @@ function PlanoAcaoForm({
     );
   }
 
+  const identificacao = {
+    nomeEstudante:
+      alunoSelecionado?.alunoNome ?? alunoSelecionado?.nome ?? "Não informado",
+
+    matricula:
+      alunoSelecionado?.alunoMatricula ??
+      alunoSelecionado?.matricula ??
+      "Não informada",
+
+    curso:
+      alunoSelecionado?.alunoCurso ??
+      alunoSelecionado?.curso ??
+      "Não informado",
+
+    semestreAno:
+      alunoSelecionado?.periodoAluno ??
+      alunoSelecionado?.semestreAno ??
+      "Não informado",
+  };
+
   const errorResponse = error?.response?.data || {};
   const invalidFields = errorResponse.invalidFields || {};
   const mensagemErro = errorResponse.detail || error?.message || null;
@@ -194,11 +213,6 @@ function PlanoAcaoForm({
   function erroDoCampo(campo) {
     return errosLocais[campo] || invalidFields[campo];
   }
-
-  const opcoesAlunos = alunos.map((aluno) => ({
-    value: aluno.alunoMatricula,
-    label: `${aluno.alunoNome || "Nome não informado"} — ${aluno.alunoMatricula}`,
-  }));
 
   return (
     <div className="plano-acao-body">
@@ -223,20 +237,39 @@ function PlanoAcaoForm({
           </span>
 
           <div className="plano-acao-row">
-            <FormSelect
-              name="matricula"
-              label="Aluno"
-              value={formData.matricula}
-              onChange={handleChange}
-              options={opcoesAlunos}
-              placeholder={
-                isLoadingAlunos ? "Carregando alunos..." : "Selecione o aluno"
-              }
-              required
-              disabled={isPending || isLoadingAlunos}
-              error={erroDoCampo("matricula")}
-            />
+            {alunoSelecionado ? (
+            <div className="plano-acao-student-summary">
+              <div>
+                <span>Nome do estudante</span>
+                <strong>{identificacao.nomeEstudante}</strong>
+              </div>
 
+              <div>
+                <span>Matrícula</span>
+                <strong>{identificacao.matricula}</strong>
+              </div>
+
+              <div>
+                <span>Curso</span>
+                <strong>{identificacao.curso}</strong>
+              </div>
+
+              <div>
+                <span>Semestre/Ano</span>
+                <strong>{identificacao.semestreAno}</strong>
+              </div>
+            </div>
+          ) : (
+            <div className="plano-acao-document-note">
+              <p>
+                Nenhum estudante selecionado. Selecione um aluno para visualizar
+                seus dados e preencher o Plano Educacional Individualizado.
+              </p>
+            </div>
+          )}
+          </div>
+
+          <div className="plano-acao-row">
             <FormField
               name="dataPlano"
               label="Data do Plano de Ação"
