@@ -44,24 +44,42 @@ const SecaoSanfona = ({ titulo, children, padraoAberto = false }) => {
   );
 };
 
+
+const SecaoMetadados = ({ 
+  dados = {},
+}) => {
+
+  return(
+    <div className="pei-view-metadados">
+      <div className="pei-view-metadados-grupo">
+        <div className="pei-view-metadado-item">
+          <span className="pei-view-metadado-label">Período de Elaboração</span>
+          <span className="pei-view-metadado-valor">
+            {dados.periodoPei || "N/A"}
+          </span>
+        </div>
+
+        {typeof dados.statusAtivo === "boolean" && (
+          <div className="pei-view-metadado-item">
+            <span className="pei-view-metadado-label">Situação</span>
+            <span
+              className={`pei-view-badge-situacao ${
+                dados.statusAtivo ? "ativa" : "inativa"
+              }`}
+            >
+              {dados.statusAtivo ? "Ativo" : "Inativo"}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function PeiView({ dados, onEdit }) {
   if (!dados) {
     return <p>Nenhum dado encontrado.</p>;
   }
-
-  const identificacao = dados.identificacao || {};
-  const aluno = identificacao.aluno || dados.aluno || {};
-
-  const nomeEstudante =
-    aluno.alunoNome || identificacao.nomeEstudante || dados.nomeEstudante;
-
-  const matricula =
-    aluno.alunoMatricula || identificacao.matricula || dados.matricula;
-
-  const curso = aluno.alunoCurso || identificacao.curso || dados.curso;
-
-  const semestreAno =
-    identificacao.semestreAno || aluno.periodoAluno || dados.semestreAno;
   const conhecimentosHabilidades =
     dados.conhecimentosHabilidadesCapacidadesInteressesNecessidades ||
     dados.conhecimentosHabilidadesInteresses ||
@@ -73,35 +91,7 @@ export default function PeiView({ dados, onEdit }) {
   return (
     <div className="pei-view-container">
       {/* Cabeçalho / Metadados */}
-      <div className="pei-view-metadados">
-        <div className="pei-view-metadados-grupo">
-          <div className="pei-view-metadado-item">
-            <span className="pei-view-metadado-label">Estudante</span>
-            <span className="pei-view-metadado-valor">
-              {nomeEstudante || "N/A"}
-            </span>
-          </div>
-
-          <div className="pei-view-metadado-item">
-            <span className="pei-view-metadado-label">Matrícula</span>
-            <span className="pei-view-metadado-valor">
-              {matricula || "N/A"}
-            </span>
-          </div>
-
-          <div className="pei-view-metadado-item">
-            <span className="pei-view-metadado-label">Curso</span>
-            <span className="pei-view-metadado-valor">{curso || "N/A"}</span>
-          </div>
-
-          <div className="pei-view-metadado-item">
-            <span className="pei-view-metadado-label">Semestre/Ano</span>
-            <span className="pei-view-metadado-valor">
-              {semestreAno || "N/A"}
-            </span>
-          </div>
-        </div>
-      </div>
+      <SecaoMetadados dados={dados} />
 
       <SecaoSanfona titulo="1. Histórico (antes e na instituição)" padraoAberto>
         <div className="pei-view-grid">
