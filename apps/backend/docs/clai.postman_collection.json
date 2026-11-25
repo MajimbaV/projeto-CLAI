@@ -199,6 +199,35 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "rais",
+      "item": [
+        {
+          "name": "criar RAI",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alunoId\": \"00000000-0000-0000-0000-000000000000\",\n  \"peaId\": \"00000000-0000-0000-0000-000000000000\",\n  \"relacionamento\": {\n    \"tipos\": [\"AFETIVO\", \"SOCIALIZADO\"],\n    \"comentario\": \"Interage bem com os colegas.\"\n  },\n  \"habilidadesCognitivas\": {\n    \"tipos\": [\"FOCO\", \"MEMORIA\"],\n    \"comentario\": \"Demonstra progresso nas atividades.\"\n  },\n  \"habilidadesSocioemocionais\": {\n    \"tipos\": [\"EMPATIA\", \"AUTONOMIA\"],\n    \"comentario\": \"Participa e coopera com o grupo.\"\n  },\n  \"avancosGerais\": \"Apresentou evolução no período.\",\n  \"dificuldadesAprendizagem\": \"Ainda precisa de apoio em algumas atividades.\",\n  \"fatoresExternos\": \"Sem observações.\",\n  \"habilidadesDesenvolvidas\": [\n    {\n      \"habilidadeDesenvolvida\": \"Resolve operações de adição\",\n      \"nivelAprendizado\": \"BOM\",\n      \"observacoes\": \"Realiza com apoio visual.\"\n    }\n  ],\n  \"parecer\": \"Apresentou evolução no período.\",\n  \"data\": \"2026-11-23\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/rais",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["rais"]
+            }
+          },
+          "description": "Substitua alunoId e peaId por IDs de registros ativos. O PEA escolhido não pode ter um RAI cadastrado."
+        }
+      ]
     }
   ]
 }
