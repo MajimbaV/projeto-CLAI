@@ -365,7 +365,7 @@ function AlunoPlanejamento({
             estudo.estudoCasoId ??
             estudo.idEstudoCaso ??
             `${matricula}-${index}`;
-          const titulo = estudo.titulo || `Estudo de Caso #${index + 1}`;
+          const titulo = idEstudo ? `Estudo de Caso #${idEstudo.toString().slice(-6)}` : `Estudo de Caso #${index + 1}`;
           const expandido = estudosExpandidos.includes(idEstudo);
           const painelId = `estudo-caso-${idEstudo}`;
           const dataCriacao = estudo.checklistApoios?.data || estudo.createdAt;
@@ -484,6 +484,7 @@ function AlunoPlanejamento({
             plano._id ??
             plano.planoAcaoId ??
             `${matricula}-${index}`;
+          const titulo = idPlano ? `Plano de Ação #${idPlano.toString().slice(-6)}` : `Plano de Ação #${index + 1}`;
           const expandido = planosExpandidos.includes(idPlano);
           const painelId = `plano-acao-${idPlano}`;
           return (
@@ -503,11 +504,13 @@ function AlunoPlanejamento({
                     PA
                   </span>
                   <span className="planejamento-plano-acao-resumo">
-                    <strong>Plano de Ação</strong>
+                    <strong>{titulo}</strong>
                     <span>
                       {plano.dataPlano
                         ? `Data do plano: ${formatarData(plano.dataPlano)}`
                         : "Data do plano não informada"}
+                      {" · "}
+                      Situação: {exibir(plano.statusAtivo ? "Ativo" : "Inativo")}
                     </span>
                   </span>
                   <span
@@ -597,8 +600,8 @@ function AlunoPlanejamento({
           const painelId = `pei-${idPei}`;
           const titulo =
             identificadorPei != null
-              ? `Plano de Ensino Individualizado #${identificadorPei}`
-              : `Plano de Ensino Individualizado ${index + 1}`;
+              ? `Plano de Ensino Individualizado #${identificadorPei.toString().slice(-6)}`
+              : `Plano de Ensino Individualizado #${index + 1}`;
           return (
             <article
               className="planejamento-plano-acao planejamento-pei-item"
@@ -621,9 +624,9 @@ function AlunoPlanejamento({
                   <span className="planejamento-plano-acao-resumo">
                     <strong>{titulo}</strong>
                     <span>
-                      Identificador: {exibir(identificadorPei)}
+                      Período: {exibir(pei.periodoPei)}
                       {" · "}
-                      Situação: {exibir(pei.status)}
+                      Situação: {exibir(pei.statusAtivo? "Ativo" : "Inativo")}
                     </span>
                   </span>
                   <span
