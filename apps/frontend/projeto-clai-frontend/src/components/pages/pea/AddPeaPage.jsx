@@ -4,6 +4,9 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PeaForm from "./PeaForm";
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useGetPei } from "../../../hooks/pei/useGetPei";
+import { useCreatePea } from "../../../hooks/pea/useCreatePea";
+import { mapearParaPeaDTO } from "../../../utils/peaMapper";
+import { useToast } from "../../../hooks/useToast";
 
 function obterRegistro(data) {
   if (Array.isArray(data)) return data[0] ?? null;
@@ -45,6 +48,9 @@ export default function AddPeaPage() {
     isLoading: isLoadingPei,
     error: erroPei,
   } = useGetPei(peiId);
+
+  const { mutate: createPea} = useCreatePea();
+  const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   // Prioriza os dados recebidos pela navegação.
   // Caso não existam, utiliza os dados recuperados pelos hooks.
@@ -88,9 +94,22 @@ export default function AddPeaPage() {
       return;
     }
 
-    setFeedback(
-      "Formulário preenchido. A integração para salvar o PEA ainda não foi conectada.",
-    );
+    const peaDTO = mapearParaPeaDTO(payload, payload.alunoId, payload.peiId);
+    console.log("Enviando dados para criação do PEA:", peaDTO);
+    createPea(peaDTO, {
+      onSuccess: () => {
+        showSuccessToast("Plano de Ensino Acadêmico cadastrado com sucesso!");
+        voltarAoPlanejamento();
+      },
+      onError: (error) => {
+        const errorMessage =
+          error?.response?.data?.detail ||
+          error?.detail ||
+          error?.message ||
+          "Não foi possível cadastrar o Plano de Ensino Acadêmico.";
+        showErrorToast(errorMessage);
+      }
+    });
   }
 
   if (carregandoAssociacoes) {
