@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getEstudosCaso } from '../services/EstudoCasoService';
+import { getEstudosCaso } from '../../services/EstudoCasoService';
 
 export function useGetEstudosCasoByMatricula(matriculaAluno, {page = 1, size = 10, sort="id,asc", filters} = {}) {
 
