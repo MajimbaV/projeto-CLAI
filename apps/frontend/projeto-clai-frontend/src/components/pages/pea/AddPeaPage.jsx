@@ -12,15 +12,7 @@ function obterRegistro(data) {
   return data?.data ?? data ?? null;
 }
 
-export default function AddPeaPage({
-  aluno: alunoProp = null,
-  pei: peiProp = null,
-  isLoadingAssociacoes = false,
-  associacoesError = null,
-  isPending = false,
-  error = null,
-  onSubmit,
-}) {
+export default function AddPeaPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,8 +23,6 @@ export default function AddPeaPage({
   const matricula =
     matriculaParam ??
     location.state?.matriculaAluno ??
-    alunoProp?.alunoMatricula ??
-    alunoProp?.matricula ??
     location.state?.aluno?.alunoMatricula ??
     location.state?.aluno?.matricula ??
     "";
@@ -40,8 +30,6 @@ export default function AddPeaPage({
   const peiId =
     peiIdParam ??
     location.state?.peiId ??
-    peiProp?.id ??
-    peiProp?._id ??
     location.state?.pei?.id ??
     location.state?.pei?._id ??
     "";
@@ -58,19 +46,18 @@ export default function AddPeaPage({
     error: erroPei,
   } = useGetPei(peiId);
 
-  // Prioriza os dados recebidos pela navegação ou por props.
+  // Prioriza os dados recebidos pela navegação.
   // Caso não existam, utiliza os dados recuperados pelos hooks.
-  const aluno = alunoProp ?? location.state?.aluno ?? obterRegistro(alunoData);
+  const aluno = location.state?.aluno ?? obterRegistro(alunoData);
 
-  const pei = peiProp ?? location.state?.pei ?? obterRegistro(peiData);
+  const pei = location.state?.pei ?? obterRegistro(peiData);
 
   const carregandoAssociacoes =
-    isLoadingAssociacoes ||
     (!aluno && isLoadingAluno) ||
     (!pei && isLoadingPei);
 
   const erroAssociacoes =
-    associacoesError || (!aluno && erroAluno) || (!pei && erroPei);
+    (!aluno && erroAluno) || (!pei && erroPei);
 
   const defaultValues = {
     ...location.state?.defaultValues,
@@ -98,11 +85,6 @@ export default function AddPeaPage({
 
     if (!payload.alunoId || !payload.peiId) {
       setFeedback("Não foi possível identificar o aluno ou o PEI associado.");
-      return;
-    }
-
-    if (onSubmit) {
-      onSubmit(payload);
       return;
     }
 
@@ -175,8 +157,8 @@ export default function AddPeaPage({
         defaultValues={defaultValues}
         aluno={aluno}
         pei={pei}
-        isPending={isPending}
-        error={error}
+        isPending={null}
+        error={null}
         onSubmit={handleSubmit}
         onCancel={voltarAoPlanejamento}
       />
