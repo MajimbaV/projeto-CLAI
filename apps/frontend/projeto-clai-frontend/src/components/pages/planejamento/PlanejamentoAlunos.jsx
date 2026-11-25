@@ -2,6 +2,7 @@ import { useState } from "react";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import ChevronRight from "../../../assets/ChevronRight.png";
 import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
+import { useGetCursos } from "../../../hooks/curso/useGetCursos";
 import SearchBar  from "../../queries/searchBar/SearchBar";
 import Selector from "../../queries/selector/Selector";
 import { contemApenasNumeros } from "../../../utils/validations";
@@ -302,7 +303,7 @@ function CronologiaDocumentos({ aluno, matricula, cronologiaPorMatricula }) {
 const filtrosIniciais = {
   nome: undefined,
   matricula: undefined,
-  curso: undefined,
+  cursoId: undefined,
   periodo: undefined,
   maioridade: undefined,
   statusAtivo: true
@@ -317,18 +318,6 @@ const opcoesSort = [
   {value: "alunoCurso,desc", label: "Curso (Z-A)"},
 ]
 
-
-const opcoesCurso = [
-  {value: "Integrado em Informática", label: "Integrado em Informática"},
-  {value: "Integrado em Eletromecânica", label: "Integrado em Eletromecânica"},
-  {value: "Integrado em Meio Ambiente", label: "Integrado em Meio Ambiente"},
-  {value: "Bacharelado em Engenharia de Controle e Automação", label: "Bacharelado em Engenharia de Controle e Automação"},
-  {value: "Análise e Desenvolvimento de Sistemas", label: "Análise e Desenvolvimento de Sistemas"},
-  {value: "Licenciatura em Matemática", label: "Licenciatura em Matemática"},
-  {value: "Licenciatura em Química", label: "Licenciatura em Química"},
-  {value: "Bacharelado em Engenharia Civil", label: "Bacharelado em Engenharia Civil"},
-  {value: "Tecnologia em Automação Industrial", label: "Tecnologia em Automação Industrial"},
-];
 
 const opcoesPeriodo = [
   {value: "2026.2", label: "2026.2"},
@@ -356,6 +345,12 @@ function PlanejamentoAlunos({
   const itensPorPagina = 5;
 
   const { data, isLoading, error } = useGetAlunos({page: paginaAtual, size: itensPorPagina, filters: filtros, sort: sort});
+    const { data: cursosData, isLoading: isCursosLoading, error: cursosError } = useGetCursos({size: 100});
+  
+    const opcoesCurso = cursosData?.content?.map((curso) => ({
+      value: curso.id,
+      label: `${curso.nomeCurso} (${curso.cursoSigla})`,
+    })) || [];
 
   const alunos = data?.content || [];
   const quantidadeAlunos = data?.numberOfElements || 0;
@@ -420,7 +415,7 @@ function PlanejamentoAlunos({
     );
   }
 
-  if (isLoading) {
+  if (isLoading || isCursosLoading) {
     return (
       <div className="aluno-list-body">
         {renderizarCabecalho(false)}
@@ -459,10 +454,11 @@ function PlanejamentoAlunos({
               onChange={(e) => setSort(e.target.value)}
               options={opcoesSort}/>
             
-            <Selector
-              value={filtros.curso}
-              onChange={(e) => setFiltros((prev) => ({ ...prev, curso: e.target.value }))}
-              options={[{value: "", label: "Todos os cursos"}, ...opcoesCurso]}/>
+              <Selector
+              value={filtros.cursoId}
+              onChange={(e) => setFiltros((prev) => ({ ...prev, cursoId: e.target.value }))}
+              options={ cursosError ? [{value: "", label: "Todos os Cursos"}, {value: "", label: "Erro ao carregar cursos"}] : [{value: "", label: "Todos os cursos"}, ...opcoesCurso]}/>
+
 
             <Selector
               value={filtros.periodo}

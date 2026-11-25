@@ -58,7 +58,7 @@ export default function PeiView({ dados, onEdit }) {
   const matricula =
     aluno.alunoMatricula || identificacao.matricula || dados.matricula;
 
-  const curso = aluno.alunoCurso || identificacao.curso || dados.curso;
+  const curso = aluno?.curso?.nomeCurso ?? aluno?.alunoCurso ?? aluno?.curso ?? "Não informado";
 
   const semestreAno =
     identificacao.semestreAno || aluno.periodoAluno || dados.semestreAno;

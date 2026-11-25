@@ -23,19 +23,6 @@ const TEXTOS_POR_MODO = {
 
 const OPCOES_PARENTESCO = ["Pai", "Mãe", "Irmão", "Irmã", "Outro"];
 
-const OPCOES_CURSO = [
-  "Integrado em Informática",
-  "Integrado em Edificações",
-  "Integrado em Eletromecânica",
-  "Integrado em Meio Ambiente",
-  "Bacharelado em Engenharia de Controle e Automação",
-  "Análise e Desenvolvimento de Sistemas",
-  "Licenciatura em Matemática",
-  "Licenciatura em Química",
-  "Bacharelado em Engenharia Civil",
-  "Tecnologia em Automação Industrial",
-];
-
 const FORM_DATA_VAZIO = {
   alunoNome: "",
   alunoNascimento: "",
@@ -46,17 +33,23 @@ const FORM_DATA_VAZIO = {
   responsavelTelefone: "",
   responsavelEmail: "",
   alunoMatricula: "",
-  alunoCurso: "",
+  cursoId: "",
   periodoIngresso: "",
   periodoAluno: "",
 };
 
 function normalizarDefaultValues(valores) {
+  if (!valores) {
+    return { ...FORM_DATA_VAZIO };
+  }
+
   const normalizado = {};
 
   for (const chave of Object.keys(FORM_DATA_VAZIO)) {
     normalizado[chave] = valores?.[chave] ?? "";
   }
+
+  normalizado.cursoId = valores.curso?.id ?? valores.cursoId ?? ""; 
 
   return normalizado;
 }
@@ -67,6 +60,7 @@ function AlunoForm({
   isLoading,
   error,
   defaultValues,
+  opcoesCursos,
   mode = "create",
 }) {
   const [formData, setFormData] = useState(() =>
@@ -379,9 +373,9 @@ function AlunoForm({
               <label htmlFor="alunoCurso">Curso *</label>
 
               <select
-                id="alunoCurso"
-                name="alunoCurso"
-                value={formData.alunoCurso}
+                id="cursoId"
+                name="cursoId"
+                value={formData.cursoId}
                 onChange={handleChangeForm}
                 disabled={isPending}
                 required
@@ -390,16 +384,22 @@ function AlunoForm({
                   Selecione um curso...
                 </option>
 
-                {OPCOES_CURSO.map((curso) => (
-                  <option key={curso} value={curso}>
-                    {curso}
+                {opcoesCursos?.map((curso) => (
+                  <option key={curso.value} value={curso.value}>
+                    {curso.label}
                   </option>
                 ))}
               </select>
 
-              {invalidFields.alunoCurso && (
+              {opcoesCursos?.length === 0 || !opcoesCursos ? (
+                <p className="error-message">
+                  Nenhum curso disponível. Cadastre um curso primeiro.
+                </p>
+              ) : null }
+
+              {invalidFields.cursoId && (
                 <span className="error-message">
-                  {invalidFields.alunoCurso}
+                  {invalidFields.cursoId}
                 </span>
               )}
             </div>

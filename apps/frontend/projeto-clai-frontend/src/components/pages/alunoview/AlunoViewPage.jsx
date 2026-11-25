@@ -4,6 +4,7 @@ import AlunoView from "./AlunoView";
 import { useDeleteAluno } from "../../../hooks/aluno/useDeleteAluno";
 import { useAtivarAluno } from "../../../hooks/aluno/useAtivarAluno";
 import { ConfirmModal } from "../../modal/confirmationDialog/ConfirmModal";
+import { useToast } from "../../../hooks/useToast";
 
 function AlunoViewPage() {
   const { matricula } = useParams();
@@ -14,6 +15,8 @@ function AlunoViewPage() {
   const [modalDelecaoAberto, setModalDelecaoAberto] = useState(false);
   const [modalAtivacaoAberto, setModalAtivacaoAberto] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
+
+  const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   function handleSolicitarDelecao(aluno) {
     setAlunoSelecionado(aluno);
@@ -27,11 +30,11 @@ function AlunoViewPage() {
             setModalDelecaoAberto(false);
             setAlunoSelecionado(null);
 
-            // Chamar um toast aqui depois
+            showSuccessToast('Aluno arquivado com sucesso!');
             navigate("/alunos");
           },
           onError: (error) => {
-            console.error('Erro ao arquivar aluno:', error.response?.data);//Substituir por um toast depois
+            showErrorToast(`Erro ao arquivar aluno: ${error.response?.data?.detail || error.message || 'Erro desconhecido'}`);
             setModalDelecaoAberto(false);
           }
         });
@@ -54,11 +57,11 @@ function AlunoViewPage() {
         onSuccess: () => {
           setModalAtivacaoAberto(false);
           setAlunoSelecionado(null);
-          // Chamar um toast aqui depois
+          showSuccessToast('Aluno ativado com sucesso!');
           navigate("/alunos");
         },
         onError: (error) => {
-          console.error('Erro ao ativar aluno:', error.response?.data); //Substituir por um toast depois
+          showErrorToast(`Erro ao arquivar o aluno: ${error.response?.data?.detail || error.message || 'Erro desconhecido'}`); //Substituir por um toast depois
           setModalAtivacaoAberto(false);
         }
       });
