@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,7 +109,7 @@ public class RaiService {
 
     private void validarUnicidadePea(UUID peaId) {
         if (raiRepository.existsByPeaId(peaId)) {
-            throw new DataIntegrityViolationException("Já existe um RAI cadastrado para o PEA informado.");
+            throw new BusinessRuleException("Já existe um RAI cadastrado para o PEA informado.");
         }
     }
 
