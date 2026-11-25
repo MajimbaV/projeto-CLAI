@@ -8,17 +8,17 @@ export function useGetPlanosAcaoByMatricula(matriculaAluno, {page = 1, size = 10
     }
 
     return useQuery({
-        queryKey: ['planos-acao', page, size, sort, filters],
+        queryKey: ['planos-acao', 'matricula', matriculaAluno, page, size, sort, filters],
+        enabled: Boolean(matriculaAluno),
         queryFn: () => getPlanosAcao({
             page: page - 1, 
             size: size, 
             sort: sort, 
             filters: {
-              matriculaAluno: matriculaAluno,
-              ...filters
+              ...filters,
+              matriculaAluno: matriculaAluno
             }
         }),
         staleTime: 5 * 60 * 1000, // 5 minutos
-        placeholderData: (prev) => prev 
     })
 }

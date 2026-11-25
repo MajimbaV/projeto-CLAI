@@ -8,7 +8,8 @@ export function useGetPeisByMatricula(matriculaAluno, {page = 1, size = 10, sort
     }
 
     return useQuery({
-        queryKey: ['peis', page, size, sort, filters],
+        queryKey: ['peis', 'matricula', matriculaAluno, page, size, sort, filters],
+        enabled: Boolean(matriculaAluno),
         queryFn: () => getPeis({
             page: page - 1, 
             size: size, 
@@ -19,6 +20,5 @@ export function useGetPeisByMatricula(matriculaAluno, {page = 1, size = 10, sort
             }
         }),
         staleTime: 5 * 60 * 1000, // 5 minutos
-        placeholderData: (prev) => prev 
     })
 }

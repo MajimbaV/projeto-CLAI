@@ -8,7 +8,8 @@ export function useGetEstudosCasoByMatricula(matriculaAluno, {page = 1, size = 1
     }
 
   return useQuery({
-    queryKey: ['estudos-caso', 'matricula', matriculaAluno],
+    queryKey: ['estudos-caso', 'matricula', matriculaAluno, page, size, sort, filters],
+    enabled: Boolean(matriculaAluno),
     queryFn: () => getEstudosCaso({
         page: page - 1,
         size: size,
@@ -17,9 +18,7 @@ export function useGetEstudosCasoByMatricula(matriculaAluno, {page = 1, size = 1
             ...filters,
             matriculaAluno: matriculaAluno
         }
-    }),
-    enabled: Boolean(matriculaAluno),
-    staleTime: 5 * 60 * 1000,
+    })
   });
 }
 
