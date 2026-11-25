@@ -1,21 +1,21 @@
 import api from './api';
 
-export async function getPlanosAcao({
-  page = 0,
-  size = 20,
-  sort = 'dataPlano,desc',
-  matriculaAluno,
-  nomeAluno,
-  statusAtivo,
-} = {}) {
-  const params = { page, size, sort };
-
-  if (matriculaAluno) params.matriculaAluno = matriculaAluno;
-  if (nomeAluno) params.nomeAluno = nomeAluno;
-  if (typeof statusAtivo === 'boolean') params.statusAtivo = statusAtivo;
-
-  const response = await api.get('/plano-acao', { params });
-  return response.data;
+export async function getPlanosAcao({page = 0, size = 20, sort = 'dataPlano,desc', filters} = {}) {
+    for (const key in filters) {
+        if (filters[key] === "" || filters[key] === null || filters[key] === undefined) {
+            delete filters[key];
+        }
+    }
+    
+    const response = await api.get('/plano-acao', {
+        params: {
+            page,
+            size,
+            sort,
+            ...filters
+        }
+    });
+    return response.data;
 }
 
 export async function getPlanoAcaoById(id) {

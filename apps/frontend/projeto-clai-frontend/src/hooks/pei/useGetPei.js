@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPeiById } from '../../services/PeiServiceMock';
+import { getPeiById } from '../../services/PeiService';
 
 export function useGetPei(id) {
     return useQuery({

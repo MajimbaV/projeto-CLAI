@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPlanoAcaoById } from '../services/PlanoAcaoService';
+import { getPlanoAcaoById } from '../../services/PlanoAcaoService';
 
 export function useGetPlanoAcaoById(id, options = {}) {
   return useQuery({

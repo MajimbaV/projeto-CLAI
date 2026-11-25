@@ -1,39 +1,86 @@
 import { useNavigate, useParams } from "react-router-dom";
 import AlunoPlanejamento from "./AlunoPlanejamento";
-import { useGetPlanosAcaoByMatricula } from "../../../hooks/useGetPlanosAcaoByMatricula";
-import { useGetPeis } from "../../../hooks/pei/useGetPeis";
+import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
+import { useGetPlanosAcaoByMatricula } from "../../../hooks/plano-acao/useGetPlanosAcaoByMatricula";
+import { useGetPeisByMatricula } from "../../../hooks/pei/useGetPeisByMatricula";
+import { useGetEstudosCasoByMatricula } from "../../../hooks/estudo-caso/useGetEstudosCasoByMatricula"
 
 function AlunoPlanejamentoPage() {
   const { matricula } = useParams();
   const navigate = useNavigate();
 
   const {
+      data: aluno,
+      isLoadingAluno,
+      errorAluno,
+  } = useGetAlunoByMatricula(matricula);
+
+  const {
+    data: estudosCasoData,
+    isLoading: isLoadingEstudosCaso,
+    error: errorEstudosCaso,
+  } = useGetEstudosCasoByMatricula(matricula, {
+    sort: "situacaoEstudoDeCaso,desc",
+  });
+
+  const {
     data: planosData,
     isLoading: isLoadingPlanos,
-    error: erroPlanos,
+    error: errorPlanos,
   } = useGetPlanosAcaoByMatricula(matricula);
 
   const {
     data: peisData,
     isLoading: isLoadingPeis,
-    error: erroPeis,
-  } = useGetPeis({
-    filters: {
-      alunoMatricula: matricula,
-    },
-  });
+    error: errorPeis,
+  } = useGetPeisByMatricula(matricula);
 
-  const planosAcao = Array.isArray(planosData)
-    ? planosData
-    : Array.isArray(planosData?.content)
-      ? planosData.content
-      : [];
+  function getDocumentos() {
+    const documentos = {}
+    const estudosCaso = Array.isArray(estudosCasoData?.content) ? estudosCasoData?.content : []
+    const planosAcao = Array.isArray(planosData?.content) ? planosData?.content : []
+    const peis = Array.isArray(peisData?.content) ? peisData?.content : []
 
-  const peis = Array.isArray(peisData)
-    ? peisData
-    : Array.isArray(peisData?.content)
-      ? peisData.content
-      : [];
+    documentos["estudosCaso"] = estudosCaso
+    documentos["planosAcao"] = planosAcao
+    documentos["peis"] = peis
+
+    return documentos
+  }
+
+  function getLoadings() {
+    const loadings = {}
+    loadings["aluno"] = isLoadingAluno
+    loadings["estudosCaso"] = isLoadingEstudosCaso
+    loadings["planosAcao"] = isLoadingPlanos
+    loadings["peis"] = isLoadingPeis
+
+    return loadings
+  }
+
+  function getErrors() {
+    const errors = {}
+    const alunoErrors = errorAluno?.response?.data || errorAluno?.message || errorAluno || null
+    const estudoCasoErrors = errorEstudosCaso?.response?.data || errorEstudosCaso?.message || errorEstudosCaso || null
+    const planosAcaoErrors = errorPlanos?.response?.data || errorPlanos?.message || errorPlanos || null
+    const peisErrors = errorPeis?.response?.data || errorPeis?.message || errorPeis || null
+
+    errors["aluno"] = alunoErrors
+    errors["estudosCaso"] = estudoCasoErrors
+    errors["planosAcao"] = planosAcaoErrors
+    errors["peis"] = peisErrors
+
+    return errors
+  }
+
+
+  function novoEstudoCaso() {
+    navigate(`/alunos/${encodeURIComponent(matricula)}/estudo-caso/novo`, {
+      state: {
+        matricula: matricula
+      }
+    })
+  }
 
   function editarEstudoCaso(estudo) {
     const idEstudo =
@@ -118,17 +165,12 @@ function AlunoPlanejamentoPage() {
 
   return (
     <AlunoPlanejamento
-      matriculaAluno={matricula}
-      planosAcao={planosAcao}
-      isLoadingPlanosAcao={isLoadingPlanos}
-      erroPlanosAcao={erroPlanos}
-      peisData={peis}
-      isLoadingPeis={isLoadingPeis}
-      erroPeis={erroPeis}
+      aluno = {aluno}
+      documentos = {getDocumentos()}
+      errors = {getErrors()}
+      loadings = {getLoadings()}
       onBack={() => navigate("/planejamento/alunos")}
-      onNovoEstudoCaso={() =>
-        navigate(`/alunos/${encodeURIComponent(matricula)}/estudo-caso/novo`)
-      }
+      onNovoEstudoCaso={novoEstudoCaso}
       onNovoPlanoAcao={novoPlanoAcao}
       onNovoPei={novoPei}
       onNovoPea={novoPea}

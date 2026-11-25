@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
 import PlanoAcaoForm from "./PlanoAcaoForm";
-import { useGetTodosAlunos } from "../../../hooks/aluno/useGetTodosAlunos";
-import { useCreatePlanoAcao } from "../../../hooks/useCreatePlanoAcao";
+import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
+import { useCreatePlanoAcao } from "../../../hooks/plano-acao/useCreatePlanoAcao";
 import { useToast } from "../../../hooks/useToast";
 
 import "./PlanoAcaoForm.css";
@@ -16,10 +16,10 @@ function PlanoAcaoCreatePage() {
   const matriculaInicial = location.state?.matricula || "";
 
   const {
-    data: alunos = [],
+    data: alunoSelecionado,
     isLoading: isLoadingAlunos,
     error: errorAlunos,
-  } = useGetTodosAlunos();
+  } = useGetAlunoByMatricula(matriculaInicial);
 
   const {
     mutate: createPlano,
@@ -54,9 +54,8 @@ function PlanoAcaoCreatePage() {
   return (
     <PlanoAcaoForm
       mode="create"
-      defaultValues={{ matricula: matriculaInicial }}
-      alunos={alunos}
-      isLoadingAlunos={isLoadingAlunos}
+      alunoSelecionado={alunoSelecionado}
+      isLoading={isLoadingAlunos}
       isPending={isCreating}
       error={errorCreate || errorAlunos}
       onSubmit={handleSubmit}

@@ -69,12 +69,12 @@ function temItemPreenchido(lista) {
 }
 
 
-export function validarPlanoAcao(formData, dataAtual = obterDataAtualLocal()) {
+export function validarPlanoAcao(formData, matriculaAluno, dataAtual = obterDataAtualLocal()) {
   const erros = {};
 
-  if (!formData.matricula) {
+  if (!matriculaAluno) {
     erros.matricula = "Selecione um aluno.";
-  } else if (!/^\d+$/.test(formData.matricula)) {
+  } else if (!/^\d+$/.test(matriculaAluno)) {
     erros.matricula = "A matrícula deve conter apenas números.";
   }
 
@@ -117,14 +117,14 @@ export function validarPlanoAcao(formData, dataAtual = obterDataAtualLocal()) {
   return erros;
 }
 
-export function prepararPayloadPlanoAcao(formData) {
+export function prepararPayloadPlanoAcao(formData, matriculaAluno) {
   function prepararLista(resposta, lista) {
     if (resposta === "NAO") return [];
     return lista.map((item) => item.trim()).filter((item) => item !== "");
   }
 
   return {
-    matricula: formData.matricula,
+    matricula: matriculaAluno,
     comorbidadeRelevante: formData.comorbidadeRelevante,
     comorbidadeDescricao: prepararLista(
       formData.comorbidadeRelevante,

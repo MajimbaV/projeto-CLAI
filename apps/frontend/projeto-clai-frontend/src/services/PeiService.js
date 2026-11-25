@@ -5,27 +5,27 @@ export async function postPei(data) {
     return response.data;
 }
 
-export function getPeis({ page = 0, size = 20, sort = 'id,asc', filters } = {}) {
+export async function getPeis({ page = 0, size = 20, sort = 'id,asc', filters } = {}) {
     for (const key in filters) {
         if (filters[key] === "" || filters[key] === null || filters[key] === undefined) {
             delete filters[key];
         }
     }
-    const response = api.get('/peis', { params: { page, size, sort, ...filters } });
+    const response = await api.get('/peis', { params: { page, size, sort, ...filters } });
     return response.data;
 }
 
-export function getPeiById(id) {
-    const response = api.get(`/peis/${id}`);
+export async function getPeiById(id) {
+    const response = await api.get(`/peis/${id}`);
     return response.data;
 }
 
-export function putPei(id, data) {
-    const response = api.put(`/peis/${id}`, data);
+export async function putPei(id, data) {
+    const response = await api.put(`/peis/${id}`, data);
     return response.data;
 }
 
-export function deletePei(id) {
-    const response = api.delete(`/peis/${id}`);
+export async function deletePei(id) {
+    const response = await api.delete(`/peis/${id}`);
     return response.data;
 }

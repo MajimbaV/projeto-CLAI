@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { putPlanoAcao } from '../services/PlanoAcaoService';
+import { putPlanoAcao } from '../../services/PlanoAcaoService';
 
 export function useUpdatePlanoAcao(id) {
   const queryClient = useQueryClient();
