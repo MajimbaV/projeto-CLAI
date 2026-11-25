@@ -65,6 +65,7 @@ export default function PeiForm({
       "Não informada",
 
     curso:
+      alunoSelecionado?.curso?.nomeCurso ??
       alunoSelecionado?.alunoCurso ??
       alunoSelecionado?.curso ??
       "Não informado",

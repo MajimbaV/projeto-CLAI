@@ -44,12 +44,8 @@ const SecaoSanfona = ({ titulo, children, padraoAberto = false }) => {
   );
 };
 
-
-const SecaoMetadados = ({ 
-  dados = {},
-}) => {
-
-  return(
+const SecaoMetadados = ({ dados = {} }) => {
+  return (
     <div className="pei-view-metadados">
       <div className="pei-view-metadados-grupo">
         <div className="pei-view-metadado-item">
@@ -74,19 +70,19 @@ const SecaoMetadados = ({
       </div>
     </div>
   );
-}
+};
 
 export default function PeiView({ dados, onEdit }) {
   if (!dados) {
     return <p>Nenhum dado encontrado.</p>;
   }
+
   const conhecimentosHabilidades =
     dados.conhecimentosHabilidadesCapacidadesInteressesNecessidades ||
     dados.conhecimentosHabilidadesInteresses ||
     dados.conhecimentosHabilidadesCapacidadesInteresses;
   const propostasAdaptacoes =
-    dados.propostasAdaptacoesCurriculares ||
-    dados.propostasAdaptacoes;
+    dados.propostasAdaptacoesCurriculares || dados.propostasAdaptacoes;
 
   return (
     <div className="pei-view-container">

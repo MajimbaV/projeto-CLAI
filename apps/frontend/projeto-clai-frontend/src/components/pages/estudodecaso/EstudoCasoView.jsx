@@ -120,7 +120,7 @@ export default function EstudoCasoView({ dados, onEdit }) {
           </div>
           <div className="estudo-view-metadado-item">
             <span className="estudo-view-metadado-label">Curso</span>
-            <span className="estudo-view-metadado-valor">{aluno.alunoCurso || "N/A"}</span>
+            <span className="estudo-view-metadado-valor">{aluno?.curso?.nomeCurso ?? aluno?.alunoCurso ?? aluno?.curso ?? "N/A"}</span>
           </div>
         </div>
 
