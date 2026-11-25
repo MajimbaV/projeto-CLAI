@@ -6,11 +6,9 @@ import EstudoCasoView from "../estudodecaso/EstudoCasoView";
 import PeiView from "../pei/PeiView";
 import "./AlunoPlanejamento.css";
 const ABAS_PLANEJAMENTO = [
-  { id: "estudo-caso", titulo: "Estudo de caso" },
-  { id: "pei", titulo: "PEI" },
+  { id: "estudo-caso", titulo: "Estudo de Caso" },
   { id: "plano-acao", titulo: "Planos de Ação" },
-  { id: "plano-atendimento", titulo: "Plano de atendimento" },
-  { id: "adaptacoes", titulo: "Adaptações" },
+  { id: "pei", titulo: "PEI" },
   { id: "documentos", titulo: "Outros documentos" },
 ];
 // const SECOES_ESTUDO_CONFIG = [
@@ -338,7 +336,7 @@ function AlunoPlanejamento({
         </p>
       );
     }
-    
+
     if (listaEstudos.length === 0) {
       return (
         <div className="planejamento-vazio">
