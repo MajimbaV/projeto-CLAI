@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import PeaForm from "./PeaForm";
-import { getPeis, getPeiById } from "../../../services/PeiServiceMock";
-import { createPea } from "../../../services/PeaServiceMock";
 import { useToast } from "../../../hooks/useToast";
+import { createPea } from "../../../services/PeaServiceMock";
+import { getPeis, getPeiById } from "../../../services/PeiServiceMock";
 
 export default function AddPeaPage({
   aluno: alunoProp = null,
@@ -17,38 +17,28 @@ export default function AddPeaPage({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { matricula: matriculaParam, peiId: peiIdParam } = useParams();
-
   const [feedback, setFeedback] = useState("");
   const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   const matricula =
     matriculaParam ??
     location.state?.matriculaAluno ??
-    alunoProp?.alunoMatricula ??
-    alunoProp?.matricula ??
     location.state?.aluno?.alunoMatricula ??
     location.state?.aluno?.matricula ??
     "";
-
   const peiId =
     peiIdParam ??
     location.state?.peiId ??
-    peiProp?.id ??
-    peiProp?._id ??
     location.state?.pei?.id ??
     location.state?.pei?._id ??
     "";
 
-  const peiMock = peiId ? getPeiById(peiId) : null;
-  const pei =
-    peiProp ?? location.state?.pei ?? peiMock ?? null;
+  const pei = peiProp ?? location.state?.pei ?? getPeiById(peiId);
   const alunoMock = matricula
     ? getPeis({ filters: { alunoMatricula: matricula } }).content[0] ?? null
     : null;
-  const alunoBase =
-    alunoProp ?? location.state?.aluno ?? alunoMock ?? pei ?? null;
+  const alunoBase = alunoProp ?? location.state?.aluno ?? alunoMock ?? pei;
   const alunoId =
     location.state?.defaultValues?.alunoId ??
     alunoBase?.id ??
@@ -75,10 +65,6 @@ export default function AddPeaPage({
     : null;
   const peiIdentificador =
     pei?.id ?? pei?._id ?? peiId ?? null;
-
-  const carregandoAssociacoes = isLoadingAssociacoes;
-  const erroAssociacoes = associacoesError;
-
   const defaultValues = {
     ...location.state?.defaultValues,
     alunoId,
@@ -116,15 +102,15 @@ export default function AddPeaPage({
       createPea(payload);
       showSuccessToast("PEA salvo no mock com sucesso.");
       voltarAoPlanejamento();
-    } catch (erro) {
-      const mensagem =
-        erro?.message ?? "Não foi possível salvar o PEA no mock.";
-      setFeedback(mensagem);
-      showErrorToast(mensagem);
+    } catch (submitError) {
+      const message =
+        submitError?.message ?? "Não foi possível salvar o PEA no mock.";
+      setFeedback(message);
+      showErrorToast(message);
     }
   }
 
-  if (carregandoAssociacoes) {
+  if (isLoadingAssociacoes) {
     return (
       <div className="pea-page-body">
         <p className="pea-page-message">
@@ -134,17 +120,18 @@ export default function AddPeaPage({
     );
   }
 
-  if (erroAssociacoes) {
+  if (associacoesError) {
+    const message =
+      associacoesError?.response?.data?.detail ??
+      associacoesError?.detail ??
+      associacoesError?.message ??
+      "Não foi possível carregar o aluno ou o PEI.";
+
     return (
       <div className="pea-page-body">
         <div className="pea-alert pea-alert-error" role="alert">
-          Erro ao carregar as informações associadas:{" "}
-          {erroAssociacoes?.response?.data?.detail ||
-            erroAssociacoes?.detail ||
-            erroAssociacoes?.message ||
-            "Não foi possível carregar o aluno ou o PEI."}
+          Erro ao carregar as informações associadas: {message}
         </div>
-
         <button
           type="button"
           className="pea-btn-cancel"
@@ -156,14 +143,13 @@ export default function AddPeaPage({
     );
   }
 
-  if (!aluno || !peiId || !pei) {
+  if (!alunoId || !peiIdentificador || !pei) {
     return (
       <div className="pea-page-body">
         <div className="pea-alert pea-alert-error" role="alert">
           Não foi possível identificar o aluno ou o PEI associado.
           <p>Verifique se o aluno e o PEI informados na rota existem.</p>
         </div>
-
         <button
           type="button"
           className="pea-btn-cancel"
@@ -182,7 +168,6 @@ export default function AddPeaPage({
           {feedback}
         </div>
       )}
-
       <PeaForm
         mode="create"
         defaultValues={defaultValues}
