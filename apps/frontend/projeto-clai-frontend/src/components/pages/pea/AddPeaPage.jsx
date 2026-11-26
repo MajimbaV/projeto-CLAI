@@ -4,6 +4,9 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PeaForm from "./PeaForm";
 import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useGetPei } from "../../../hooks/pei/useGetPei";
+import { useCreatePea } from "../../../hooks/pea/useCreatePea";
+import { mapearParaPeaDTO } from "../../../utils/peaMapper";
+import { useToast } from "../../../hooks/useToast";
 
 function obterRegistro(data) {
   if (Array.isArray(data)) return data[0] ?? null;
@@ -12,15 +15,7 @@ function obterRegistro(data) {
   return data?.data ?? data ?? null;
 }
 
-export default function AddPeaPage({
-  aluno: alunoProp = null,
-  pei: peiProp = null,
-  isLoadingAssociacoes = false,
-  associacoesError = null,
-  isPending = false,
-  error = null,
-  onSubmit,
-}) {
+export default function AddPeaPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,8 +26,6 @@ export default function AddPeaPage({
   const matricula =
     matriculaParam ??
     location.state?.matriculaAluno ??
-    alunoProp?.alunoMatricula ??
-    alunoProp?.matricula ??
     location.state?.aluno?.alunoMatricula ??
     location.state?.aluno?.matricula ??
     "";
@@ -40,8 +33,6 @@ export default function AddPeaPage({
   const peiId =
     peiIdParam ??
     location.state?.peiId ??
-    peiProp?.id ??
-    peiProp?._id ??
     location.state?.pei?.id ??
     location.state?.pei?._id ??
     "";
@@ -58,26 +49,39 @@ export default function AddPeaPage({
     error: erroPei,
   } = useGetPei(peiId);
 
-  // Prioriza os dados recebidos pela navegação ou por props.
+  const { mutate: createPea, isPending: isCreatingPea, error: erroCreatePea } = useCreatePea();
+  const { success: showSuccessToast, error: showErrorToast } = useToast();
+
+  // Prioriza os dados recebidos pela navegação.
   // Caso não existam, utiliza os dados recuperados pelos hooks.
-  const aluno = alunoProp ?? location.state?.aluno ?? obterRegistro(alunoData);
-
-  const pei = peiProp ?? location.state?.pei ?? obterRegistro(peiData);
-
-  const carregandoAssociacoes =
-    isLoadingAssociacoes ||
-    (!aluno && isLoadingAluno) ||
-    (!pei && isLoadingPei);
-
-  const erroAssociacoes =
-    associacoesError || (!aluno && erroAluno) || (!pei && erroPei);
+  const aluno = location.state?.aluno ?? obterRegistro(alunoData);
+  const pei = location.state?.pei ?? obterRegistro(peiData);
 
   const defaultValues = {
     ...location.state?.defaultValues,
-    alunoId:
-      location.state?.defaultValues?.alunoId ?? aluno?.id ?? aluno?._id ?? "",
+    alunoId: location.state?.defaultValues?.alunoId ?? aluno?.id ?? aluno?._id ?? "",
     peiId: location.state?.defaultValues?.peiId ?? peiId,
   };
+
+  function getInactivity() {
+    const inactivity = {};
+
+    if (isLoadingAluno) inactivity.aluno = true;
+    if (isLoadingPei) inactivity.pei = true;
+    if (isCreatingPea) inactivity.createPea = true;
+
+    return inactivity;
+  }
+
+  function getErrors(){
+    const errors = {};
+
+    if (erroAluno) errors.aluno = erroAluno?.response?.data|| erroAluno;
+    if (erroPei) errors.pei = erroPei?.response?.data || erroPei;
+    if (erroCreatePea) errors.createPea = erroCreatePea?.response?.data || erroCreatePea;
+
+    return errors;
+  }
 
   function voltarAoPlanejamento() {
     if (location.state?.returnTo) {
@@ -101,17 +105,25 @@ export default function AddPeaPage({
       return;
     }
 
-    if (onSubmit) {
-      onSubmit(payload);
-      return;
-    }
-
-    setFeedback(
-      "Formulário preenchido. A integração para salvar o PEA ainda não foi conectada.",
-    );
+    const peaDTO = mapearParaPeaDTO(payload, payload.alunoId, payload.peiId);
+    console.log("Enviando dados para criação do PEA:", peaDTO);
+    createPea(peaDTO, {
+      onSuccess: () => {
+        showSuccessToast("Plano de Ensino Acadêmico cadastrado com sucesso!");
+        voltarAoPlanejamento();
+      },
+      onError: (error) => {
+        const errorMessage =
+          error?.response?.data?.detail ||
+          error?.detail ||
+          error?.message ||
+          "Não foi possível cadastrar o Plano de Ensino Acadêmico.";
+        showErrorToast(errorMessage);
+      }
+    });
   }
 
-  if (carregandoAssociacoes) {
+  if (getInactivity().aluno || getInactivity().pei) {
     return (
       <div className="pea-page-body">
         <p className="pea-page-message">
@@ -121,14 +133,15 @@ export default function AddPeaPage({
     );
   }
 
-  if (erroAssociacoes) {
+  if (getErrors().aluno || getErrors().pei) {
     return (
       <div className="pea-page-body">
         <div className="pea-alert pea-alert-error" role="alert">
-          Erro ao carregar as informações associadas:{" "}
-          {erroAssociacoes?.response?.data?.detail ||
-            erroAssociacoes?.detail ||
-            erroAssociacoes?.message ||
+          Erro ao carregar as informações associadas:{""}
+          { getErrors().aluno?.detail ||
+            getErrors().aluno?.message ||
+            getErrors().pei?.detail ||
+            getErrors().pei?.message ||
             "Não foi possível carregar o aluno ou o PEI."}
         </div>
 
@@ -175,8 +188,8 @@ export default function AddPeaPage({
         defaultValues={defaultValues}
         aluno={aluno}
         pei={pei}
-        isPending={isPending}
-        error={error}
+        error={getErrors().createPea}
+        isPending={getInactivity().createPea}
         onSubmit={handleSubmit}
         onCancel={voltarAoPlanejamento}
       />
