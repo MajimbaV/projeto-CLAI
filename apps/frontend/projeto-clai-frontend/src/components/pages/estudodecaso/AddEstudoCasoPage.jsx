@@ -14,8 +14,8 @@ export default function AddEstudoCasoPage({
 
 
   const caminhoDeVolta = matricula
-    ? `/alunos/${encodeURIComponent(matricula)}`
-    : "/alunos";
+    ? `/planejamento/alunos/${encodeURIComponent(matricula)}`
+    : "/planejamento/alunos";
 
   if (isLoadingAluno) {
     return <div>Carregando dados...</div>;

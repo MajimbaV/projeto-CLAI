@@ -42,6 +42,27 @@
   font-weight: 600;
 }
 
+.pei-view-badge-situacao {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pei-view-badge-situacao.ativa {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.pei-view-badge-situacao.inativa {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
 /* Sanfona (Accordion) */
 .pei-view-section {
   display: block;

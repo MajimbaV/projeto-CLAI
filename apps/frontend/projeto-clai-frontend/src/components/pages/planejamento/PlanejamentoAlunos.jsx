@@ -2,7 +2,9 @@ import { useState } from "react";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import ChevronRight from "../../../assets/ChevronRight.png";
 import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
-import SearchBar  from "../../queries/searchBar/SearchBar";
+import { useGetPendenciaDocumentos } from "../../../hooks/aluno/useGetPendenciaDocumentos";
+import { useGetCursos } from "../../../hooks/curso/useGetCursos";
+import SearchBar from "../../queries/searchBar/SearchBar";
 import Selector from "../../queries/selector/Selector";
 import { contemApenasNumeros } from "../../../utils/validations";
 
@@ -12,268 +14,45 @@ import "./PlanejamentoAlunos.css";
 const TIPOS_DOCUMENTO = [
   {
     id: "estudoCaso",
-    titulo: "Estudo de caso",
+    titulo: "Estudo de Caso",
     chaves: ["estudocaso", "estudoscaso", "estudodecaso", "estudosdecaso"],
     termos: ["estudodecaso", "estudosdecaso", "estudocaso"],
   },
   {
-    id: "planoAtendimento",
-    titulo: "Plano de atendimento",
-    chaves: ["planoatendimento", "planosatendimento"],
-    termos: ["planoatendimento", "planosatendimento"],
+    id: "planoAcao",
+    titulo: "Plano de Ação",
+    chaves: ["planoacao", "planosacao"],
+    termos: ["planoacao", "planosacao"],
   },
   {
-    id: "adaptacoes",
-    titulo: "Adaptações",
-    chaves: [
-      "adaptacao",
-      "adaptacoes",
-      "adaptacaoeducacional",
-      "adaptacoeseducacionais",
-    ],
-    termos: ["adaptacao", "adaptacoes"],
-  },
-  {
-    id: "outrosDocumentos",
-    titulo: "Outros documentos",
-    chaves: ["outrosdocumentos"],
-    termos: ["outrodocumento", "outrosdocumentos"],
+    id: "pei",
+    titulo: "PEI",
+    chaves: ["planoensinoindividual", "pei"],
+    termos: ["planoensinoindividual", "pei"],
   },
 ];
 
-function normalizarTexto(valor) {
-  return String(valor ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
-}
-
-function formatarData(data) {
-  if (!data) return null;
-
-  const texto = String(data);
-  const partes = texto.slice(0, 10).split("-");
-
-  if (partes.length !== 3 || partes[0].length !== 4) {
-    return texto;
-  }
-
-  const [ano, mes, dia] = partes;
-
-  return `${dia}/${mes}/${ano}`;
-}
-
-function obterDataDocumento(documento) {
-  if (!documento || typeof documento !== "object") return null;
-
-  return (
-    documento.dataCriacao ||
-    documento.createdAt ||
-    documento.dataAtualizacao ||
-    documento.updatedAt ||
-    documento.data ||
-    null
-  );
-}
-
-function obterFonteCronologia(aluno, matricula, cronologiaPorMatricula) {
-  if (
-    cronologiaPorMatricula &&
-    Object.prototype.hasOwnProperty.call(cronologiaPorMatricula, matricula)
-  ) {
-    return cronologiaPorMatricula[matricula];
-  }
-
-  return (
-    aluno.documentosPlanejamento ??
-    aluno.cronologiaPlanejamento ??
-    aluno.planejamentoDocumentos ??
-    aluno.planejamento?.documentos ??
-    null
-  );
-}
-
-function identificarTipoDocumento(documento) {
-  const tipo = normalizarTexto(
-    documento?.tipoDocumento ||
-      documento?.tipo ||
-      documento?.categoria ||
-      documento?.nome ||
-      documento?.titulo,
-  );
-
-  if (!tipo) return null;
-
-  return (
-    TIPOS_DOCUMENTO.find((item) =>
-      item.termos.some((termo) => tipo.includes(termo)),
-    )?.id || "outrosDocumentos"
-  );
-}
-
-function resumirRegistros(registros) {
-  const quantidade = registros.length;
-
-  const datas = registros
-    .map(obterDataDocumento)
-    .filter(Boolean)
-    .sort((a, b) => new Date(b) - new Date(a));
-
-  return {
-    quantidade,
-    ultimaData: datas.length > 0 ? formatarData(datas[0]) : null,
-  };
-}
-
-function resumirValorDocumento(valor) {
-  if (valor === undefined || valor === null || valor === false) {
-    return { quantidade: 0, ultimaData: null };
-  }
-
-  if (valor === true) {
-    return { quantidade: 1, ultimaData: null };
-  }
-
-  if (typeof valor === "number") {
-    return {
-      quantidade: Math.max(0, valor),
-      ultimaData: null,
-    };
-  }
-
-  if (Array.isArray(valor)) {
-    return resumirRegistros(valor);
-  }
-
-  if (typeof valor === "object") {
-    const registros =
-      valor.content ?? valor.items ?? valor.registros ?? valor.documentos;
-
-    if (Array.isArray(registros)) {
-      return resumirRegistros(registros);
-    }
-
-    const quantidade =
-      valor.quantidade ?? valor.totalElements ?? valor.total ?? valor.count;
-
-    if (typeof quantidade === "number") {
-      return {
-        quantidade: Math.max(0, quantidade),
-        ultimaData: formatarData(obterDataDocumento(valor)),
-      };
-    }
-
-    if (
-      typeof valor.existe === "boolean" ||
-      typeof valor.concluido === "boolean"
-    ) {
-      const existe = valor.existe ?? valor.concluido;
-
-      return {
-        quantidade: existe ? 1 : 0,
-        ultimaData: formatarData(obterDataDocumento(valor)),
-      };
-    }
-
-    const temIdentificador =
-      valor.id != null || valor._id != null || valor.estudoCasoId != null;
-
-    const temData = Boolean(obterDataDocumento(valor));
-
-    return {
-      quantidade:
-        temIdentificador || temData || Object.keys(valor).length > 0 ? 1 : 0,
-      ultimaData: formatarData(obterDataDocumento(valor)),
-    };
-  }
-
-  return { quantidade: 0, ultimaData: null };
-}
-
-function obterCronologia(fonte, tipoDocumento) {
-  if (fonte == null) {
-    return {
-      conhecido: false,
-      quantidade: 0,
-      ultimaData: null,
-    };
-  }
-
-  const fonteLista = Array.isArray(fonte)
-    ? fonte
-    : Array.isArray(fonte.documentos)
-      ? fonte.documentos
-      : Array.isArray(fonte.content)
-        ? fonte.content
-        : null;
-
-  if (fonteLista) {
-    const registros = fonteLista.filter(
-      (documento) => identificarTipoDocumento(documento) === tipoDocumento.id,
-    );
-
-    return {
-      conhecido: true,
-      ...resumirRegistros(registros),
-    };
-  }
-
-  const entradas = Object.entries(fonte);
-  const aliases = tipoDocumento.chaves;
-
-  const entrada = entradas.find(([chave]) =>
-    aliases.includes(normalizarTexto(chave)),
-  );
-
-  if (entrada) {
-    return {
-      conhecido: true,
-      ...resumirValorDocumento(entrada[1]),
-    };
-  }
-
-  return {
-    conhecido: true,
-    quantidade: 0,
-    ultimaData: null,
-  };
-}
-
-function CronologiaDocumentos({ aluno, matricula, cronologiaPorMatricula }) {
-  const fonte = obterFonteCronologia(aluno, matricula, cronologiaPorMatricula);
+function StatusDocumentos({ matricula }) {
+  const pendencias = useGetPendenciaDocumentos(matricula);
 
   return (
     <div className="planejamento-cronologia">
       {TIPOS_DOCUMENTO.map((tipo) => {
-        const resumo = obterCronologia(fonte, tipo);
+        const pendencia = pendencias[tipo.id];
 
-        const classeStatus = !resumo.conhecido
-          ? "desconhecido"
-          : resumo.quantidade > 0
-            ? "feito"
-            : "pendente";
+        const classeStatus =
+          pendencia == null ? "desconhecido" : !pendencia ? "feito" : "pendente";
 
         let textoStatus = "Não consultado";
 
-        if (resumo.conhecido) {
-          textoStatus =
-            resumo.quantidade > 0
-              ? `${resumo.quantidade} ${
-                  resumo.quantidade === 1 ? "registro" : "registros"
-                }`
-              : "Não cadastrado";
+        if (pendencia != null) {
+          textoStatus = !pendencia ? "Cadastrado" : "Pendente";
         }
 
         return (
           <div
             className={`planejamento-documento-status ${classeStatus}`}
             key={tipo.id}
-            title={
-              resumo.ultimaData
-                ? `${tipo.titulo} — último registro em ${resumo.ultimaData}`
-                : tipo.titulo
-            }
           >
             <span className="planejamento-documento-ponto" />
 
@@ -285,12 +64,6 @@ function CronologiaDocumentos({ aluno, matricula, cronologiaPorMatricula }) {
               <span className="planejamento-documento-resumo">
                 {textoStatus}
               </span>
-
-              {resumo.ultimaData && (
-                <span className="planejamento-documento-data">
-                  Último: {resumo.ultimaData}
-                </span>
-              )}
             </span>
           </div>
         );
@@ -302,60 +75,57 @@ function CronologiaDocumentos({ aluno, matricula, cronologiaPorMatricula }) {
 const filtrosIniciais = {
   nome: undefined,
   matricula: undefined,
-  curso: undefined,
+  cursoId: undefined,
   periodo: undefined,
   maioridade: undefined,
-  statusAtivo: true
+  statusAtivo: true,
 };
 
 const opcoesSort = [
-  {value: "alunoNome,asc", label: "Nome (A-Z)"},
-  {value: "alunoNome,desc", label: "Nome (Z-A)"},
-  {value: "alunoMatricula,asc", label: "Matrícula (Crescente)"},
-  {value: "alunoMatricula,desc", label: "Matrícula (Decrescente)"},
-  {value: "alunoCurso,asc", label: "Curso (A-Z)"},
-  {value: "alunoCurso,desc", label: "Curso (Z-A)"},
-]
-
-
-const opcoesCurso = [
-  {value: "Integrado em Informática", label: "Integrado em Informática"},
-  {value: "Integrado em Eletromecânica", label: "Integrado em Eletromecânica"},
-  {value: "Integrado em Meio Ambiente", label: "Integrado em Meio Ambiente"},
-  {value: "Bacharelado em Engenharia de Controle e Automação", label: "Bacharelado em Engenharia de Controle e Automação"},
-  {value: "Análise e Desenvolvimento de Sistemas", label: "Análise e Desenvolvimento de Sistemas"},
-  {value: "Licenciatura em Matemática", label: "Licenciatura em Matemática"},
-  {value: "Licenciatura em Química", label: "Licenciatura em Química"},
-  {value: "Bacharelado em Engenharia Civil", label: "Bacharelado em Engenharia Civil"},
-  {value: "Tecnologia em Automação Industrial", label: "Tecnologia em Automação Industrial"},
+  { value: "alunoNome,asc", label: "Nome (A-Z)" },
+  { value: "alunoNome,desc", label: "Nome (Z-A)" },
+  { value: "alunoMatricula,asc", label: "Matrícula (Crescente)" },
+  { value: "alunoMatricula,desc", label: "Matrícula (Decrescente)" },
+  { value: "alunoCurso,asc", label: "Curso (A-Z)" },
+  { value: "alunoCurso,desc", label: "Curso (Z-A)" },
 ];
 
 const opcoesPeriodo = [
-  {value: "2026.2", label: "2026.2"},
-  {value: "2026.1", label: "2026.1"},
-  {value: "2025.2", label: "2025.2"},
-  {value: "2025.1", label: "2025.1"},
-  {value: "2024.2", label: "2024.2"},
-  {value: "2024.1", label: "2024.1"},
-  {value: "2023.2", label: "2023.2"},
-  {value: "2023.1", label: "2023.1"},
-]
+  { value: "2026.2", label: "2026.2" },
+  { value: "2026.1", label: "2026.1" },
+  { value: "2025.2", label: "2025.2" },
+  { value: "2025.1", label: "2025.1" },
+  { value: "2024.2", label: "2024.2" },
+  { value: "2024.1", label: "2024.1" },
+  { value: "2023.2", label: "2023.2" },
+  { value: "2023.1", label: "2023.1" },
+];
 
-function PlanejamentoAlunos({
-  onViewPlanning,
-  onNovoEstudoCaso,
-  onNovoPlanoAcao,
-  cronologiaPorMatricula,
-}) {
+function PlanejamentoAlunos({ onViewPlanning, onNovoEstudoCaso }) {
   const [filtros, setFiltros] = useState(filtrosIniciais);
   const [sort, setSort] = useState("alunoNome,asc");
   const [termoBusca, setTermoBusca] = useState("");
 
-
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 5;
 
-  const { data, isLoading, error } = useGetAlunos({page: paginaAtual, size: itensPorPagina, filters: filtros, sort: sort});
+  const { data, isLoading, error } = useGetAlunos({
+    page: paginaAtual,
+    size: itensPorPagina,
+    filters: filtros,
+    sort: sort,
+  });
+  const {
+    data: cursosData,
+    isLoading: isCursosLoading,
+    error: cursosError,
+  } = useGetCursos({ size: 100 });
+
+  const opcoesCurso =
+    cursosData?.content?.map((curso) => ({
+      value: curso.id,
+      label: `${curso.nomeCurso} (${curso.cursoSigla})`,
+    })) || [];
 
   const alunos = data?.content || [];
   const quantidadeAlunos = data?.numberOfElements || 0;
@@ -370,7 +140,7 @@ function PlanejamentoAlunos({
     onViewPlanning(aluno);
   }
 
-  function handleSearch (termoDebounced) {
+  function handleSearch(termoDebounced) {
     let nome = undefined;
     let matricula = undefined;
 
@@ -388,9 +158,9 @@ function PlanejamentoAlunos({
       nome,
       matricula,
     }));
-    
-    setPaginaAtual(1); 
-  };
+
+    setPaginaAtual(1);
+  }
 
   function renderizarCabecalho(mostrarAcoes) {
     return (
@@ -406,21 +176,13 @@ function PlanejamentoAlunos({
             >
               + Novo estudo de caso
             </button>
-
-            <button
-              type="button"
-              className="btn-add"
-              onClick={onNovoPlanoAcao}
-            >
-              + Novo Plano de Ação
-            </button>
           </div>
         )}
       </div>
     );
   }
 
-  if (isLoading) {
+  if (isLoading || isCursosLoading) {
     return (
       <div className="aluno-list-body">
         {renderizarCabecalho(false)}
@@ -453,29 +215,49 @@ function PlanejamentoAlunos({
             />
           </div>
           <div className="toolbar-right">
-
-              <Selector
+            <Selector
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              options={opcoesSort}/>
-            
+              options={opcoesSort}
+            />
+
             <Selector
-              value={filtros.curso}
-              onChange={(e) => setFiltros((prev) => ({ ...prev, curso: e.target.value }))}
-              options={[{value: "", label: "Todos os cursos"}, ...opcoesCurso]}/>
+              value={filtros.cursoId}
+              onChange={(e) =>
+                setFiltros((prev) => ({ ...prev, cursoId: e.target.value }))
+              }
+              options={
+                cursosError
+                  ? [
+                      { value: "", label: "Todos os Cursos" },
+                      { value: "", label: "Erro ao carregar cursos" },
+                    ]
+                  : [{ value: "", label: "Todos os cursos" }, ...opcoesCurso]
+              }
+            />
 
             <Selector
               value={filtros.periodo}
-              onChange={(e) => setFiltros((prev) => ({ ...prev, periodo: e.target.value }))}
-              options={[{value: "", label: "Todos os períodos"}, ...opcoesPeriodo]}/>
+              onChange={(e) =>
+                setFiltros((prev) => ({ ...prev, periodo: e.target.value }))
+              }
+              options={[
+                { value: "", label: "Todos os períodos" },
+                ...opcoesPeriodo,
+              ]}
+            />
 
             <Selector
               value={filtros.maioridade}
-              onChange={(e) => setFiltros((prev) => ({ ...prev, maioridade: e.target.value }))}
-              options={[{value: "", label: "Todas as maioridades"},
-                {value: true, label: "Maiores de idade"},
-                {value: false, label: "Menores de idade"}
-              ]}/>
+              onChange={(e) =>
+                setFiltros((prev) => ({ ...prev, maioridade: e.target.value }))
+              }
+              options={[
+                { value: "", label: "Todas as maioridades" },
+                { value: true, label: "Maiores de idade" },
+                { value: false, label: "Menores de idade" },
+              ]}
+            />
           </div>
         </div>
 
@@ -485,7 +267,7 @@ function PlanejamentoAlunos({
               <tr>
                 <th>Aluno</th>
                 <th>Curso</th>
-                <th>Cronologia do planejamento</th>
+                <th>Status dos documentos</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -523,11 +305,7 @@ function PlanejamentoAlunos({
                       </td>
 
                       <td>
-                        <CronologiaDocumentos
-                          aluno={aluno}
-                          matricula={matricula}
-                          cronologiaPorMatricula={cronologiaPorMatricula}
-                        />
+                        <StatusDocumentos matricula={matricula} />
                       </td>
 
                       <td>
