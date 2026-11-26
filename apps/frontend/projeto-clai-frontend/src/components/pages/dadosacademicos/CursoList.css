@@ -1,0 +1,376 @@
+/* Corpo principal da listagem */
+.curso-list-body {
+  margin-top: -30px;
+}
+
+/* Cabeçalho e botão de adicionar */
+.curso-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.curso-header-text {
+  color: #111827;
+  font-size: 24px;
+  font-weight: 450;
+}
+
+.curso-btn-add {
+  background-color: #374151;
+  color: white;
+  border: 0.5px solid transparent;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.curso-btn-add:hover {
+  background-color: #00523d;
+  transition: 0.3s;
+  color: black;
+  border-color: #475ccc;
+  border-width: 0.5px;
+  border-style: solid;
+}
+
+/* Card principal */
+.curso-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+}
+
+/* Abas de cursos ativos e desativados */
+.curso-filters {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 24px;
+  gap: 50px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0;
+}
+
+.curso-filters > button {
+  background-color: #ffffff;
+  color: #4b5563;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 6px 4px 10px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.curso-filters > button:hover {
+  color: #475ccc;
+}
+
+.curso-filters > button.btn-ativo {
+  color: #475ccc;
+  border-bottom: 2px solid #475ccc;
+}
+
+/* Barra de ferramentas */
+.curso-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 0;
+}
+
+.curso-search-container {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+}
+
+.curso-toolbar-right {
+  display: flex;
+  gap: 12px;
+}
+
+/* Tabela */
+.curso-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  margin-top: 16px;
+  table-layout: fixed;
+}
+
+.curso-table thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.curso-table tbody {
+  display: block;
+  min-height: 340px;
+}
+
+.curso-table tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.curso-table th {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.curso-table td {
+  font-size: 14px;
+  color: #374151;
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+  height: 100%;
+  overflow-wrap: break-word;
+}
+
+/* Distribuição das colunas */
+.curso-table th:nth-child(1),
+.curso-table td:nth-child(1) {
+  width: 27%;
+}
+
+.curso-table th:nth-child(2),
+.curso-table td:nth-child(2) {
+  width: 20%;
+}
+
+.curso-table th:nth-child(3),
+.curso-table td:nth-child(3) {
+  width: 14%;
+}
+
+.curso-table th:nth-child(4),
+.curso-table td:nth-child(4) {
+  width: 12%;
+}
+
+.curso-table th:nth-child(5),
+.curso-table td:nth-child(5) {
+  width: 15%;
+}
+
+.curso-table th:nth-child(6),
+.curso-table td:nth-child(6) {
+  width: 12%;
+}
+
+/* Informações do curso */
+.curso-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.curso-nome {
+  font-weight: 600;
+  color: #111827;
+  font-size: 14px;
+}
+
+.curso-sigla {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Botões de ação */
+.curso-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.curso-action-buttons button {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.curso-action-buttons button:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.curso-action-icon {
+  width: 18px;
+  height: 18px;
+  color: #6b7280;
+  opacity: 0.7;
+  transition:
+    opacity 0.2s,
+    color 0.2s;
+}
+
+.curso-action-buttons button:hover .curso-action-icon {
+  opacity: 1;
+  color: #111827;
+}
+
+/* Status */
+.curso-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.curso-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Curso ativo */
+.curso-status-ativo {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.curso-status-ativo .curso-status-dot {
+  background-color: #16a34a;
+}
+
+/* Curso desativado */
+.curso-status-desativado {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.curso-status-desativado .curso-status-dot {
+  background-color: #6b7280;
+}
+
+/* Estado vazio */
+.curso-empty-message {
+  text-align: center;
+  color: #6b7280 !important;
+  padding: 32px 16px !important;
+}
+
+/* Rodapé da tabela */
+.curso-table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0 0 0;
+  margin-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.curso-footer-info {
+  color: #6b7280;
+}
+
+/* Paginação */
+.curso-pagination {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.curso-page-btn {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.curso-page-btn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.curso-page-btn.active {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.curso-page-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.curso-page-icon {
+  width: 14px;
+  height: 14px;
+  color: #374151;
+}
+
+.curso-page-btn:disabled .curso-page-icon {
+  color: #9ca3af;
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 1100px) {
+  .curso-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .curso-search-container {
+    max-width: 100%;
+  }
+
+  .curso-toolbar-right {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .curso-card {
+    padding: 16px;
+    overflow-x: auto;
+  }
+
+  .curso-header {
+    gap: 12px;
+  }
+
+  .curso-table {
+    min-width: 850px;
+  }
+
+  .curso-table-footer {
+    min-width: 850px;
+  }
+}
