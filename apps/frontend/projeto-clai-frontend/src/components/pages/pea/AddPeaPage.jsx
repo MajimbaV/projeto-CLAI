@@ -2,18 +2,19 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import PeaForm from "./PeaForm";
-import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
-import { useGetPei } from "../../../hooks/pei/useGetPei";
-import { useCreatePea } from "../../../hooks/pea/useCreatePea";
+import { postPea } from "../../../services/PeaServiceMock";
 import { mapearParaPeaDTO } from "../../../utils/peaMapper";
 import { useToast } from "../../../hooks/useToast";
 
-function obterRegistro(data) {
-  if (Array.isArray(data)) return data[0] ?? null;
-  if (Array.isArray(data?.content)) return data.content[0] ?? null;
-
-  return data?.data ?? data ?? null;
-}
+/*
+ * Integração futura com a API:
+ * import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
+ * import { useGetPei } from "../../../hooks/pei/useGetPei";
+ * import { useCreatePea } from "../../../hooks/pea/useCreatePea";
+ * const { data: alunoData } = useGetAlunoByMatricula(matricula);
+ * const { data: peiData } = useGetPei(peiId);
+ * const { mutate: createPea, isPending, error } = useCreatePea();
+ */
 
 export default function AddPeaPage() {
   const navigate = useNavigate();
@@ -37,51 +38,17 @@ export default function AddPeaPage() {
     location.state?.pei?._id ??
     "";
 
-  const {
-    data: alunoData,
-    isLoading: isLoadingAluno,
-    error: erroAluno,
-  } = useGetAlunoByMatricula(matricula);
-
-  const {
-    data: peiData,
-    isLoading: isLoadingPei,
-    error: erroPei,
-  } = useGetPei(peiId);
-
-  const { mutate: createPea, isPending: isCreatingPea, error: erroCreatePea } = useCreatePea();
   const { success: showSuccessToast, error: showErrorToast } = useToast();
 
-  // Prioriza os dados recebidos pela navegação.
-  // Caso não existam, utiliza os dados recuperados pelos hooks.
-  const aluno = location.state?.aluno ?? obterRegistro(alunoData);
-  const pei = location.state?.pei ?? obterRegistro(peiData);
+  // Para o teste, aluno e PEI vêm da navegação iniciada no planejamento.
+  const aluno = location.state?.aluno ?? null;
+  const pei = location.state?.pei ?? null;
 
   const defaultValues = {
     ...location.state?.defaultValues,
     alunoId: location.state?.defaultValues?.alunoId ?? aluno?.id ?? aluno?._id ?? "",
     peiId: location.state?.defaultValues?.peiId ?? peiId,
   };
-
-  function getInactivity() {
-    const inactivity = {};
-
-    if (isLoadingAluno) inactivity.aluno = true;
-    if (isLoadingPei) inactivity.pei = true;
-    if (isCreatingPea) inactivity.createPea = true;
-
-    return inactivity;
-  }
-
-  function getErrors(){
-    const errors = {};
-
-    if (erroAluno) errors.aluno = erroAluno?.response?.data|| erroAluno;
-    if (erroPei) errors.pei = erroPei?.response?.data || erroPei;
-    if (erroCreatePea) errors.createPea = erroCreatePea?.response?.data || erroCreatePea;
-
-    return errors;
-  }
 
   function voltarAoPlanejamento() {
     if (location.state?.returnTo) {
@@ -106,54 +73,28 @@ export default function AddPeaPage() {
     }
 
     const peaDTO = mapearParaPeaDTO(payload, payload.alunoId, payload.peiId);
-    console.log("Enviando dados para criação do PEA:", peaDTO);
-    createPea(peaDTO, {
-      onSuccess: () => {
-        showSuccessToast("Plano de Ensino Acadêmico cadastrado com sucesso!");
-        voltarAoPlanejamento();
-      },
-      onError: (error) => {
-        const errorMessage =
-          error?.response?.data?.detail ||
-          error?.detail ||
-          error?.message ||
-          "Não foi possível cadastrar o Plano de Ensino Acadêmico.";
-        showErrorToast(errorMessage);
-      }
-    });
-  }
+    try {
+      // Mock para teste: grava em memória e preserva o vínculo do aluno.
+      postPea({ ...peaDTO, alunoMatricula: matricula });
+      showSuccessToast("Plano de Ensino Adaptado cadastrado com sucesso!");
+      voltarAoPlanejamento();
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.detail ||
+        error?.detail ||
+        error?.message ||
+        "Não foi possível cadastrar o Plano de Ensino Adaptado.";
+      setFeedback(errorMessage);
+      showErrorToast(errorMessage);
+    }
 
-  if (getInactivity().aluno || getInactivity().pei) {
-    return (
-      <div className="pea-page-body">
-        <p className="pea-page-message">
-          Carregando informações do aluno e do PEI...
-        </p>
-      </div>
-    );
-  }
-
-  if (getErrors().aluno || getErrors().pei) {
-    return (
-      <div className="pea-page-body">
-        <div className="pea-alert pea-alert-error" role="alert">
-          Erro ao carregar as informações associadas:{""}
-          { getErrors().aluno?.detail ||
-            getErrors().aluno?.message ||
-            getErrors().pei?.detail ||
-            getErrors().pei?.message ||
-            "Não foi possível carregar o aluno ou o PEI."}
-        </div>
-
-        <button
-          type="button"
-          className="pea-btn-cancel"
-          onClick={voltarAoPlanejamento}
-        >
-          Voltar ao planejamento
-        </button>
-      </div>
-    );
+    /*
+     * Integração futura com a API: substitua postPea pelo mutate do hook.
+     * createPea(peaDTO, {
+     *   onSuccess: () => voltarAoPlanejamento(),
+     *   onError: (error) => showErrorToast(error?.message),
+     * });
+     */
   }
 
   if (!aluno || !peiId || !pei) {
@@ -188,8 +129,6 @@ export default function AddPeaPage() {
         defaultValues={defaultValues}
         aluno={aluno}
         pei={pei}
-        error={getErrors().createPea}
-        isPending={getInactivity().createPea}
         onSubmit={handleSubmit}
         onCancel={voltarAoPlanejamento}
       />
