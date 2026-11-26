@@ -22,6 +22,8 @@ import EditPeiPage from "./components/pages/pei/EditPeiPage";
 import NewPeiPage from "./components/pages/pei/NewPeiPage";
 
 import AddPeaPage from "./components/pages/pea/AddPeaPage";
+import AddRaiPage from "./components/pages/rai/AddRaiPage";
+import EditRaiPage from "./components/pages/rai/EditRaiPage";
 
 function App() {
   return (
@@ -81,6 +83,16 @@ function App() {
         <Route
           path="planejamento/alunos/:matricula/pei/:peiId/pea/novo"
           element={<AddPeaPage />}
+        />
+
+        {/* Rotas do RAI */}
+        <Route
+          path="planejamento/alunos/:matricula/pei/:peiId/rai/novo"
+          element={<AddRaiPage />}
+        />
+        <Route
+          path="planejamento/alunos/:matricula/pei/:peiId/rai/:raiId/editar"
+          element={<EditRaiPage />}
         />
       </Route>
     </Routes>
