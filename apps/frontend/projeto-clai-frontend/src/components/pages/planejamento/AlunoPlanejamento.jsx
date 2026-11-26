@@ -6,6 +6,9 @@ import { useGetEstudosCaso } from "../../../hooks/estudo-caso/useGetEstudosCaso"
 import PlanoAcaoView from "../planoacao/PlanoAcaoView";
 import EstudoCasoView from "../estudodecaso/EstudoCasoView";
 import PeiView from "../pei/PeiView";
+import PeaView from "../pea/PeaView";
+import RaiView from "../rai/RaiView";
+import { getRais } from "../../../services/RaiServiceMock";
 import "./AlunoPlanejamento.css";
 const ABAS_PLANEJAMENTO = [
   { id: "estudo-caso", titulo: "Estudo de caso" },
@@ -248,11 +251,19 @@ function AlunoPlanejamento({
   onNovoPei,
   onEditarPei,
   onNovoPea,
+  onEditarPea,
+  peasData = null,
+  isLoadingPeas = false,
+  erroPeas = null,
+  onNovoRai,
+  onEditarRai,
 }) {
   const [abaAtiva, setAbaAtiva] = useState("estudo-caso");
   const [estudosExpandidos, setEstudosExpandidos] = useState([]);
   const [planosExpandidos, setPlanosExpandidos] = useState([]);
   const [peisExpandidos, setPeisExpandidos] = useState([]);
+  const [peasExpandidos, setPeasExpandidos] = useState([]);
+  const [raisExpandidos, setRaisExpandidos] = useState([]);
   const {
     data: aluno,
     isLoading,
@@ -283,6 +294,20 @@ function AlunoPlanejamento({
   }
   function alternarPei(id) {
     setPeisExpandidos((atuais) =>
+      atuais.includes(id)
+        ? atuais.filter((item) => item !== id)
+        : [...atuais, id],
+    );
+  }
+  function alternarPea(id) {
+    setPeasExpandidos((atuais) =>
+      atuais.includes(id)
+        ? atuais.filter((item) => item !== id)
+        : [...atuais, id],
+    );
+  }
+  function alternarRai(id) {
+    setRaisExpandidos((atuais) =>
       atuais.includes(id)
         ? atuais.filter((item) => item !== id)
         : [...atuais, id],
@@ -333,6 +358,11 @@ function AlunoPlanejamento({
     ? peisData
     : Array.isArray(peisData?.content)
       ? peisData.content
+      : [];
+  const listaPeas = Array.isArray(peasData)
+    ? peasData
+    : Array.isArray(peasData?.content)
+      ? peasData.content
       : [];
   function renderizarEstudosCaso() {
     if (isLoadingEstudosCaso) {
@@ -612,6 +642,19 @@ function AlunoPlanejamento({
             identificadorPei != null
               ? `Plano de Ensino Individualizado #${identificadorPei}`
               : `Plano de Ensino Individualizado ${index + 1}`;
+          const peasDoPei =
+            identificadorPei != null
+              ? listaPeas.filter(
+                  (pea) =>
+                    String(
+                      pea?.peiId ?? pea?.pei?.id ?? pea?.pei?._id ?? "",
+                    ) === String(identificadorPei),
+                )
+              : [];
+          const listaRais =
+            identificadorPei != null
+              ? getRais({ filters: { peiId: identificadorPei } })?.content || []
+              : [];
           return (
             <article
               className="planejamento-plano-acao planejamento-pei-item"
@@ -666,14 +709,207 @@ function AlunoPlanejamento({
                       <span aria-hidden="true">+</span>
                       Adicionar PEA
                     </button>
-                    {/*
-                      O PEI funciona como documento principal deste conjunto.
+                    <div className="planejamento-lista-header">
+                      <div>
+                        <h2>Planos de Ensino Adaptados</h2>
+                        <p>Consulte os PEAs vinculados a este PEI.</p>
+                      </div>
+                      <span className="planejamento-contador">
+                        {peasDoPei.length}{" "}
+                        {peasDoPei.length === 1 ? "registro" : "registros"}
+                      </span>
+                    </div>
 
-                      Os PEA e RAI vinculados a este PEI serão apresentados nesta área.
+                    {isLoadingPeas ? (
+                      <p className="planejamento-mensagem">
+                        Carregando Planos de Ensino Adaptados...
+                      </p>
+                    ) : erroPeas ? (
+                      <p className="planejamento-erro">
+                        Erro ao carregar os PEAs:{" "}
+                        {erroPeas.detail ||
+                          erroPeas.message ||
+                          String(erroPeas)}
+                      </p>
+                    ) : peasDoPei.length === 0 ? (
+                      <p className="planejamento-mensagem">
+                        Nenhum Plano de Ensino Adaptado cadastrado para este
+                        PEI.
+                      </p>
+                    ) : (
+                      <div className="planejamento-lista-planos">
+                        {peasDoPei.map((pea, peaIndex) => {
+                          const identificadorPea = pea?.id ?? pea?._id;
+                          const idPea =
+                            identificadorPea ?? `${idPei}-pea-${peaIndex}`;
+                          const peaExpandido = peasExpandidos.includes(idPea);
+                          const painelPeaId = `pea-${idPea}`;
 
-                      Cada documento deverá utilizar o identificador do PEI
-                      correspondente para manter o vínculo entre os registros.
-                    */}
+                          return (
+                            <article
+                              className="planejamento-plano-acao"
+                              key={idPea}
+                            >
+                              <div className="planejamento-plano-acao-cabecalho">
+                                <button
+                                  type="button"
+                                  className="planejamento-plano-acao-toggle"
+                                  onClick={() => alternarPea(idPea)}
+                                  aria-expanded={peaExpandido}
+                                  aria-controls={painelPeaId}
+                                >
+                                  <span
+                                    className="planejamento-plano-acao-icone"
+                                    aria-hidden="true"
+                                  >
+                                    PEA
+                                  </span>
+
+                                  <span className="planejamento-plano-acao-resumo">
+                                    <strong>
+                                      {pea.componenteCurricular ||
+                                        `Plano de Ensino Adaptado #${peaIndex + 1}`}
+                                    </strong>
+                                    <span>
+                                      Semestre/Ano: {exibir(pea.semestreAno)}
+                                      {pea.docente
+                                        ? ` · Docente: ${pea.docente}`
+                                        : ""}
+                                    </span>
+                                  </span>
+
+                                  <span
+                                    className={`planejamento-plano-acao-seta ${
+                                      peaExpandido ? "expandido" : ""
+                                    }`}
+                                    aria-hidden="true"
+                                  >
+                                    ⌄
+                                  </span>
+                                </button>
+                              </div>
+
+                              <div
+                                className="planejamento-plano-acao-conteudo"
+                                id={painelPeaId}
+                                hidden={!peaExpandido}
+                              >
+                                {peaExpandido && (
+                                  <PeaView
+                                    dados={pea}
+                                    aluno={aluno}
+                                    pei={pei}
+                                    onEdit={
+                                      onEditarPea
+                                        ? () => onEditarPea(pea, pei, aluno)
+                                        : undefined
+                                    }
+                                  />
+                                )}
+                              </div>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div className="planejamento-lista-header">
+                      <div>
+                        <h2>Relatórios de Acompanhamento Individualizado</h2>
+                        <p>Consulte os RAIs vinculados a este PEI.</p>
+                      </div>
+                      <span className="planejamento-contador">
+                        {listaRais.length}{" "}
+                        {listaRais.length === 1 ? "registro" : "registros"}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="planejamento-botao-principal"
+                      disabled={!onNovoRai || identificadorPei == null}
+                      onClick={() => onNovoRai?.(pei, aluno)}
+                    >
+                      <span aria-hidden="true">+</span>
+                      Adicionar RAI
+                    </button>
+
+                    {listaRais.length === 0 ? (
+                      <p className="planejamento-mensagem">
+                        Nenhum Relatório de Acompanhamento Individualizado
+                        cadastrado para este PEI.
+                      </p>
+                    ) : (
+                      <div className="planejamento-lista-planos">
+                        {listaRais.map((rai, raiIndex) => {
+                          const identificadorRai = rai?.id ?? rai?._id;
+                          const idRai =
+                            identificadorRai ?? `${idPei}-rai-${raiIndex}`;
+                          const raiExpandido = raisExpandidos.includes(idRai);
+                          const painelRaiId = `rai-${idRai}`;
+
+                          return (
+                            <article
+                              className="planejamento-plano-acao"
+                              key={idRai}
+                            >
+                              <div className="planejamento-plano-acao-cabecalho">
+                                <button
+                                  type="button"
+                                  className="planejamento-plano-acao-toggle"
+                                  onClick={() => alternarRai(idRai)}
+                                  aria-expanded={raiExpandido}
+                                  aria-controls={painelRaiId}
+                                >
+                                  <span
+                                    className="planejamento-plano-acao-icone"
+                                    aria-hidden="true"
+                                  >
+                                    RAI
+                                  </span>
+                                  <span className="planejamento-plano-acao-resumo">
+                                    <strong>
+                                      {rai.componenteCurricular ||
+                                        `Relatório de Acompanhamento #${raiIndex + 1}`}
+                                    </strong>
+                                    <span>
+                                      Período letivo:{" "}
+                                      {exibir(rai.periodoLetivo)}
+                                      {" · "}
+                                      Data: {formatarData(rai.data)}
+                                    </span>
+                                  </span>
+                                  <span
+                                    className={`planejamento-plano-acao-seta ${
+                                      raiExpandido ? "expandido" : ""
+                                    }`}
+                                    aria-hidden="true"
+                                  >
+                                    ⌄
+                                  </span>
+                                </button>
+                              </div>
+                              <div
+                                className="planejamento-plano-acao-conteudo"
+                                id={painelRaiId}
+                                hidden={!raiExpandido}
+                              >
+                                {raiExpandido && (
+                                  <RaiView
+                                    dados={rai}
+                                    onEdit={
+                                      onEditarRai
+                                        ? () => onEditarRai(rai, pei, aluno)
+                                        : undefined
+                                    }
+                                  />
+                                )}
+                              </div>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

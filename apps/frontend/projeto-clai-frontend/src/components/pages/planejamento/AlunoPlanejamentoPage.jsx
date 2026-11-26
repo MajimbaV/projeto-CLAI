@@ -1,7 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
+
 import AlunoPlanejamento from "./AlunoPlanejamento";
+
 import { useGetPlanosAcaoByMatricula } from "../../../hooks/useGetPlanosAcaoByMatricula";
 import { useGetPeis } from "../../../hooks/pei/useGetPeis";
+
+import { getPeas } from "../../../services/PeaServiceMock";
 
 function AlunoPlanejamentoPage() {
   const { matricula } = useParams();
@@ -23,6 +27,11 @@ function AlunoPlanejamentoPage() {
     },
   });
 
+  const peasData = getPeas({
+    page: 0,
+    size: 100,
+  });
+
   const planosAcao = Array.isArray(planosData)
     ? planosData
     : Array.isArray(planosData?.content)
@@ -33,6 +42,12 @@ function AlunoPlanejamentoPage() {
     ? peisData
     : Array.isArray(peisData?.content)
       ? peisData.content
+      : [];
+
+  const peas = Array.isArray(peasData)
+    ? peasData
+    : Array.isArray(peasData?.content)
+      ? peasData.content
       : [];
 
   function editarEstudoCaso(estudo) {
@@ -116,6 +131,47 @@ function AlunoPlanejamentoPage() {
     );
   }
 
+  function novoRai(pei, aluno) {
+    const idPei = pei?.id ?? pei?._id;
+
+    if (!idPei || !aluno) return;
+
+    navigate(
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/rai/novo`,
+      {
+        state: {
+          aluno,
+          pei,
+          peiId: idPei,
+          matriculaAluno: matricula,
+          returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
+        },
+      },
+    );
+  }
+
+  function editarRai(rai, pei, aluno) {
+    const idRai = rai?.id ?? rai?._id;
+    const idPei = pei?.id ?? pei?._id;
+
+    if (!idRai || !idPei || !aluno) return;
+
+    navigate(
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/rai/${encodeURIComponent(idRai)}/editar`,
+      {
+        state: {
+          rai,
+          pei,
+          aluno,
+          raiId: idRai,
+          peiId: idPei,
+          matriculaAluno: matricula,
+          returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
+        },
+      },
+    );
+  }
+
   return (
     <AlunoPlanejamento
       matriculaAluno={matricula}
@@ -125,6 +181,9 @@ function AlunoPlanejamentoPage() {
       peisData={peis}
       isLoadingPeis={isLoadingPeis}
       erroPeis={erroPeis}
+      peasData={peas}
+      isLoadingPeas={false}
+      erroPeas={null}
       onBack={() => navigate("/planejamento/alunos")}
       onNovoEstudoCaso={() =>
         navigate(`/alunos/${encodeURIComponent(matricula)}/estudo-caso/novo`)
@@ -135,6 +194,8 @@ function AlunoPlanejamentoPage() {
       onEditarPei={editarPei}
       onEditarEstudoCaso={editarEstudoCaso}
       onEditarPlanoAcao={editarPlanoAcao}
+      onNovoRai={novoRai}
+      onEditarRai={editarRai}
     />
   );
 }
