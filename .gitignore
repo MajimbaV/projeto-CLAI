@@ -89,6 +89,8 @@ nb-configuration.xml
 ##############################
 *.log
 .env
+/.env.dev
+/.env.prod
 
 ##############################
 ## OpenIdea
