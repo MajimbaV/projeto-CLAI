@@ -3,9 +3,9 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import RaiForm from "./RaiForm";
 
-import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useGetPei } from "../../../hooks/pei/useGetPei";
 
+import { getAlunoMockFromPei } from "../../../services/AlunoServiceMock";
 import { getRaiById, putRai } from "../../../services/RaiServiceMock";
 
 function obterRegistro(data) {
@@ -67,30 +67,30 @@ export default function EditRaiPage({
     "";
 
   const {
-    data: alunoData,
-    isLoading: isLoadingAluno,
-    error: erroAluno,
-  } = useGetAlunoByMatricula(matricula);
-
-  const {
     data: peiData,
     isLoading: isLoadingPei,
     error: erroPei,
   } = useGetPei(peiId);
 
-  // Prioriza os dados recebidos pela navegação ou por props.
-  // Caso não existam, utiliza os dados recuperados pelos hooks.
-  const aluno = alunoProp ?? location.state?.aluno ?? obterRegistro(alunoData);
-
   const pei = peiProp ?? location.state?.pei ?? obterRegistro(peiData);
+  const alunoInformado = alunoProp ?? location.state?.aluno;
+  const alunoMock = getAlunoMockFromPei(pei);
+  const alunoInformadoId =
+    alunoInformado?.id ?? alunoInformado?._id ?? alunoInformado?.alunoId;
+  const aluno = alunoInformadoId
+    ? {
+        ...alunoMock,
+        ...alunoInformado,
+        id: alunoInformadoId,
+      }
+    : alunoMock;
+  const alunoId = aluno?.id ?? aluno?._id ?? aluno?.alunoId ?? "";
 
   const carregandoAssociacoes =
-    isLoadingAssociacoes ||
-    (!aluno && isLoadingAluno) ||
-    (!pei && isLoadingPei);
+    isLoadingAssociacoes || (!pei && isLoadingPei);
 
   const erroAssociacoes =
-    associacoesError || (!aluno && erroAluno) || (!pei && erroPei);
+    associacoesError || (!pei && erroPei);
 
   const defaultValues = {
     ...rai,
@@ -99,9 +99,7 @@ export default function EditRaiPage({
     alunoId:
       location.state?.defaultValues?.alunoId ??
       rai?.alunoId ??
-      aluno?.id ??
-      aluno?._id ??
-      "",
+      alunoId,
 
     peiId: location.state?.defaultValues?.peiId ?? rai?.peiId ?? peiId,
   };
@@ -194,7 +192,7 @@ export default function EditRaiPage({
     );
   }
 
-  if (!aluno || !peiId || !pei) {
+  if (!alunoId || !peiId || !pei) {
     return (
       <div className="pea-page-body">
         <div className="pea-alert pea-alert-error" role="alert">
