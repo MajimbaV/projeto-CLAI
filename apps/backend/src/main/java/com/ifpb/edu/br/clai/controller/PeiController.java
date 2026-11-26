@@ -18,7 +18,6 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173") //Alterar isso quando fizer deploy
 @RequestMapping("/peis")
 @Validated
 public class PeiController {
