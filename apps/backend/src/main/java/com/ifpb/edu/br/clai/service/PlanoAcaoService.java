@@ -26,6 +26,7 @@ import java.util.UUID;
 
 
 @Service
+@Transactional(readOnly = true)
 public class PlanoAcaoService {
     private final PlanoAcaoRepository planoAcaoRepository;
     private final AlunoRepository alunoRepository;
