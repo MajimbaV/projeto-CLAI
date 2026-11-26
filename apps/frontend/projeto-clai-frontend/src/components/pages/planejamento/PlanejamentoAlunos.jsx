@@ -1,15 +1,20 @@
 import { useState } from "react";
 import ChevronLeft from "../../../assets/ChevronLeft.png";
 import ChevronRight from "../../../assets/ChevronRight.png";
-import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
 import { useGetPendenciaDocumentos } from "../../../hooks/aluno/useGetPendenciaDocumentos";
-import { useGetCursos } from "../../../hooks/curso/useGetCursos";
+import { getAlunos, getCursos } from "../../../services/AlunoServiceMock";
 import SearchBar from "../../queries/searchBar/SearchBar";
 import Selector from "../../queries/selector/Selector";
 import { contemApenasNumeros } from "../../../utils/validations";
 
 import "../alunolist/AlunoList.css";
 import "./PlanejamentoAlunos.css";
+
+/*
+ * Integração futura com a API:
+ * import { useGetAlunos } from "../../../hooks/aluno/useGetAlunos";
+ * import { useGetCursos } from "../../../hooks/curso/useGetCursos";
+ */
 
 const TIPOS_DOCUMENTO = [
   {
@@ -33,6 +38,7 @@ const TIPOS_DOCUMENTO = [
 ];
 
 function StatusDocumentos({ matricula }) {
+  // As pendências seguem o hook existente; a lista de alunos é que usa o mock.
   const pendencias = useGetPendenciaDocumentos(matricula);
 
   return (
@@ -109,17 +115,49 @@ function PlanejamentoAlunos({ onViewPlanning, onNovoEstudoCaso }) {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 5;
 
-  const { data, isLoading, error } = useGetAlunos({
-    page: paginaAtual,
+  // Mock para teste local: alunos e cursos vêm de AlunoServiceMock.
+  const data = getAlunos({
+    page: paginaAtual - 1,
     size: itensPorPagina,
     filters: filtros,
     sort: sort,
   });
-  const {
-    data: cursosData,
-    isLoading: isCursosLoading,
-    error: cursosError,
-  } = useGetCursos({ size: 100 });
+  const cursosData = getCursos({ size: 100 });
+
+  /*
+   * Integração futura com a API: descomente os hooks e substitua as chamadas
+   * mock acima. A página do hook é 1-based; a do mock é 0-based.
+   *
+   * const { data, isLoading, error } = useGetAlunos({
+   *   page: paginaAtual,
+   *   size: itensPorPagina,
+   *   filters: filtros,
+   *   sort,
+   * });
+   * const {
+   *   data: cursosData,
+   *   isLoading: isCursosLoading,
+   *   error: cursosError,
+   * } = useGetCursos({ size: 100 });
+   *
+   * if (isLoading || isCursosLoading) {
+   *   return (
+   *     <div className="aluno-list-body">
+   *       {renderizarCabecalho(false)}
+   *       <p>Carregando...</p>
+   *     </div>
+   *   );
+   * }
+   *
+   * if (error) {
+   *   return (
+   *     <div className="aluno-list-body">
+   *       {renderizarCabecalho(false)}
+   *       <p>Erro: {error.detail || error.message || String(error)}</p>
+   *     </div>
+   *   );
+   * }
+   */
 
   const opcoesCurso =
     cursosData?.content?.map((curso) => ({
@@ -182,24 +220,6 @@ function PlanejamentoAlunos({ onViewPlanning, onNovoEstudoCaso }) {
     );
   }
 
-  if (isLoading || isCursosLoading) {
-    return (
-      <div className="aluno-list-body">
-        {renderizarCabecalho(false)}
-        <p>Carregando...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="aluno-list-body">
-        {renderizarCabecalho(false)}
-        <p>Erro: {error.detail || error.message || String(error)}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="aluno-list-body">
       {renderizarCabecalho(true)}
@@ -226,14 +246,7 @@ function PlanejamentoAlunos({ onViewPlanning, onNovoEstudoCaso }) {
               onChange={(e) =>
                 setFiltros((prev) => ({ ...prev, cursoId: e.target.value }))
               }
-              options={
-                cursosError
-                  ? [
-                      { value: "", label: "Todos os Cursos" },
-                      { value: "", label: "Erro ao carregar cursos" },
-                    ]
-                  : [{ value: "", label: "Todos os cursos" }, ...opcoesCurso]
-              }
+              options={[{ value: "", label: "Todos os cursos" }, ...opcoesCurso]}
             />
 
             <Selector

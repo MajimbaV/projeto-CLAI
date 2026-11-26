@@ -1,19 +1,23 @@
 import { useNavigate, useParams } from "react-router-dom";
 import AlunoPlanejamento from "./AlunoPlanejamento";
-import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
 import { useGetPlanosAcaoByMatricula } from "../../../hooks/plano-acao/useGetPlanosAcaoByMatricula";
-import { useGetPeisByMatricula } from "../../../hooks/pei/useGetPeisByMatricula";
-import { useGetEstudosCasoByMatricula } from "../../../hooks/estudo-caso/useGetEstudosCasoByMatricula"
+import { useGetEstudosCasoByMatricula } from "../../../hooks/estudo-caso/useGetEstudosCasoByMatricula";
+import { getAlunoByMatricula } from "../../../services/AlunoServiceMock";
+import { getPeis } from "../../../services/PeiServiceMock";
+import { getPeas } from "../../../services/PeaServiceMock";
+
+/*
+ * Integração futura com a API:
+ * import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
+ * import { useGetPeisByMatricula } from "../../../hooks/pei/useGetPeisByMatricula";
+ */
 
 function AlunoPlanejamentoPage() {
   const { matricula } = useParams();
   const navigate = useNavigate();
 
-  const {
-      data: aluno,
-      isLoadingAluno,
-      errorAluno,
-  } = useGetAlunoByMatricula(matricula);
+  // Mock de teste: aluno, PEIs e PEAs compartilham os mesmos IDs/matrículas.
+  const aluno = getAlunoByMatricula(matricula);
 
   const {
     data: estudosCasoData,
@@ -29,57 +33,100 @@ function AlunoPlanejamentoPage() {
     error: errorPlanos,
   } = useGetPlanosAcaoByMatricula(matricula);
 
-  const {
-    data: peisData,
-    isLoading: isLoadingPeis,
-    error: errorPeis,
-  } = useGetPeisByMatricula(matricula);
+  // Integração futura: substitua esta chamada pelo hook useGetPeisByMatricula.
+  const peisData = getPeis({
+    page: 0,
+    size: 100,
+    filters: { alunoMatricula: matricula },
+  });
+
+  /*
+   * Integração futura com a API:
+   * const {
+   *   data: aluno,
+   *   isLoadingAluno,
+   *   errorAluno,
+   * } = useGetAlunoByMatricula(matricula);
+   * const {
+   *   data: peisData,
+   *   isLoading: isLoadingPeis,
+   *   error: errorPeis,
+   * } = useGetPeisByMatricula(matricula);
+   */
 
   function getDocumentos() {
-    const documentos = {}
-    const estudosCaso = Array.isArray(estudosCasoData?.content) ? estudosCasoData?.content : []
-    const planosAcao = Array.isArray(planosData?.content) ? planosData?.content : []
-    const peis = Array.isArray(peisData?.content) ? peisData?.content : []
+    const documentos = {};
+    const estudosCaso = Array.isArray(estudosCasoData?.content)
+      ? estudosCasoData.content
+      : [];
+    const planosAcao = Array.isArray(planosData?.content)
+      ? planosData.content
+      : [];
+    const peis = Array.isArray(peisData?.content) ? peisData.content : [];
+    const alunoId = aluno?.id ?? aluno?._id;
+    const respostaPeas = getPeas({
+      page: 0,
+      size: 100,
+      filters: alunoId ? { alunoId } : { alunoMatricula: matricula },
+    });
+    const peas = Array.isArray(respostaPeas?.content)
+      ? respostaPeas.content
+      : [];
 
-    documentos["estudosCaso"] = estudosCaso
-    documentos["planosAcao"] = planosAcao
-    documentos["peis"] = peis
+    documentos["estudosCaso"] = estudosCaso;
+    documentos["planosAcao"] = planosAcao;
+    documentos["peis"] = peis;
+    documentos["peas"] = peas;
 
-    return documentos
+    return documentos;
   }
 
   function getLoadings() {
-    const loadings = {}
-    loadings["aluno"] = isLoadingAluno
-    loadings["estudosCaso"] = isLoadingEstudosCaso
-    loadings["planosAcao"] = isLoadingPlanos
-    loadings["peis"] = isLoadingPeis
+    const loadings = {};
+    loadings["aluno"] = false;
+    loadings["estudosCaso"] = isLoadingEstudosCaso;
+    loadings["planosAcao"] = isLoadingPlanos;
+    loadings["peis"] = false;
 
-    return loadings
+    /*
+     * Integração futura:
+     * loadings["aluno"] = isLoadingAluno;
+     * loadings["peis"] = isLoadingPeis;
+     */
+    return loadings;
   }
 
   function getErrors() {
-    const errors = {}
-    const alunoErrors = errorAluno?.response?.data || errorAluno?.message || errorAluno || null
-    const estudoCasoErrors = errorEstudosCaso?.response?.data || errorEstudosCaso?.message || errorEstudosCaso || null
-    const planosAcaoErrors = errorPlanos?.response?.data || errorPlanos?.message || errorPlanos || null
-    const peisErrors = errorPeis?.response?.data || errorPeis?.message || errorPeis || null
+    const errors = {};
+    const estudoCasoErrors =
+      errorEstudosCaso?.response?.data ||
+      errorEstudosCaso?.message ||
+      errorEstudosCaso ||
+      null;
+    const planosAcaoErrors =
+      errorPlanos?.response?.data ||
+      errorPlanos?.message ||
+      errorPlanos ||
+      null;
+    errors["aluno"] = null;
+    errors["estudosCaso"] = estudoCasoErrors;
+    errors["planosAcao"] = planosAcaoErrors;
+    errors["peis"] = null;
 
-    errors["aluno"] = alunoErrors
-    errors["estudosCaso"] = estudoCasoErrors
-    errors["planosAcao"] = planosAcaoErrors
-    errors["peis"] = peisErrors
-
-    return errors
+    /*
+     * Integração futura:
+     * errors["aluno"] = alunoErrors;
+     * errors["peis"] = peisErrors;
+     */
+    return errors;
   }
-
 
   function novoEstudoCaso() {
     navigate(`/alunos/${encodeURIComponent(matricula)}/estudo-caso/novo`, {
       state: {
-        matricula: matricula
-      }
-    })
+        matricula: matricula,
+      },
+    });
   }
 
   function editarEstudoCaso(estudo) {
@@ -165,10 +212,10 @@ function AlunoPlanejamentoPage() {
 
   return (
     <AlunoPlanejamento
-      aluno = {aluno}
-      documentos = {getDocumentos()}
-      errors = {getErrors()}
-      loadings = {getLoadings()}
+      aluno={aluno}
+      documentos={getDocumentos()}
+      errors={getErrors()}
+      loadings={getLoadings()}
       onBack={() => navigate("/planejamento/alunos")}
       onNovoEstudoCaso={novoEstudoCaso}
       onNovoPlanoAcao={novoPlanoAcao}
