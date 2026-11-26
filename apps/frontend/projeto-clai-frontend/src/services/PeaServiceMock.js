@@ -66,3 +66,17 @@ export function getPeas({ page = 0, size = 20, filters = {} } = {}) {
   };
 }
 
+export function createPea(pea) {
+  if (!pea?.alunoId || !pea?.peiId) {
+    throw new Error("O PEA precisa estar associado a um aluno e a um PEI.");
+  }
+
+  const savedPea = {
+    ...pea,
+    id: `pea-${peasMock.length + 1}`,
+  };
+
+  peasMock.push(savedPea);
+  return savedPea;
+}
+

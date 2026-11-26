@@ -2,15 +2,9 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import PeaForm from "./PeaForm";
-import { useGetAlunoByMatricula } from "../../../hooks/aluno/useGetAlunoByMatricula";
-import { useGetPei } from "../../../hooks/pei/useGetPei";
-
-function obterRegistro(data) {
-  if (Array.isArray(data)) return data[0] ?? null;
-  if (Array.isArray(data?.content)) return data.content[0] ?? null;
-
-  return data?.data ?? data ?? null;
-}
+import { getPeis, getPeiById } from "../../../services/PeiServiceMock";
+import { createPea } from "../../../services/PeaServiceMock";
+import { useToast } from "../../../hooks/useToast";
 
 export default function AddPeaPage({
   aluno: alunoProp = null,
@@ -27,6 +21,7 @@ export default function AddPeaPage({
   const { matricula: matriculaParam, peiId: peiIdParam } = useParams();
 
   const [feedback, setFeedback] = useState("");
+  const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   const matricula =
     matriculaParam ??
@@ -46,37 +41,48 @@ export default function AddPeaPage({
     location.state?.pei?._id ??
     "";
 
-  const {
-    data: alunoData,
-    isLoading: isLoadingAluno,
-    error: erroAluno,
-  } = useGetAlunoByMatricula(matricula);
+  const peiMock = peiId ? getPeiById(peiId) : null;
+  const pei =
+    peiProp ?? location.state?.pei ?? peiMock ?? null;
+  const alunoMock = matricula
+    ? getPeis({ filters: { alunoMatricula: matricula } }).content[0] ?? null
+    : null;
+  const alunoBase =
+    alunoProp ?? location.state?.aluno ?? alunoMock ?? pei ?? null;
+  const alunoId =
+    location.state?.defaultValues?.alunoId ??
+    alunoBase?.id ??
+    alunoBase?._id ??
+    alunoBase?.alunoId ??
+    pei?.alunoId ??
+    null;
+  const aluno = alunoBase
+    ? {
+        ...alunoBase,
+        id: alunoId,
+        alunoNome:
+          alunoBase.alunoNome ??
+          alunoBase.nome ??
+          pei?.alunoNome ??
+          "Não informado",
+        alunoMatricula:
+          alunoBase.alunoMatricula ??
+          alunoBase.matricula ??
+          pei?.alunoMatricula ??
+          matricula ??
+          "Não informada",
+      }
+    : null;
+  const peiIdentificador =
+    pei?.id ?? pei?._id ?? peiId ?? null;
 
-  const {
-    data: peiData,
-    isLoading: isLoadingPei,
-    error: erroPei,
-  } = useGetPei(peiId);
-
-  // Prioriza os dados recebidos pela navegação ou por props.
-  // Caso não existam, utiliza os dados recuperados pelos hooks.
-  const aluno = alunoProp ?? location.state?.aluno ?? obterRegistro(alunoData);
-
-  const pei = peiProp ?? location.state?.pei ?? obterRegistro(peiData);
-
-  const carregandoAssociacoes =
-    isLoadingAssociacoes ||
-    (!aluno && isLoadingAluno) ||
-    (!pei && isLoadingPei);
-
-  const erroAssociacoes =
-    associacoesError || (!aluno && erroAluno) || (!pei && erroPei);
+  const carregandoAssociacoes = isLoadingAssociacoes;
+  const erroAssociacoes = associacoesError;
 
   const defaultValues = {
     ...location.state?.defaultValues,
-    alunoId:
-      location.state?.defaultValues?.alunoId ?? aluno?.id ?? aluno?._id ?? "",
-    peiId: location.state?.defaultValues?.peiId ?? peiId,
+    alunoId,
+    peiId: location.state?.defaultValues?.peiId ?? peiIdentificador ?? "",
   };
 
   function voltarAoPlanejamento() {
@@ -106,9 +112,16 @@ export default function AddPeaPage({
       return;
     }
 
-    setFeedback(
-      "Formulário preenchido. A integração para salvar o PEA ainda não foi conectada.",
-    );
+    try {
+      createPea(payload);
+      showSuccessToast("PEA salvo no mock com sucesso.");
+      voltarAoPlanejamento();
+    } catch (erro) {
+      const mensagem =
+        erro?.message ?? "Não foi possível salvar o PEA no mock.";
+      setFeedback(mensagem);
+      showErrorToast(mensagem);
+    }
   }
 
   if (carregandoAssociacoes) {
