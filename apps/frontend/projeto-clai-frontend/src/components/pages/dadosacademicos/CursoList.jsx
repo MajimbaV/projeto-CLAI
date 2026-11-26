@@ -69,7 +69,14 @@ const turnosLabels = {
   INTEGRAL: "Integral",
 };
 
-function CursoList({ onAdd, onEdit, onDelete, onActivate, refreshKey = 0 }) {
+function CursoList({
+  onAdd,
+  onEdit,
+  onView,
+  onDelete,
+  onActivate,
+  refreshKey = 0,
+}) {
   const [filtros, setFiltros] = useState(filtrosIniciais);
   const [sort, setSort] = useState("nomeCurso,asc");
   const [tabAtual, setTabAtual] = useState("ativos");
@@ -168,6 +175,10 @@ function CursoList({ onAdd, onEdit, onDelete, onActivate, refreshKey = 0 }) {
 
   function handleAdd() {
     onAdd?.();
+  }
+
+  function handleView(curso) {
+    onView?.(curso);
   }
 
   function handleEdit(curso) {
@@ -316,11 +327,16 @@ function CursoList({ onAdd, onEdit, onDelete, onActivate, refreshKey = 0 }) {
               cursos.map((curso) => (
                 <tr key={curso.id}>
                   <td>
-                    <div className="curso-info">
+                    <button
+                      type="button"
+                      className="curso-info curso-info-button"
+                      onClick={() => handleView(curso)}
+                      title={`Visualizar ${curso.nomeCurso}`}
+                    >
                       <span className="curso-nome">{curso.nomeCurso}</span>
 
                       <span className="curso-sigla">{curso.cursoSigla}</span>
-                    </div>
+                    </button>
                   </td>
 
                   <td>

@@ -374,3 +374,22 @@
     min-width: 850px;
   }
 }
+.curso-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.curso-info-button {
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.curso-info-button:hover .curso-nome {
+  color: #00523d;
+}

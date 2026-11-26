@@ -24,6 +24,7 @@ import NewPeiPage from "./components/pages/pei/NewPeiPage";
 import AddPeaPage from "./components/pages/pea/AddPeaPage";
 
 import Cursos from "./components/pages/dadosacademicos/Cursos";
+import CursoViewPage from "./components/pages/dadosacademicos/CursoViewPage";
 
 function App() {
   return (
@@ -87,6 +88,7 @@ function App() {
 
         {/* Dados Acadêmicos */}
         <Route path="dados-academicos/cursos" element={<Cursos />} />
+        <Route path="dados-academicos/cursos/:id" element={<CursoViewPage />} />
       </Route>
     </Routes>
   );

@@ -84,6 +84,9 @@ function Cursos() {
     <>
       <CursoList
         onAdd={() => navigate("/dados-academicos/cursos/novo")}
+        onView={(curso) =>
+          navigate(`/dados-academicos/cursos/${encodeURIComponent(curso.id)}`)
+        }
         onEdit={(curso) =>
           navigate(
             `/dados-academicos/cursos/${encodeURIComponent(curso.id)}/editar`,
