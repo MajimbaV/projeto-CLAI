@@ -23,6 +23,8 @@ import NewPeiPage from "./components/pages/pei/NewPeiPage";
 
 import AddPeaPage from "./components/pages/pea/AddPeaPage";
 
+import Cursos from "./components/pages/dadosacademicos/Cursos";
+
 function App() {
   return (
     <Routes>
@@ -82,6 +84,9 @@ function App() {
           path="planejamento/alunos/:matricula/pei/:peiId/pea/novo"
           element={<AddPeaPage />}
         />
+
+        {/* Dados Acadêmicos */}
+        <Route path="dados-academicos/cursos" element={<Cursos />} />
       </Route>
     </Routes>
   );
