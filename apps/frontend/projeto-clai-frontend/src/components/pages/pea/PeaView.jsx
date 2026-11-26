@@ -45,89 +45,17 @@ const SecaoSanfona = ({ titulo, children, padraoAberto = false }) => {
   );
 };
 
-export default function PeaView({ dados, aluno, pei, onEdit }) {
+export default function PeaView({ dados, onEdit }) {
   if (!dados) {
     return <p>Nenhum dado encontrado.</p>;
   }
 
-  const alunoAtual = aluno || dados.aluno || {};
-
-  const nomeEstudante =
-    alunoAtual.alunoNome || alunoAtual.nome || dados.alunoNome;
-
-  const matricula =
-    alunoAtual.alunoMatricula || alunoAtual.matricula || dados.alunoMatricula;
-
-  const curso = alunoAtual.alunoCurso || alunoAtual.curso || dados.alunoCurso;
-
-  const peiId = pei?.id ?? pei?._id ?? dados.peiId;
-
-  const nomePei = pei?.titulo
-    ? pei.titulo
-    : peiId
-      ? `PEI #${peiId}`
-      : "PEI não identificado";
-
   return (
     <div className="pea-view-container">
-      {/* Cabeçalho / Metadados */}
-      <div className="pea-view-metadados">
-        <div className="pea-view-metadados-grupo">
-          <div className="pea-view-metadado-item">
-            <span className="pea-view-metadado-label">Estudante</span>
-            <span className="pea-view-metadado-valor">
-              {nomeEstudante || "N/A"}
-            </span>
-          </div>
-
-          <div className="pea-view-metadado-item">
-            <span className="pea-view-metadado-label">Matrícula</span>
-            <span className="pea-view-metadado-valor">
-              {matricula || "N/A"}
-            </span>
-          </div>
-
-          <div className="pea-view-metadado-item">
-            <span className="pea-view-metadado-label">Curso</span>
-            <span className="pea-view-metadado-valor">{curso || "N/A"}</span>
-          </div>
-
-          <div className="pea-view-metadado-item">
-            <span className="pea-view-metadado-label">
-              Componente curricular
-            </span>
-            <span className="pea-view-metadado-valor">
-              {dados.componenteCurricular || "N/A"}
-            </span>
-          </div>
-
-          <div className="pea-view-metadado-item">
-            <span className="pea-view-metadado-label">Semestre/Ano</span>
-            <span className="pea-view-metadado-valor">
-              {dados.semestreAno || "N/A"}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <SecaoSanfona titulo="1. Identificação e vínculos" padraoAberto>
-        <div className="pea-view-grid">
-          <CampoExibicao label="Estudante" valor={nomeEstudante} />
-
-          <CampoExibicao label="Matrícula" valor={matricula} />
-
-          <CampoExibicao label="Curso" valor={curso} />
-
-          <CampoExibicao
-            label="Plano de Ensino Individualizado"
-            valor={nomePei}
-          />
-
-          <CampoExibicao label="Identificador do PEI" valor={peiId} largo />
-        </div>
-      </SecaoSanfona>
-
-      <SecaoSanfona titulo="2. Identificação do componente curricular">
+      <SecaoSanfona
+        titulo="1. Identificação do componente curricular"
+        padraoAberto
+      >
         <div className="pea-view-grid">
           <CampoExibicao
             label="Componente curricular"
@@ -140,7 +68,7 @@ export default function PeaView({ dados, aluno, pei, onEdit }) {
         </div>
       </SecaoSanfona>
 
-      <SecaoSanfona titulo="3. Planejamento pedagógico adaptado">
+      <SecaoSanfona titulo="2. Planejamento pedagógico adaptado">
         <div className="pea-view-grid">
           <CampoExibicao
             label="Objetivo geral do componente curricular"
@@ -166,7 +94,7 @@ export default function PeaView({ dados, aluno, pei, onEdit }) {
         </div>
       </SecaoSanfona>
 
-      <SecaoSanfona titulo="4. Referências bibliográficas">
+      <SecaoSanfona titulo="3. Referências bibliográficas">
         <div className="pea-view-grid">
           <CampoExibicao
             label="Bibliografia básica"
