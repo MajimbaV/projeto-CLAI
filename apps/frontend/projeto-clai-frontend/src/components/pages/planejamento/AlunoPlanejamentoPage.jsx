@@ -38,15 +38,20 @@ function AlunoPlanejamentoPage() {
     error: errorPeis,
   } = useGetPeisByMatricula(matricula);
 
-  // Fallback local para visualizar RAIs sem backend; ao integrar a API, remova este bloco e os imports dos mocks.
+  // Fallback local para visualizar RAIs sem backend;
+  // ao integrar a API, remova este bloco e os imports dos mocks.
   const alunoMock = getRaiMockStudents().find(
     (estudante) => String(estudante.alunoMatricula) === String(matricula),
   );
-  const usarAlunoMock = Boolean(alunoMock && !(aluno?.alunoNome || aluno?.nome));
-  const alunoPlanejamento = usarAlunoMock
-    ? { ...aluno, ...alunoMock }
-    : aluno;
+
+  const usarAlunoMock = Boolean(
+    alunoMock && !(aluno?.alunoNome || aluno?.nome),
+  );
+
+  const alunoPlanejamento = usarAlunoMock ? { ...aluno, ...alunoMock } : aluno;
+
   const peisDaApi = Array.isArray(peisData?.content) ? peisData.content : [];
+
   const peisMockData = usarAlunoMock
     ? getPeisMock({
         page: 0,
@@ -54,19 +59,21 @@ function AlunoPlanejamentoPage() {
         filters: { alunoId: alunoMock.id },
       })
     : null;
+
   const usarPeisMock =
-    usarAlunoMock &&
-    peisDaApi.length === 0 &&
-    peisMockData?.content.length > 0;
+    usarAlunoMock && peisDaApi.length === 0 && peisMockData?.content.length > 0;
 
   function getDocumentos() {
     const documentos = {};
+
     const estudosCaso = Array.isArray(estudosCasoData?.content)
       ? estudosCasoData.content
       : [];
+
     const planosAcao = Array.isArray(planosData?.content)
       ? planosData.content
       : [];
+
     const peis = usarPeisMock
       ? peisMockData.content.map((pei) => ({
           ...pei,
@@ -83,6 +90,7 @@ function AlunoPlanejamentoPage() {
 
   function getLoadings() {
     const loadings = {};
+
     loadings.aluno = isLoadingAluno && !usarAlunoMock;
     loadings.estudosCaso = isLoadingEstudosCaso;
     loadings.planosAcao = isLoadingPlanos;
@@ -93,18 +101,22 @@ function AlunoPlanejamentoPage() {
 
   function getErrors() {
     const errors = {};
+
     const alunoErrors =
       errorAluno?.response?.data || errorAluno?.message || errorAluno || null;
+
     const estudoCasoErrors =
       errorEstudosCaso?.response?.data ||
       errorEstudosCaso?.message ||
       errorEstudosCaso ||
       null;
+
     const planosAcaoErrors =
       errorPlanos?.response?.data ||
       errorPlanos?.message ||
       errorPlanos ||
       null;
+
     const peisErrors =
       errorPeis?.response?.data || errorPeis?.message || errorPeis || null;
 
@@ -145,6 +157,7 @@ function AlunoPlanejamentoPage() {
 
   function editarPlanoAcao(plano) {
     const idPlano = plano?.id ?? plano?._id;
+
     if (!idPlano) return;
 
     navigate(`/plano-acao/editar/${encodeURIComponent(idPlano)}`, {
@@ -173,6 +186,7 @@ function AlunoPlanejamentoPage() {
 
   function editarPei(pei) {
     const idPei = pei?.id ?? pei?._id;
+
     if (!idPei) return;
 
     navigate(
@@ -205,18 +219,21 @@ function AlunoPlanejamentoPage() {
     );
   }
 
-  function novoRai(pei, aluno) {
+  function novoRai(pei, pea, aluno) {
     const idPei = pei?.id ?? pei?._id;
+    const idPea = pea?.id ?? pea?._id;
 
-    if (!idPei || !aluno) return;
+    if (!idPei || !idPea || !aluno) return;
 
     navigate(
-      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/rai/novo`,
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/pea/${encodeURIComponent(idPea)}/rai/novo`,
       {
         state: {
           aluno,
           pei,
+          pea,
           peiId: idPei,
+          peaId: idPea,
           matriculaAluno: matricula,
           returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
         },
@@ -224,21 +241,24 @@ function AlunoPlanejamentoPage() {
     );
   }
 
-  function editarRai(rai, pei, aluno) {
+  function editarRai(rai, pei, pea, aluno) {
     const idRai = rai?.id ?? rai?._id;
     const idPei = pei?.id ?? pei?._id;
+    const idPea = pea?.id ?? pea?._id;
 
-    if (!idRai || !idPei || !aluno) return;
+    if (!idRai || !idPei || !idPea || !aluno) return;
 
     navigate(
-      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/rai/${encodeURIComponent(idRai)}/editar`,
+      `/planejamento/alunos/${encodeURIComponent(matricula)}/pei/${encodeURIComponent(idPei)}/pea/${encodeURIComponent(idPea)}/rai/${encodeURIComponent(idRai)}/editar`,
       {
         state: {
           aluno,
           pei,
+          pea,
           rai,
           raiId: idRai,
           peiId: idPei,
+          peaId: idPea,
           matriculaAluno: matricula,
           returnTo: `/planejamento/alunos/${encodeURIComponent(matricula)}`,
         },
