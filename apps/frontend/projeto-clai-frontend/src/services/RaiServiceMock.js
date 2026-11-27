@@ -1,15 +1,19 @@
+import { getPeaById, getPeas } from "./PeaServiceMock.js";
+import { getPeiById } from "./PeiServiceMock.js";
+
 const raisMock = [
   {
     id: "880e8400-e29b-41d4-a716-446655440000",
     alunoId: "550e8400-e29b-41d4-a716-446655440001",
     peiId: "550e8400-e29b-41d4-a716-446655440000",
+    peaId: "550e8400-e29b-41d4-a716-446655440100",
     alunoNome: "Ana Carolina Souza",
     alunoMatricula: "2024001",
     curso: "Técnico em Informática",
 
     periodoLetivo: "2026.1",
-    componenteCurricular: "Língua Portuguesa",
-    docente: "Professor(a) responsável",
+    componenteCurricular: "Matemática",
+    docente: "Professor Exemplo",
 
     relacionamento: ["Afetivo", "Socializado"],
     relacionamentoOutro: "",
@@ -60,19 +64,19 @@ const raisMock = [
     parecer:
       "A estudante apresentou avanços na participação, na leitura compartilhada e na realização das atividades propostas. As estratégias de divisão das tarefas em etapas e o uso de roteiros de leitura mostraram resultados positivos. Para a próxima etapa, recomenda-se manter esses recursos e ampliar gradualmente as atividades de interpretação e produção textual, incentivando a autonomia na revisão dos textos.",
     data: "2026-06-30",
-    assinaturaDocente: "Professor(a) responsável",
   },
   {
     id: "880e8400-e29b-41d4-a716-446655440001",
     alunoId: "550e8400-e29b-41d4-a716-446655440004",
     peiId: "550e8400-e29b-41d4-a716-446655440003",
+    peaId: "550e8400-e29b-41d4-a716-446655440101",
     alunoNome: "Bruno Henrique Lima",
     alunoMatricula: "2024002",
     curso: "Técnico em Edificações",
 
     periodoLetivo: "2026.1",
-    componenteCurricular: "Matemática",
-    docente: "Professor(a) responsável",
+    componenteCurricular: "Português",
+    docente: "Outra Professora",
 
     relacionamento: ["Afetivo", "Socializado"],
     relacionamentoOutro: "",
@@ -117,34 +121,11 @@ const raisMock = [
     parecer:
       "O estudante apresentou evolução na realização de operações com suporte concreto e na organização da rotina de atividades. O uso de exemplos resolvidos e de recursos visuais favoreceu a compreensão. Recomenda-se manter essas estratégias, ampliar gradualmente a complexidade dos problemas e estimular a identificação autônoma das informações relevantes.",
     data: "2026-06-30",
-    assinaturaDocente: "Professor(a) responsável",
   },
 ];
 
-// Alunos adicionais para teste; os IDs correspondem aos PEIs existentes no PeiServiceMock.
-const alunosMockados = [
-  {
-    id: "550e8400-e29b-41d4-a716-446655440006",
-    peiId: "550e8400-e29b-41d4-a716-446655440005",
-    alunoNome: "Beatriz Oliveira Santos",
-    alunoMatricula: "2024003",
-    alunoCurso: "",
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440008",
-    peiId: "550e8400-e29b-41d4-a716-446655440007",
-    alunoNome: "Carlos Eduardo Mendes",
-    alunoMatricula: "2024004",
-    alunoCurso: "",
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440010",
-    peiId: "550e8400-e29b-41d4-a716-446655440009",
-    alunoNome: "Daniela Ferreira Costa",
-    alunoMatricula: "2024005",
-    alunoCurso: "",
-  },
-];
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function gerarId() {
   if (globalThis.crypto?.randomUUID) {
@@ -154,28 +135,120 @@ function gerarId() {
   return `rai-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function criarHabilidadesVazias() {
-  return Array.from({ length: 7 }, () => ({
-    habilidadeDesenvolvida: "",
-    nivelAprendizado: "",
-    observacoes: "",
+function normalizarArray(valor) {
+  return Array.isArray(valor) ? [...valor] : [];
+}
+
+// A quantidade de habilidades agora é variável; nenhuma posição vazia é criada automaticamente.
+function normalizarHabilidades(habilidades) {
+  if (!Array.isArray(habilidades)) return [];
+
+  return habilidades.map((habilidade) => ({
+    habilidadeDesenvolvida: habilidade?.habilidadeDesenvolvida ?? "",
+    nivelAprendizado: habilidade?.nivelAprendizado ?? "",
+    observacoes: habilidade?.observacoes ?? "",
   }));
 }
 
-function normalizarHabilidades(habilidades) {
-  const recebidas = Array.isArray(habilidades) ? habilidades : [];
+function removerAssinaturaDocente(dados) {
+  const dadosSemAssinatura = { ...(dados ?? {}) };
+  delete dadosSemAssinatura.assinaturaDocente;
+  return dadosSemAssinatura;
+}
 
-  return Array.from({ length: 7 }, (_, index) => ({
-    habilidadeDesenvolvida: recebidas[index]?.habilidadeDesenvolvida ?? "",
-    nivelAprendizado: recebidas[index]?.nivelAprendizado ?? "",
-    observacoes: recebidas[index]?.observacoes ?? "",
-  }));
+function validarVinculos(data) {
+  if (!data || typeof data !== "object") {
+    throw new TypeError("Os dados do RAI devem ser um objeto.");
+  }
+
+  const peaId = String(data.peaId ?? "");
+
+  if (!UUID_PATTERN.test(peaId)) {
+    throw new TypeError("O RAI deve estar associado a um PEA válido.");
+  }
+
+  const pea = getPeaById(peaId);
+
+  if (!pea) {
+    throw new Error("O PEA associado ao RAI não foi encontrado.");
+  }
+
+  const alunoId = String(data.alunoId || pea.alunoId || "");
+  const peiId = String(data.peiId || pea.peiId || "");
+
+  if (!UUID_PATTERN.test(alunoId)) {
+    throw new TypeError("O ID do aluno deve ser um UUID válido.");
+  }
+
+  if (!UUID_PATTERN.test(peiId)) {
+    throw new TypeError("O ID do PEI deve ser um UUID válido.");
+  }
+
+  if (String(pea.alunoId) !== alunoId) {
+    throw new Error("O PEA informado não pertence ao aluno associado.");
+  }
+
+  if (String(pea.peiId) !== peiId) {
+    throw new Error("O PEA informado não pertence ao PEI associado.");
+  }
+
+  const pei = getPeiById(peiId);
+
+  if (pei && String(pei.alunoId) !== alunoId) {
+    throw new Error("O PEI informado não pertence ao aluno associado.");
+  }
+
+  if (
+    pei &&
+    data.alunoMatricula &&
+    String(pei.alunoMatricula) !== String(data.alunoMatricula)
+  ) {
+    throw new Error("A matrícula informada não corresponde ao PEI associado.");
+  }
+
+  return { pea, pei, alunoId, peiId, peaId };
+}
+
+function aplicarContextoPea(rai, vinculos) {
+  const { pea, pei, alunoId, peiId, peaId } = vinculos;
+
+  return {
+    ...rai,
+    alunoId,
+    peiId,
+    peaId,
+    alunoNome: rai.alunoNome || pei?.alunoNome || "",
+    alunoMatricula:
+      rai.alunoMatricula || pea.alunoMatricula || pei?.alunoMatricula || "",
+    periodoLetivo: pea.semestreAno ?? "",
+    componenteCurricular: pea.componenteCurricular ?? "",
+    docente: pea.docente ?? "",
+    habilidadesCompetencias: normalizarHabilidades(rai.habilidadesCompetencias),
+  };
+}
+
+function clonarRai(rai) {
+  if (!rai) return null;
+
+  const pea = rai.peaId ? getPeaById(rai.peaId) : null;
+
+  return {
+    ...rai,
+    relacionamento: normalizarArray(rai.relacionamento),
+    habilidadesCognitivas: normalizarArray(rai.habilidadesCognitivas),
+    habilidadesSocioemocionais: normalizarArray(rai.habilidadesSocioemocionais),
+    habilidadesCompetencias: normalizarHabilidades(rai.habilidadesCompetencias),
+    pea: pea ? { ...pea } : null,
+  };
 }
 
 export function postRai(data) {
+  const dadosSemAssinatura = removerAssinaturaDocente(data);
+
   const novoRai = {
     alunoId: "",
     peiId: "",
+    peaId: "",
     alunoNome: "",
     alunoMatricula: "",
     curso: "",
@@ -194,35 +267,29 @@ export function postRai(data) {
     avancosGerais: "",
     dificuldadesAprendizagem: "",
     fatoresExternos: "",
-    habilidadesCompetencias: criarHabilidadesVazias(),
+    habilidadesCompetencias: [],
     parecer: "",
     data: "",
-    assinaturaDocente: "",
-    ...data,
+    ...dadosSemAssinatura,
     id: gerarId(),
   };
 
-  novoRai.relacionamento = Array.isArray(novoRai.relacionamento)
-    ? [...novoRai.relacionamento]
-    : [];
+  const vinculos = validarVinculos(novoRai);
+  const raiComContexto = aplicarContextoPea(novoRai, vinculos);
 
-  novoRai.habilidadesCognitivas = Array.isArray(novoRai.habilidadesCognitivas)
-    ? [...novoRai.habilidadesCognitivas]
-    : [];
-
-  novoRai.habilidadesSocioemocionais = Array.isArray(
-    novoRai.habilidadesSocioemocionais,
-  )
-    ? [...novoRai.habilidadesSocioemocionais]
-    : [];
-
-  novoRai.habilidadesCompetencias = normalizarHabilidades(
-    novoRai.habilidadesCompetencias,
+  raiComContexto.relacionamento = normalizarArray(
+    raiComContexto.relacionamento,
+  );
+  raiComContexto.habilidadesCognitivas = normalizarArray(
+    raiComContexto.habilidadesCognitivas,
+  );
+  raiComContexto.habilidadesSocioemocionais = normalizarArray(
+    raiComContexto.habilidadesSocioemocionais,
   );
 
-  raisMock.push(novoRai);
+  raisMock.push(raiComContexto);
 
-  return novoRai;
+  return clonarRai(raiComContexto);
 }
 
 export function getRais({ page = 0, size = 20, filters = {} } = {}) {
@@ -239,7 +306,7 @@ export function getRais({ page = 0, size = 20, filters = {} } = {}) {
   const pagina = Math.max(0, Number(page) || 0);
   const tamanho = Math.max(0, Number(size) || 0);
   const inicio = pagina * tamanho;
-  const content = raisFiltrados.slice(inicio, inicio + tamanho);
+  const content = raisFiltrados.slice(inicio, inicio + tamanho).map(clonarRai);
 
   return {
     content,
@@ -255,50 +322,63 @@ export function getRais({ page = 0, size = 20, filters = {} } = {}) {
 }
 
 export function getRaiById(id) {
-  return raisMock.find((rai) => String(rai.id) === String(id)) || null;
+  const rai = raisMock.find((item) => String(item.id) === String(id));
+  return clonarRai(rai);
 }
 
-// Lista usada pelo planejamento no teste local; remover junto ao fallback da página na integração real.
+export function getRaiByPeaId(peaId) {
+  const rai = raisMock.find((item) => String(item.peaId) === String(peaId));
+  return clonarRai(rai);
+}
+
+// Lista estudantes que possuem PEA disponível para associação ao RAI.
 export function getRaiMockStudents() {
-  const alunos = new Map();
+  const { content: peasDisponiveis = [] } = getPeas({ page: 0, size: 100 });
 
-  raisMock.forEach((rai) => {
-    if (!rai.alunoId) return;
+  return peasDisponiveis
+    .map((pea) => {
+      const pei = getPeiById(pea.peiId);
+      if (!pei) return null;
 
-    alunos.set(String(rai.alunoId), {
-      id: rai.alunoId,
-      peiId: rai.peiId,
-      alunoNome: rai.alunoNome,
-      alunoMatricula: rai.alunoMatricula,
-      alunoCurso: rai.curso,
-    });
-  });
+      const raiExistente = raisMock.find(
+        (rai) => String(rai.peaId) === String(pea.id),
+      );
 
-  alunosMockados.forEach((aluno) => {
-    if (!alunos.has(String(aluno.id))) {
-      alunos.set(String(aluno.id), aluno);
-    }
-  });
-
-  return Array.from(alunos.values(), (aluno) => ({ ...aluno }));
+      return {
+        id: pea.alunoId,
+        peiId: pea.peiId,
+        peaId: pea.id,
+        alunoNome: raiExistente?.alunoNome ?? pei.alunoNome ?? "",
+        alunoMatricula: pea.alunoMatricula ?? pei.alunoMatricula ?? "",
+        alunoCurso: raiExistente?.curso ?? pei.curso ?? pei.alunoCurso ?? "",
+      };
+    })
+    .filter(Boolean);
 }
 
-// Contexto para abrir cadastro/edição isolados; remover quando a navegação receber dados reais do planejamento.
+// Contexto para abrir cadastro/edição: retorna o estudante e o PEA associado.
 export function getRaiTestContext(id) {
-  const rai = getRaiById(id);
+  const rai = raisMock.find((item) => String(item.id) === String(id));
+
   const aluno = rai
     ? {
         id: rai.alunoId,
         peiId: rai.peiId,
+        peaId: rai.peaId,
         alunoNome: rai.alunoNome,
         alunoMatricula: rai.alunoMatricula,
         alunoCurso: rai.curso,
       }
     : getRaiMockStudents().find(
-        (estudante) => String(estudante.id) === String(id),
+        (estudante) =>
+          String(estudante.id) === String(id) ||
+          String(estudante.alunoMatricula) === String(id),
       );
 
-  if (!aluno) return null;
+  if (!aluno?.peaId) return null;
+
+  const pea = getPeaById(aluno.peaId);
+  if (!pea) return null;
 
   return {
     aluno: {
@@ -307,7 +387,9 @@ export function getRaiTestContext(id) {
       alunoMatricula: aluno.alunoMatricula,
       alunoCurso: aluno.alunoCurso,
     },
-    peiId: aluno.peiId,
+    pea: { ...pea },
+    peaId: pea.id,
+    peiId: pea.peiId,
     matriculaAluno: aluno.alunoMatricula,
   };
 }
@@ -317,35 +399,29 @@ export function putRai(id, data) {
 
   if (index === -1) return null;
 
+  const dadosSemAssinatura = removerAssinaturaDocente(data);
   const raiAtualizado = {
     ...raisMock[index],
-    ...data,
+    ...dadosSemAssinatura,
     id: raisMock[index].id,
   };
 
-  raiAtualizado.relacionamento = Array.isArray(raiAtualizado.relacionamento)
-    ? [...raiAtualizado.relacionamento]
-    : [];
+  const vinculos = validarVinculos(raiAtualizado);
+  const raiComContexto = aplicarContextoPea(raiAtualizado, vinculos);
 
-  raiAtualizado.habilidadesCognitivas = Array.isArray(
-    raiAtualizado.habilidadesCognitivas,
-  )
-    ? [...raiAtualizado.habilidadesCognitivas]
-    : [];
-
-  raiAtualizado.habilidadesSocioemocionais = Array.isArray(
-    raiAtualizado.habilidadesSocioemocionais,
-  )
-    ? [...raiAtualizado.habilidadesSocioemocionais]
-    : [];
-
-  raiAtualizado.habilidadesCompetencias = normalizarHabilidades(
-    raiAtualizado.habilidadesCompetencias,
+  raiComContexto.relacionamento = normalizarArray(
+    raiComContexto.relacionamento,
+  );
+  raiComContexto.habilidadesCognitivas = normalizarArray(
+    raiComContexto.habilidadesCognitivas,
+  );
+  raiComContexto.habilidadesSocioemocionais = normalizarArray(
+    raiComContexto.habilidadesSocioemocionais,
   );
 
-  raisMock[index] = raiAtualizado;
+  raisMock[index] = raiComContexto;
 
-  return raiAtualizado;
+  return clonarRai(raiComContexto);
 }
 
 export function deleteRai(id) {

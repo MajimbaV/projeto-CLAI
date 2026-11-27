@@ -48,6 +48,7 @@ function SecaoSanfona({ titulo, children, padraoAberto = false }) {
         aria-expanded={aberta}
       >
         <span className="rai-view-section-title">{titulo}</span>
+
         <span
           className={`rai-view-section-chevron ${aberta ? "expandido" : ""}`}
           aria-hidden="true"
@@ -65,9 +66,11 @@ function GrupoObservado({ titulo, selecionados, outro, comentario }) {
   return (
     <div className="rai-view-grupo-observado">
       <CampoExibicao label={titulo} valor={selecionados} />
+
       {selecionados?.includes("Outros") && (
         <CampoExibicao label="Outros" valor={outro} />
       )}
+
       <CampoExibicao label="Comentário" valor={comentario} largo />
     </div>
   );
@@ -78,6 +81,52 @@ function possuiDadosHabilidade(habilidade) {
     habilidade?.habilidadeDesenvolvida ||
     habilidade?.nivelAprendizado ||
     habilidade?.observacoes,
+  );
+}
+
+function DadosPeaAssociado({ dados }) {
+  const pea = dados.pea ?? {};
+
+  const componenteCurricular =
+    pea.componenteCurricular ?? dados.componenteCurricular;
+
+  const periodoLetivo = pea.semestreAno ?? dados.periodoLetivo;
+
+  const docente = pea.docente ?? dados.docente;
+
+  const peaId = pea.id ?? dados.peaId;
+
+  return (
+    <section className="rai-view-pea-associado">
+      <div className="rai-view-pea-header">
+        <div>
+          <h2>PEA associado</h2>
+          <p>
+            Este Relatório de Acompanhamento Individualizado está vinculado ao
+            seguinte Plano de Ensino Adaptado.
+          </p>
+        </div>
+      </div>
+
+      {peaId || componenteCurricular || periodoLetivo || docente ? (
+        <div className="rai-view-grid">
+          <CampoExibicao
+            label="Componente curricular"
+            valor={componenteCurricular}
+          />
+
+          <CampoExibicao label="Período letivo" valor={periodoLetivo} />
+
+          <CampoExibicao label="Docente" valor={docente} />
+
+          <CampoExibicao label="Identificador do PEA" valor={peaId} largo />
+        </div>
+      ) : (
+        <p className="rai-view-vazio-secao">
+          Os dados do PEA associado não estão disponíveis.
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -92,9 +141,10 @@ export default function RaiView({ dados, onEdit }) {
         .filter(({ habilidade }) => possuiDadosHabilidade(habilidade))
     : [];
 
-  // IDs de aluno e PEI continuam no registro para associação, mas não são exibidos no documento.
   return (
     <div className="rai-view-container">
+      <DadosPeaAssociado dados={dados} />
+
       <SecaoSanfona titulo="1. Aspectos observados" padraoAberto>
         <div className="rai-view-lista-grupos">
           <GrupoObservado
@@ -103,12 +153,14 @@ export default function RaiView({ dados, onEdit }) {
             outro={dados.relacionamentoOutro}
             comentario={dados.comentarioRelacionamento}
           />
+
           <GrupoObservado
             titulo="Principais habilidades cognitivas"
             selecionados={dados.habilidadesCognitivas}
             outro={dados.habilidadesCognitivasOutro}
             comentario={dados.comentarioHabilidadesCognitivas}
           />
+
           <GrupoObservado
             titulo="Principais habilidades socioemocionais"
             selecionados={dados.habilidadesSocioemocionais}
@@ -125,11 +177,13 @@ export default function RaiView({ dados, onEdit }) {
             valor={dados.avancosGerais}
             largo
           />
+
           <CampoExibicao
             label="Dificuldades de aprendizagem observadas"
             valor={dados.dificuldadesAprendizagem}
             largo
           />
+
           <CampoExibicao
             label="Fatores externos que influenciam o processo escolar"
             valor={dados.fatoresExternos}
@@ -148,16 +202,19 @@ export default function RaiView({ dados, onEdit }) {
             {habilidades.map(({ habilidade, index }) => (
               <article className="rai-view-habilidade" key={index}>
                 <h3>Habilidade desenvolvida {index + 1}</h3>
+
                 <div className="rai-view-grid">
                   <CampoExibicao
                     label="Habilidade desenvolvida"
                     valor={habilidade.habilidadeDesenvolvida}
                     largo
                   />
+
                   <CampoExibicao
                     label="Nível de aprendizado"
                     valor={habilidade.nivelAprendizado}
                   />
+
                   <CampoExibicao
                     label="Observações"
                     valor={habilidade.observacoes}
@@ -183,10 +240,6 @@ export default function RaiView({ dados, onEdit }) {
       <SecaoSanfona titulo="5. Finalização">
         <div className="rai-view-grid">
           <CampoExibicao label="Data" valor={formatarData(dados.data)} />
-          <CampoExibicao
-            label="Assinatura do(a) docente"
-            valor={dados.assinaturaDocente}
-          />
         </div>
       </SecaoSanfona>
 

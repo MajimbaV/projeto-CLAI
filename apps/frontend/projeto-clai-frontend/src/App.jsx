@@ -87,11 +87,11 @@ function App() {
 
         {/* Rotas do RAI */}
         <Route
-          path="planejamento/alunos/:matricula/pei/:peiId/rai/novo"
+          path="planejamento/alunos/:matricula/pei/:peiId/pea/:peaId/rai/novo"
           element={<AddRaiPage />}
         />
         <Route
-          path="planejamento/alunos/:matricula/pei/:peiId/rai/:raiId/editar"
+          path="planejamento/alunos/:matricula/pei/:peiId/pea/:peaId/rai/:raiId/editar"
           element={<EditRaiPage />}
         />
       </Route>

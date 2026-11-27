@@ -38,12 +38,12 @@ const OPCOES_SOCIOEMOCIONAIS = [
 
 const NIVEIS_APRENDIZADO = ["Satisfatório", "Bom", "Ótimo"];
 
-function criarHabilidadesVazias() {
-  return Array.from({ length: 7 }, () => ({
+function criarHabilidadeVazia() {
+  return {
     habilidadeDesenvolvida: "",
     nivelAprendizado: "",
     observacoes: "",
-  }));
+  };
 }
 
 function criarValoresPadrao() {
@@ -63,10 +63,9 @@ function criarValoresPadrao() {
     avancosGerais: "",
     dificuldadesAprendizagem: "",
     fatoresExternos: "",
-    habilidadesCompetencias: criarHabilidadesVazias(),
+    habilidadesCompetencias: [],
     parecer: "",
     data: "",
-    assinaturaDocente: "",
   };
 }
 
@@ -79,29 +78,32 @@ function normalizarDefaultValues(defaultValues = {}) {
   valores.relacionamento = Array.isArray(defaultValues.relacionamento)
     ? [...defaultValues.relacionamento]
     : [];
+
   valores.habilidadesCognitivas = Array.isArray(
     defaultValues.habilidadesCognitivas,
   )
     ? [...defaultValues.habilidadesCognitivas]
     : [];
+
   valores.habilidadesSocioemocionais = Array.isArray(
     defaultValues.habilidadesSocioemocionais,
   )
     ? [...defaultValues.habilidadesSocioemocionais]
     : [];
 
-  const habilidadesRecebidas = Array.isArray(
+  valores.habilidadesCompetencias = Array.isArray(
     defaultValues.habilidadesCompetencias,
   )
-    ? defaultValues.habilidadesCompetencias
+    ? defaultValues.habilidadesCompetencias.map((habilidade) => ({
+        habilidadeDesenvolvida: habilidade?.habilidadeDesenvolvida ?? "",
+        nivelAprendizado: habilidade?.nivelAprendizado ?? "",
+        observacoes: habilidade?.observacoes ?? "",
+      }))
     : [];
 
-  valores.habilidadesCompetencias = Array.from({ length: 7 }, (_, index) => ({
-    habilidadeDesenvolvida:
-      habilidadesRecebidas[index]?.habilidadeDesenvolvida ?? "",
-    nivelAprendizado: habilidadesRecebidas[index]?.nivelAprendizado ?? "",
-    observacoes: habilidadesRecebidas[index]?.observacoes ?? "",
-  }));
+  // Compatibilidade com registros antigos.
+  // A assinatura não faz mais parte do formulário.
+  delete valores.assinaturaDocente;
 
   return valores;
 }
@@ -110,6 +112,7 @@ function obterErroCampo(campo, invalidFields, errors) {
   const erro = errors?.[campo] ?? invalidFields?.[campo];
 
   if (Array.isArray(erro)) return erro.join(", ");
+
   if (typeof erro === "object" && erro !== null) {
     return erro.message ?? erro.detail ?? "";
   }
@@ -124,6 +127,7 @@ function FormSection({ title, description, children }) {
         <h2>{title}</h2>
         {description && <p>{description}</p>}
       </div>
+
       <div className="rai-section-content">{children}</div>
     </section>
   );
@@ -141,6 +145,7 @@ function GrupoCheckbox({ name, label, options, value, onChange, disabled }) {
   return (
     <fieldset className="rai-checkbox-fieldset" disabled={disabled}>
       <legend>{label}</legend>
+
       <div className="rai-checkbox-options">
         {options.map((opcao, index) => {
           const id = `${name}-${index}`;
@@ -153,6 +158,7 @@ function GrupoCheckbox({ name, label, options, value, onChange, disabled }) {
                 checked={value.includes(opcao)}
                 onChange={(event) => alternarOpcao(opcao, event.target.checked)}
               />
+
               <span>{opcao}</span>
             </label>
           );
@@ -176,7 +182,19 @@ function obterMatriculaAluno(aluno, defaultValues) {
 }
 
 function obterCursoAluno(aluno, defaultValues) {
-  return aluno?.alunoCurso ?? aluno?.curso ?? defaultValues?.curso ?? "";
+  return (
+    aluno?.curso?.nomeCurso ??
+    aluno?.alunoCurso ??
+    aluno?.curso ??
+    defaultValues?.curso ??
+    ""
+  );
+}
+
+function exibirValor(valor) {
+  return valor !== undefined && valor !== null && valor !== ""
+    ? valor
+    : "Não informado";
 }
 
 export default function RaiForm(props) {
@@ -196,36 +214,73 @@ function RaiFormContent({
   errors = {},
   aluno = null,
   pei = null,
+  pea = null,
 }) {
   const [formData, setFormData] = useState(() =>
     normalizarDefaultValues(defaultValues ?? {}),
   );
+
   const [errosLocais, setErrosLocais] = useState({});
 
   const modoEdicao = mode === "edit" || mode === "editar";
   const formularioDesabilitado = isPending || isLoading;
 
-  // IDs remain in the payload for association, although identification is not shown in the RAI.
-  const alunoId = aluno?.id ?? defaultValues?.alunoId ?? null;
-  const peiId = pei?.id ?? pei?._id ?? defaultValues?.peiId ?? null;
+  // Identificação dos registros associados.
+  const alunoId = aluno?.id ?? pea?.alunoId ?? defaultValues?.alunoId ?? null;
+
+  const peaId =
+    pea?.id ??
+    pea?._id ??
+    defaultValues?.peaId ??
+    defaultValues?.pea?.id ??
+    null;
+
+  const peiId =
+    pea?.peiId ??
+    pei?.id ??
+    defaultValues?.peiId ??
+    defaultValues?.pei?.id ??
+    null;
+
+  // Dados do aluno.
   const nomeAluno = obterNomeAluno(aluno, defaultValues);
   const matriculaAluno = obterMatriculaAluno(aluno, defaultValues);
   const cursoAluno = obterCursoAluno(aluno, defaultValues);
 
+  // Dados acadêmicos provenientes do PEA.
+  const componenteCurricular =
+    pea?.componenteCurricular ?? defaultValues?.componenteCurricular ?? "";
+
+  const periodoLetivo = pea?.semestreAno ?? defaultValues?.periodoLetivo ?? "";
+
+  const docente = pea?.docente ?? defaultValues?.docente ?? "";
+
   const errorResponse = error?.response?.data || error?.data || {};
+
   const mensagemErro =
     errorResponse.detail || error?.detail || error?.message || "";
+
   const invalidFields = errorResponse.invalidFields || {};
 
   function handleChange(event) {
     const { name, value } = event.target;
 
-    setFormData((atual) => ({ ...atual, [name]: value }));
-    setErrosLocais((atual) => ({ ...atual, [name]: "" }));
+    setFormData((atual) => ({
+      ...atual,
+      [name]: value,
+    }));
+
+    setErrosLocais((atual) => ({
+      ...atual,
+      [name]: "",
+    }));
   }
 
   function handleCheckboxChange(campo, value) {
-    setFormData((atual) => ({ ...atual, [campo]: value }));
+    setFormData((atual) => ({
+      ...atual,
+      [campo]: value,
+    }));
   }
 
   function handleHabilidadeChange(index, campo, value) {
@@ -236,6 +291,25 @@ function RaiFormContent({
           habilidadeIndex === index
             ? { ...habilidade, [campo]: value }
             : habilidade,
+      ),
+    }));
+  }
+
+  function handleAdicionarHabilidade() {
+    setFormData((atual) => ({
+      ...atual,
+      habilidadesCompetencias: [
+        ...atual.habilidadesCompetencias,
+        criarHabilidadeVazia(),
+      ],
+    }));
+  }
+
+  function handleRemoverHabilidade(index) {
+    setFormData((atual) => ({
+      ...atual,
+      habilidadesCompetencias: atual.habilidadesCompetencias.filter(
+        (_, habilidadeIndex) => habilidadeIndex !== index,
       ),
     }));
   }
@@ -253,6 +327,10 @@ function RaiFormContent({
       novosErros.peiId = "O PEI associado não foi identificado.";
     }
 
+    if (peaId === null || peaId === undefined || peaId === "") {
+      novosErros.peaId = "O PEA associado não foi identificado.";
+    }
+
     setErrosLocais(novosErros);
 
     if (Object.keys(novosErros).length > 0 || formularioDesabilitado) {
@@ -263,17 +341,26 @@ function RaiFormContent({
       return;
     }
 
-    onSubmit({
+    const payload = {
       ...formData,
       alunoId,
       peiId,
+      peaId,
       alunoNome: nomeAluno,
       alunoMatricula: matriculaAluno,
       curso: cursoAluno,
+      periodoLetivo,
+      componenteCurricular,
+      docente,
       habilidadesCompetencias: formData.habilidadesCompetencias.map(
         (habilidade) => ({ ...habilidade }),
       ),
-    });
+    };
+
+    // Não enviar assinaturaDocente, inclusive em registros antigos.
+    delete payload.assinaturaDocente;
+
+    onSubmit(payload);
   }
 
   return (
@@ -285,12 +372,14 @@ function RaiFormContent({
               ? "Editar Relatório de Acompanhamento Individualizado"
               : "Novo Relatório de Acompanhamento Individualizado"}
           </h1>
+
           <p className="rai-subtitle">
             Registre as observações, os avanços, as habilidades e o parecer do
             acompanhamento educacional.
           </p>
         </div>
-        <span className="rai-private-label">Documento vinculado ao PEI</span>
+
+        <span className="rai-private-label">Documento vinculado ao PEA</span>
       </header>
 
       <form className="rai-form" onSubmit={handleSubmit}>
@@ -303,10 +392,61 @@ function RaiFormContent({
         {Object.values(errosLocais)
           .filter(Boolean)
           .map((mensagem) => (
-            <div className="rai-alert rai-alert-error" role="alert" key={mensagem}>
+            <div
+              className="rai-alert rai-alert-error"
+              role="alert"
+              key={mensagem}
+            >
               {mensagem}
             </div>
           ))}
+
+        <FormSection
+          title="Dados do estudante e do PEA associado"
+          description="Confira os dados do estudante e do Plano de Ensino Adaptado ao qual este relatório está vinculado."
+        >
+          <div className="rai-contexto-subsection">
+            <h3>Dados do estudante</h3>
+
+            <div className="rai-contexto-grid">
+              <div className="rai-contexto-field">
+                <span>Nome do estudante</span>
+                <p>{exibirValor(nomeAluno)}</p>
+              </div>
+
+              <div className="rai-contexto-field">
+                <span>Matrícula</span>
+                <p>{exibirValor(matriculaAluno)}</p>
+              </div>
+
+              <div className="rai-contexto-field">
+                <span>Curso</span>
+                <p>{exibirValor(cursoAluno)}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rai-contexto-subsection">
+            <h3>PEA associado</h3>
+
+            <div className="rai-contexto-grid">
+              <div className="rai-contexto-field">
+                <span>Componente curricular</span>
+                <p>{exibirValor(componenteCurricular)}</p>
+              </div>
+
+              <div className="rai-contexto-field">
+                <span>Período letivo</span>
+                <p>{exibirValor(periodoLetivo)}</p>
+              </div>
+
+              <div className="rai-contexto-field">
+                <span>Docente</span>
+                <p>{exibirValor(docente)}</p>
+              </div>
+            </div>
+          </div>
+        </FormSection>
 
         <FormSection
           title="1. Aspectos observados"
@@ -323,6 +463,7 @@ function RaiFormContent({
               }
               disabled={formularioDesabilitado}
             />
+
             {formData.relacionamento.includes("Outros") && (
               <FormField
                 name="relacionamentoOutro"
@@ -332,6 +473,7 @@ function RaiFormContent({
                 disabled={formularioDesabilitado}
               />
             )}
+
             <FormTextarea
               name="comentarioRelacionamento"
               label="Comentário sobre o relacionamento (se necessário)"
@@ -353,6 +495,7 @@ function RaiFormContent({
               }
               disabled={formularioDesabilitado}
             />
+
             {formData.habilidadesCognitivas.includes("Outros") && (
               <FormField
                 name="habilidadesCognitivasOutro"
@@ -362,6 +505,7 @@ function RaiFormContent({
                 disabled={formularioDesabilitado}
               />
             )}
+
             <FormTextarea
               name="comentarioHabilidadesCognitivas"
               label="Comentário sobre as habilidades cognitivas (se necessário)"
@@ -383,6 +527,7 @@ function RaiFormContent({
               }
               disabled={formularioDesabilitado}
             />
+
             {formData.habilidadesSocioemocionais.includes("Outros") && (
               <FormField
                 name="habilidadesSocioemocionaisOutro"
@@ -392,6 +537,7 @@ function RaiFormContent({
                 disabled={formularioDesabilitado}
               />
             )}
+
             <FormTextarea
               name="comentarioHabilidadesSocioemocionais"
               label="Comentário sobre as habilidades socioemocionais (se necessário)"
@@ -415,6 +561,7 @@ function RaiFormContent({
             rows={5}
             disabled={formularioDesabilitado}
           />
+
           <FormTextarea
             name="dificuldadesAprendizagem"
             label="Relato das dificuldades de aprendizagem observadas"
@@ -423,6 +570,7 @@ function RaiFormContent({
             rows={5}
             disabled={formularioDesabilitado}
           />
+
           <FormTextarea
             name="fatoresExternos"
             label="Fatores externos que estejam influenciando no processo escolar"
@@ -435,12 +583,25 @@ function RaiFormContent({
 
         <FormSection
           title="3. Habilidades e competências desenvolvidas"
-          description="Registre as habilidades desenvolvidas após as adaptações realizadas, indicando o nível de aprendizado e as observações pertinentes."
+          description="Adicione as habilidades desenvolvidas após as adaptações realizadas, indicando o nível de aprendizado e as observações pertinentes."
         >
           <div className="rai-habilidades-lista">
             {formData.habilidadesCompetencias.map((habilidade, index) => (
               <article className="rai-habilidade-card" key={index}>
-                <h3>Habilidade desenvolvida {index + 1}</h3>
+                <div className="rai-habilidade-card-header">
+                  <h3>Habilidade desenvolvida {index + 1}</h3>
+
+                  <button
+                    type="button"
+                    className="rai-btn-remove-habilidade"
+                    onClick={() => handleRemoverHabilidade(index)}
+                    disabled={formularioDesabilitado}
+                    aria-label={`Remover habilidade ${index + 1}`}
+                  >
+                    Remover
+                  </button>
+                </div>
+
                 <FormTextarea
                   name={`habilidadeDesenvolvida-${index}`}
                   label="Habilidade desenvolvida"
@@ -461,6 +622,7 @@ function RaiFormContent({
                     <label htmlFor={`nivelAprendizado-${index}`}>
                       Nível de aprendizado
                     </label>
+
                     <select
                       id={`nivelAprendizado-${index}`}
                       value={habilidade.nivelAprendizado}
@@ -474,6 +636,7 @@ function RaiFormContent({
                       disabled={formularioDesabilitado}
                     >
                       <option value="">Selecione o nível</option>
+
                       {NIVEIS_APRENDIZADO.map((nivel) => (
                         <option key={nivel} value={nivel}>
                           {nivel}
@@ -500,6 +663,15 @@ function RaiFormContent({
               </article>
             ))}
           </div>
+
+          <button
+            type="button"
+            className="rai-btn-add-habilidade"
+            onClick={handleAdicionarHabilidade}
+            disabled={formularioDesabilitado}
+          >
+            + Adicionar habilidade
+          </button>
         </FormSection>
 
         <FormSection
@@ -527,14 +699,6 @@ function RaiFormContent({
               disabled={formularioDesabilitado}
               error={obterErroCampo("data", invalidFields, errors)}
             />
-            <FormField
-              name="assinaturaDocente"
-              label="Assinatura do(a) docente"
-              value={formData.assinaturaDocente}
-              onChange={handleChange}
-              disabled={formularioDesabilitado}
-              error={obterErroCampo("assinaturaDocente", invalidFields, errors)}
-            />
           </div>
         </FormSection>
 
@@ -543,6 +707,7 @@ function RaiFormContent({
             Documento de uso institucional. Registre informações pertinentes ao
             acompanhamento educacional do estudante.
           </p>
+
           <div className="rai-buttons-group">
             <button
               type="button"
@@ -552,6 +717,7 @@ function RaiFormContent({
             >
               Cancelar
             </button>
+
             <button
               type="submit"
               className="rai-btn-submit"

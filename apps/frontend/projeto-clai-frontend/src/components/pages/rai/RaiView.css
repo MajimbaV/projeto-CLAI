@@ -172,3 +172,31 @@
     padding: 14px;
   }
 }
+
+/* Identificação do PEA associado */
+.rai-view-pea-associado {
+  padding: 20px;
+  margin-bottom: 6px;
+  border: 1px solid #d1e5dc;
+  border-left: 4px solid #00523d;
+  border-radius: 8px;
+  background-color: #f7fbf9;
+}
+
+.rai-view-pea-header {
+  margin-bottom: 18px;
+}
+
+.rai-view-pea-header h2 {
+  margin: 0;
+  color: #00523d;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.rai-view-pea-header p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}

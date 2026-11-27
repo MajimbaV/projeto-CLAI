@@ -2,54 +2,113 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import RaiForm from "./RaiForm";
+
 import { postRai } from "../../../services/RaiServiceMock";
+import { getPeaById } from "../../../services/PeaServiceMock";
+import { getPeiById } from "../../../services/PeiServiceMock";
+
 import { useToast } from "../../../hooks/useToast";
 
 export default function AddRaiPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { matricula: matriculaParam, peiId: peiIdParam } = useParams();
+
+  const {
+    matricula: matriculaParam,
+    peiId: peiIdParam,
+    peaId: peaIdParam,
+  } = useParams();
 
   const [isPending, setIsPending] = useState(false);
   const [formError, setFormError] = useState(null);
 
-  const alunoRecebido = location.state?.aluno ?? null;
-  const pei = location.state?.pei ?? null;
+  const estado = location.state ?? {};
 
-  const matricula =
-    matriculaParam ??
-    location.state?.matriculaAluno ??
-    alunoRecebido?.alunoMatricula ??
-    alunoRecebido?.matricula ??
+  // Recupera o PEA recebido pela navegação ou consulta pelo ID.
+  const peaId =
+    peaIdParam ??
+    estado.peaId ??
+    estado.pea?.id ??
+    estado.defaultValues?.peaId ??
     "";
 
-  const peiId =
-    peiIdParam ?? location.state?.peiId ?? pei?.id ?? pei?._id ?? "";
+  const peaRecebido = estado.pea ?? (peaId ? getPeaById(peaId) : null);
 
-  // O formulário utiliza aluno.id. Normaliza também registros que utilizem _id.
+  const pea = peaRecebido;
+
+  // O PEI é obtido a partir da associação existente no PEA.
+  const peiId =
+    pea?.peiId ?? peiIdParam ?? estado.peiId ?? estado.pei?.id ?? "";
+
+  const peiRecebido = estado.pei;
+
+  const pei =
+    peiRecebido && String(peiRecebido.id) === String(peiId)
+      ? peiRecebido
+      : peiId
+        ? getPeiById(peiId)
+        : null;
+
+  // Normaliza o estudante recebido pela navegação.
+  const alunoRecebido = estado.aluno ?? null;
+
   const aluno = alunoRecebido
     ? {
         ...alunoRecebido,
         id: alunoRecebido.id ?? alunoRecebido._id,
       }
-    : null;
+    : pea && pei
+      ? {
+          id: pea.alunoId,
+          alunoNome: pei.alunoNome ?? "",
+          alunoMatricula: pea.alunoMatricula ?? pei.alunoMatricula ?? "",
+          alunoCurso: estado.defaultValues?.curso ?? pei.alunoCurso ?? "",
+        }
+      : null;
 
-  const alunoId = aluno?.id ?? "";
+  const alunoId = aluno?.id ?? pea?.alunoId ?? "";
+
+  const matricula =
+    matriculaParam ??
+    estado.matriculaAluno ??
+    aluno?.alunoMatricula ??
+    aluno?.matricula ??
+    pea?.alunoMatricula ??
+    "";
+
+  const vinculosCoerentes = Boolean(
+    pea &&
+    pei &&
+    aluno &&
+    alunoId &&
+    String(pea.alunoId) === String(alunoId) &&
+    String(pea.peiId) === String(pei.id) &&
+    String(pei.alunoId) === String(alunoId) &&
+    (!peiIdParam || String(peiIdParam) === String(pea.peiId)),
+  );
 
   const defaultValues = {
-    ...location.state?.defaultValues,
+    ...estado.defaultValues,
     alunoId,
     peiId,
+    peaId: pea?.id ?? "",
     alunoNome: aluno?.alunoNome ?? aluno?.nome ?? "",
     alunoMatricula: matricula,
-    curso: aluno?.alunoCurso ?? aluno?.curso ?? "",
+    curso:
+      aluno?.alunoCurso ??
+      aluno?.curso?.nomeCurso ??
+      (typeof aluno?.curso === "string" ? aluno.curso : "") ??
+      "",
+    componenteCurricular: pea?.componenteCurricular ?? "",
+    periodoLetivo: pea?.semestreAno ?? "",
+    docente: pea?.docente ?? "",
   };
 
   const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   function voltarAoPlanejamento() {
-    if (location.state?.returnTo) {
-      navigate(location.state.returnTo);
+    if (estado.returnTo) {
+      navigate(estado.returnTo);
       return;
     }
 
@@ -64,9 +123,10 @@ export default function AddRaiPage() {
   function handleSubmit(payload) {
     setFormError(null);
 
-    if (!payload.alunoId || !payload.peiId) {
+    if (!payload.alunoId || !payload.peiId || !payload.peaId) {
       const mensagem =
-        "Não foi possível identificar o estudante ou o PEI associado.";
+        "Não foi possível identificar o estudante, o PEI ou o PEA associado.";
+
       setFormError(new Error(mensagem));
       showErrorToast(mensagem);
       return;
@@ -76,9 +136,11 @@ export default function AddRaiPage() {
 
     try {
       postRai(payload);
+
       showSuccessToast(
         "Relatório de Acompanhamento Individualizado cadastrado com sucesso!",
       );
+
       voltarAoPlanejamento();
     } catch (error) {
       const mensagem =
@@ -94,13 +156,14 @@ export default function AddRaiPage() {
     }
   }
 
-  if (!aluno || !alunoId || !pei || !peiId) {
+  if (!vinculosCoerentes) {
     return (
       <div className="rai-page-body">
         <div className="rai-alert" role="alert">
-          Não foi possível identificar o estudante ou o PEI associado.
+          Não foi possível identificar corretamente o estudante, o PEI e o PEA
+          associado.
           <p>
-            Abra o cadastro do RAI a partir do PEI correspondente no
+            Abra o cadastro do RAI a partir do PEA correspondente no
             planejamento do estudante.
           </p>
         </div>
@@ -123,6 +186,7 @@ export default function AddRaiPage() {
         defaultValues={defaultValues}
         aluno={aluno}
         pei={pei}
+        pea={pea}
         error={formError}
         isPending={isPending}
         onSubmit={handleSubmit}

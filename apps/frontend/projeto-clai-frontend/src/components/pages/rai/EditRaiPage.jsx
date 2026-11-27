@@ -2,77 +2,127 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import RaiForm from "./RaiForm";
+
 import { getRaiById, putRai } from "../../../services/RaiServiceMock";
+
+import { getPeaById } from "../../../services/PeaServiceMock";
+import { getPeiById } from "../../../services/PeiServiceMock";
+
 import { useToast } from "../../../hooks/useToast";
 
 export default function EditRaiPage() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const {
     matricula: matriculaParam,
     peiId: peiIdParam,
+    peaId: peaIdParam,
     raiId: raiIdParam,
   } = useParams();
 
-  const raiId = raiIdParam ?? location.state?.raiId ?? location.state?.rai?.id;
-  const rai = location.state?.rai ?? getRaiById(raiId);
+  const estado = location.state ?? {};
 
-  const matricula =
-    matriculaParam ??
-    location.state?.matriculaAluno ??
-    rai?.alunoMatricula ??
-    "";
+  const raiId = raiIdParam ?? estado.raiId ?? estado.rai?.id;
 
-  const peiId = peiIdParam ?? location.state?.peiId ?? rai?.peiId ?? "";
+  const rai = estado.rai ?? getRaiById(raiId);
 
-  const alunoRecebido =
-    location.state?.aluno ??
-    (rai
-      ? {
-          id: rai.alunoId,
-          alunoNome: rai.alunoNome,
-          alunoMatricula: rai.alunoMatricula,
-          alunoCurso: rai.curso,
-        }
-      : null);
+  // Identifica o PEA associado ao relatório.
+  const peaId =
+    peaIdParam ?? estado.peaId ?? rai?.peaId ?? estado.pea?.id ?? "";
+
+  const pea = peaId ? getPeaById(peaId) : null;
+
+  // Identifica o PEI associado ao PEA.
+  const peiId = peiIdParam ?? pea?.peiId ?? estado.peiId ?? rai?.peiId ?? "";
+
+  const pei = peiId ? getPeiById(peiId) : null;
+
+  // Recupera os dados do estudante.
+  const alunoRecebido = estado.aluno ?? null;
 
   const aluno = alunoRecebido
     ? {
         ...alunoRecebido,
         id: alunoRecebido.id ?? alunoRecebido._id ?? rai?.alunoId,
       }
-    : null;
-
-  const peiRecebido =
-    location.state?.pei ??
-    (rai
+    : pea && pei
       ? {
-          id: peiId,
-          titulo: rai.peiTitulo ?? `PEI #${peiId}`,
+          id: pea.alunoId,
+          alunoNome: rai?.alunoNome ?? pei.alunoNome ?? "",
+          alunoMatricula:
+            rai?.alunoMatricula ??
+            pea.alunoMatricula ??
+            pei.alunoMatricula ??
+            "",
+          alunoCurso: rai?.curso ?? pei.alunoCurso ?? "",
         }
-      : null);
+      : null;
 
-  const pei = peiRecebido
-    ? {
-        ...peiRecebido,
-        id: peiRecebido.id ?? peiRecebido._id ?? peiId,
-      }
-    : null;
+  const matricula =
+    matriculaParam ??
+    estado.matriculaAluno ??
+    aluno?.alunoMatricula ??
+    aluno?.matricula ??
+    rai?.alunoMatricula ??
+    "";
+
+  const alunoId = aluno?.id ?? "";
+
+  // Confere se o relatório, o aluno, o PEI e o PEA pertencem
+  // à mesma associação.
+  const vinculosCoerentes = Boolean(
+    rai &&
+    pea &&
+    pei &&
+    alunoId &&
+    String(rai.peaId) === String(pea.id) &&
+    String(rai.peiId) === String(pei.id) &&
+    String(pea.peiId) === String(pei.id) &&
+    String(pea.alunoId) === String(alunoId) &&
+    String(pei.alunoId) === String(alunoId) &&
+    String(rai.alunoId) === String(alunoId) &&
+    (!peaIdParam || String(peaIdParam) === String(pea.id)) &&
+    (!peiIdParam || String(peiIdParam) === String(pei.id)),
+  );
 
   const [isPending, setIsPending] = useState(false);
   const [formError, setFormError] = useState(null);
+
   const { success: showSuccessToast, error: showErrorToast } = useToast();
 
   const defaultValues = {
     ...rai,
-    ...location.state?.defaultValues,
-    alunoId: aluno?.id ?? rai?.alunoId ?? "",
-    peiId: pei?.id ?? rai?.peiId ?? peiId,
+    ...estado.defaultValues,
+
+    alunoId,
+    peiId: pei?.id ?? "",
+    peaId: pea?.id ?? "",
+
+    alunoNome: aluno?.alunoNome ?? aluno?.nome ?? rai?.alunoNome ?? "",
+
+    alunoMatricula: matricula,
+
+    curso: aluno?.alunoCurso ?? rai?.curso ?? "",
+
+    componenteCurricular: pea?.componenteCurricular ?? "",
+
+    periodoLetivo: pea?.semestreAno ?? "",
+
+    docente: pea?.docente ?? "",
+
+    habilidadesCompetencias: Array.isArray(rai?.habilidadesCompetencias)
+      ? rai.habilidadesCompetencias.map((habilidade) => ({
+          habilidadeDesenvolvida: habilidade.habilidadeDesenvolvida ?? "",
+          nivelAprendizado: habilidade.nivelAprendizado ?? "",
+          observacoes: habilidade.observacoes ?? "",
+        }))
+      : [],
   };
 
   function voltarAoPlanejamento() {
-    if (location.state?.returnTo) {
-      navigate(location.state.returnTo);
+    if (estado.returnTo) {
+      navigate(estado.returnTo);
       return;
     }
 
@@ -87,9 +137,10 @@ export default function EditRaiPage() {
   function handleSubmit(payload) {
     setFormError(null);
 
-    if (!raiId || !payload.alunoId || !payload.peiId) {
+    if (!raiId || !payload.alunoId || !payload.peiId || !payload.peaId) {
       const mensagem =
-        "Não foi possível identificar o RAI, o estudante ou o PEI associado.";
+        "Não foi possível identificar o RAI, o estudante, o PEI ou o PEA associado.";
+
       setFormError(new Error(mensagem));
       showErrorToast(mensagem);
       return;
@@ -107,6 +158,7 @@ export default function EditRaiPage() {
       showSuccessToast(
         "Relatório de Acompanhamento Individualizado atualizado com sucesso!",
       );
+
       voltarAoPlanejamento();
     } catch (error) {
       const mensagem =
@@ -142,12 +194,16 @@ export default function EditRaiPage() {
     );
   }
 
-  if (!aluno?.id || !pei?.id) {
+  if (!vinculosCoerentes) {
     return (
       <div className="rai-page-body">
         <div className="rai-alert" role="alert">
-          Não foi possível identificar o estudante ou o PEI associado a este
-          RAI.
+          Não foi possível identificar corretamente o estudante, o PEI ou o PEA
+          associado a este RAI.
+          <p>
+            Verifique os vínculos do relatório e tente novamente pelo
+            planejamento do estudante.
+          </p>
         </div>
 
         <button
@@ -168,6 +224,7 @@ export default function EditRaiPage() {
         defaultValues={defaultValues}
         aluno={aluno}
         pei={pei}
+        pea={pea}
         error={formError}
         isPending={isPending}
         onSubmit={handleSubmit}
