@@ -91,9 +91,11 @@ export default function EditRaiPage() {
 
   const { success: showSuccessToast, error: showErrorToast } = useToast();
 
+  // Os dados originais do RAI têm prioridade sobre valores antigos
+  // eventualmente recebidos pelo estado de navegação.
   const defaultValues = {
-    ...rai,
     ...estado.defaultValues,
+    ...rai,
 
     alunoId,
     peiId: pei?.id ?? "",
