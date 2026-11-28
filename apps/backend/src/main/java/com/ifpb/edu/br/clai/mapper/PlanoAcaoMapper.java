@@ -4,6 +4,9 @@ import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoRequestDto;
 import com.ifpb.edu.br.clai.dto.planoacao.PlanoAcaoResponseDto;
 import com.ifpb.edu.br.clai.model.planoacao.PlanoAcao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlanoAcaoMapper {
 
     public static void requestToEntity(PlanoAcaoRequestDto request, PlanoAcao planoAcao) {
@@ -32,13 +35,13 @@ public class PlanoAcaoMapper {
                 planoAcao.getEstudante().getAlunoMatricula(),
                 planoAcao.getEstudante().getAlunoNome(),
                 planoAcao.getComorbidadeRelevante(),
-                planoAcao.getComorbidadeDescricao(),
+                copyNullableList(planoAcao.getComorbidadeDescricao()),
                 planoAcao.getFazUsoMedicacao(),
-                planoAcao.getMedicacaoDescricao(),
+                copyNullableList(planoAcao.getMedicacaoDescricao()),
                 planoAcao.getFrequentaServicoApoio(),
-                planoAcao.getServicoApoioDescricao(),
+                copyNullableList(planoAcao.getServicoApoioDescricao()),
                 planoAcao.getApresentouDocumentos(),
-                planoAcao.getDocumentosDescricao(),
+                copyNullableList(planoAcao.getDocumentosDescricao()),
                 planoAcao.getNecessidades(),
                 planoAcao.getRelatoDificuldades(),
                 planoAcao.getDemandas(),
@@ -46,5 +49,9 @@ public class PlanoAcaoMapper {
                 planoAcao.getDataPlano(),
                 planoAcao.getStatusAtivo()
         );
+    }
+
+    private static <T> List<T> copyNullableList(List<T> values) {
+        return values == null ? null : new ArrayList<>(values);
     }
 }
