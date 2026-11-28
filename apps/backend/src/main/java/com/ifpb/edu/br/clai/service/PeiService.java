@@ -2,6 +2,7 @@ package com.ifpb.edu.br.clai.service;
 
 import com.ifpb.edu.br.clai.dto.pei.PeiRequestDto;
 import com.ifpb.edu.br.clai.dto.pei.PeiResponseDto;
+import com.ifpb.edu.br.clai.dto.pei.PeiUpdateRequestDto;
 import com.ifpb.edu.br.clai.exception.BusinessRuleException;
 import com.ifpb.edu.br.clai.exception.ResourceNotFoundException;
 import com.ifpb.edu.br.clai.mapper.PeiMapper;
@@ -70,6 +71,36 @@ public class PeiService {
     public PeiResponseDto getPeiById(UUID id) {
         return peiRepository.findById(id)
                 .map(PeiMapper::entityToResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("PEI não encontrado com o ID: " + id));
+    }
+
+    @Transactional
+    public PeiResponseDto atualizar(UUID id, PeiUpdateRequestDto request) {
+        Pei pei = buscarOuFalhar(id);
+        PeiMapper.updateEntity(request, pei);
+        return PeiMapper.entityToResponse(peiRepository.save(pei));
+    }
+
+    @Transactional
+    public void desativar(UUID id) {
+        Pei pei = buscarOuFalhar(id);
+        pei.setAtivo(false);
+        peiRepository.save(pei);
+    }
+
+    @Transactional
+    public void ativar(UUID id) {
+        Pei pei = buscarOuFalhar(id);
+        UUID alunoId = pei.getAluno().getId();
+        if (peiRepository.existsByAluno_IdAndAtivoTrueAndIdNot(alunoId, id)) {
+            throw new BusinessRuleException("O aluno já possui outro PEI ativo.");
+        }
+        pei.setAtivo(true);
+        peiRepository.save(pei);
+    }
+
+    private Pei buscarOuFalhar(UUID id) {
+        return peiRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("PEI não encontrado com o ID: " + id));
     }
 }
