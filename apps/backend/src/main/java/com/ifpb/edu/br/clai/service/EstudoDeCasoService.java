@@ -23,6 +23,7 @@ import java.util.*;
 import static com.ifpb.edu.br.clai.mapper.EstudoDeCasoMapper.*;
 
 @Service
+@Transactional(readOnly = true)
 public class EstudoDeCasoService {
 
     private final EstudoDeCasoRepository estudoDeCasoRepository;
