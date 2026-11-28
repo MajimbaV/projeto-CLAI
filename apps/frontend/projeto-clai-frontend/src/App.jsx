@@ -23,6 +23,12 @@ import NewPeiPage from "./components/pages/pei/NewPeiPage";
 
 import AddPeaPage from "./components/pages/pea/AddPeaPage";
 
+import Cursos from "./components/pages/dadosacademicos/Cursos";
+import CursoViewPage from "./components/pages/dadosacademicos/CursoViewPage";
+
+import CreateCursoPage from "./components/pages/cursoform/CreateCursoPage";
+import EditCursoPage from "./components/pages/cursoform/EditCursoPage";
+
 function App() {
   return (
     <Routes>
@@ -82,6 +88,18 @@ function App() {
           path="planejamento/alunos/:matricula/pei/:peiId/pea/novo"
           element={<AddPeaPage />}
         />
+
+        {/* Dados Acadêmicos - Cursos */}
+        <Route path="dados-academicos/cursos" element={<Cursos />} />
+        <Route
+          path="dados-academicos/cursos/novo"
+          element={<CreateCursoPage />}
+        />
+        <Route
+          path="dados-academicos/cursos/:id/editar"
+          element={<EditCursoPage />}
+        />
+        <Route path="dados-academicos/cursos/:id" element={<CursoViewPage />} />
       </Route>
     </Routes>
   );

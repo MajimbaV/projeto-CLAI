@@ -33,6 +33,11 @@ function Sidebar() {
               Planejamento
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/dados-academicos/cursos" className="sidebar-button">
+              Dados Acadêmicos
+            </NavLink>
+          </li>
         </ul>
       </div>
       <div className="sidebar-footer">

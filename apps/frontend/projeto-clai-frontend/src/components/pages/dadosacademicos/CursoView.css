@@ -1,0 +1,258 @@
+.curso-view-body {
+  width: 100%;
+  margin: 0;
+  color: #111827;
+}
+
+.curso-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.curso-view-header > div {
+  min-width: 0;
+}
+
+.curso-view-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.curso-view-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #00523d;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.curso-view-back:hover {
+  color: #003f2f;
+}
+
+.curso-view-back .back-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.curso-view-title {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 450;
+}
+
+.curso-view-subtitle {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Ações */
+.curso-view-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 9px 16px;
+  background-color: #00523d;
+  color: #ffffff;
+  border: 1px solid #00523d;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.curso-view-action-btn:hover {
+  background-color: #00402e;
+}
+
+.curso-view-action-btn .action-icon {
+  width: 18px;
+  height: 18px;
+  color: #ffffff;
+}
+
+.curso-view-action-btn.btn-archive {
+  background-color: #ffffff;
+  color: #dc2626;
+  border-color: #d1d5db;
+}
+
+.curso-view-action-btn.btn-archive .action-icon {
+  color: #dc2626;
+}
+
+.curso-view-action-btn.btn-archive:hover {
+  background-color: #fef2f2;
+  border-color: #dc2626;
+}
+
+/* Card */
+.curso-view-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 24px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+/* Identificação */
+.curso-view-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.curso-view-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  background-color: #e5f2ed;
+  color: #00523d;
+  border-radius: 50%;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.curso-view-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.curso-view-profile-info h2 {
+  margin: 0 0 6px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.curso-view-profile-info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+/* Status */
+.curso-view-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.curso-view-status.ativo {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.curso-view-status.desativado {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.curso-view-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Divisores e seções */
+.curso-view-divider {
+  width: 100%;
+  height: 1px;
+  margin: 24px 0;
+  background-color: #e5e7eb;
+}
+
+.curso-view-section-title {
+  margin: 0 0 20px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Dados */
+.curso-view-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 32px;
+}
+
+.curso-view-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+}
+
+.curso-view-field span {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.curso-view-field p {
+  margin: 0;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.curso-view-body > p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.curso-view-body > .curso-view-back {
+  margin-top: 12px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .curso-view-header {
+    flex-direction: column;
+  }
+
+  .curso-view-actions {
+    flex-wrap: wrap;
+  }
+
+  .curso-view-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .curso-view-profile {
+    flex-wrap: wrap;
+  }
+}
