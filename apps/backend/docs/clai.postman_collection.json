@@ -204,6 +204,45 @@
       "name": "rais",
       "item": [
         {
+          "name": "listar RAIs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/rai?page=0&size=20&sort=data,desc",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["rai"],
+              "query": [
+                {"key": "nomeAluno", "value": "", "disabled": true},
+                {"key": "matriculaAluno", "value": "", "disabled": true},
+                {"key": "peaId", "value": "", "disabled": true},
+                {"key": "peiId", "value": "", "disabled": true},
+                {"key": "page", "value": "0"},
+                {"key": "size", "value": "20"},
+                {"key": "sort", "value": "data,desc"}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "RAI por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/rai/00000000-0000-0000-0000-000000000000",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["rai", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "criar RAI",
           "request": {
             "method": "POST",

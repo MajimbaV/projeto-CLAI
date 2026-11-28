@@ -57,7 +57,14 @@ public final class RaiMapper {
         }
 
         UUID alunoId = rai.getAluno() != null ? rai.getAluno().getId() : null;
+        String alunoNome = rai.getAluno() != null ? rai.getAluno().getAlunoNome() : null;
+        String alunoMatricula = rai.getAluno() != null ? rai.getAluno().getAlunoMatricula() : null;
         UUID peaId = rai.getPea() != null ? rai.getPea().getId() : null;
+        UUID peiId = rai.getPea() != null && rai.getPea().getPei() != null
+            ? rai.getPea().getPei().getId() : null;
+        String semestreAno = rai.getPea() != null ? rai.getPea().getSemestreAno() : null;
+        String componenteCurricular = rai.getPea() != null ? rai.getPea().getComponenteCurricular() : null;
+        String docente = rai.getPea() != null ? rai.getPea().getDocente() : null;
 
         List<RaiHabilidadeDesenvolvidaResponseDto> habilidades = rai.getHabilidadesDesenvolvidas() != null
             ? rai.getHabilidadesDesenvolvidas().stream()
@@ -68,7 +75,13 @@ public final class RaiMapper {
         return new RaiResponseDto(
             rai.getId(),
             alunoId,
+            alunoNome,
+            alunoMatricula,
             peaId,
+            peiId,
+            semestreAno,
+            componenteCurricular,
+            docente,
             toAspectoResponse(rai.getRelacionamento() != null ? rai.getRelacionamento().getTipos() : null,
                 rai.getRelacionamento() != null ? rai.getRelacionamento().getOutros() : null,
                 rai.getRelacionamento() != null ? rai.getRelacionamento().getComentario() : null),
