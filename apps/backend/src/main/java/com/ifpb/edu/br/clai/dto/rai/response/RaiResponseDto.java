@@ -11,7 +11,13 @@ import com.ifpb.edu.br.clai.model.rai.enums.TipoRelacionamento;
 public record RaiResponseDto(
     UUID id,
     UUID alunoId,
+    String alunoNome,
+    String alunoMatricula,
     UUID peaId,
+    UUID peiId,
+    String semestreAno,
+    String componenteCurricular,
+    String docente,
     AspectoResponseDto<TipoRelacionamento> relacionamento,
     AspectoResponseDto<TipoHabilidadeCognitiva> habilidadesCognitivas,
     AspectoResponseDto<TipoHabilidadeSocioemocional> habilidadesSocioemocionais,

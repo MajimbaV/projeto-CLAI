@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import com.ifpb.edu.br.clai.dto.rai.request.RaiRequestDto;
 import com.ifpb.edu.br.clai.dto.rai.response.RaiResponseDto;
@@ -24,6 +27,7 @@ import com.ifpb.edu.br.clai.model.rai.enums.TipoHabilidadeCognitiva;
 import com.ifpb.edu.br.clai.model.rai.enums.TipoHabilidadeSocioemocional;
 import com.ifpb.edu.br.clai.model.rai.enums.TipoRelacionamento;
 import com.ifpb.edu.br.clai.repository.RaiRepository;
+import com.ifpb.edu.br.clai.specification.RaiSpecification;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,6 +46,24 @@ public class RaiService {
     public Rai buscarOuFalhar(UUID id) {
         return raiRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("RAI não encontrado com o ID: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RaiResponseDto> getAllRais(
+            String nomeAluno,
+            String matriculaAluno,
+            UUID peaId,
+            UUID peiId,
+            Pageable pageable
+    ) {
+        Specification<Rai> specification = RaiSpecification.comFiltros(nomeAluno, matriculaAluno, peaId, peiId);
+        return raiRepository.findAll(specification, pageable)
+                .map(RaiMapper::entityToResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public RaiResponseDto getRaiById(UUID id) {
+        return RaiMapper.entityToResponse(buscarOuFalhar(id));
     }
 
     private void validarCamposCondicionais(RaiRequestDto request) {
