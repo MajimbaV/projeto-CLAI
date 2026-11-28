@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface PeiRepository extends JpaRepository<Pei, UUID>, JpaSpecificationExecutor<Pei> {
 
     boolean existsByAluno_IdAndAtivoTrue(UUID alunoId);
+
+    boolean existsByAluno_IdAndAtivoTrueAndIdNot(UUID alunoId, UUID id);
 }
