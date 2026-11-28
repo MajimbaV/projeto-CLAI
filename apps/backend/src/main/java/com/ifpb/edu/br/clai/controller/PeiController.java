@@ -2,6 +2,7 @@ package com.ifpb.edu.br.clai.controller;
 
 import com.ifpb.edu.br.clai.dto.pei.PeiRequestDto;
 import com.ifpb.edu.br.clai.dto.pei.PeiResponseDto;
+import com.ifpb.edu.br.clai.dto.pei.PeiUpdateRequestDto;
 import com.ifpb.edu.br.clai.service.PeiService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -62,5 +63,25 @@ public class PeiController {
     public ResponseEntity<PeiResponseDto> getPeiById(@PathVariable("id") UUID id) {
         PeiResponseDto response = peiService.getPeiById(id);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PeiResponseDto> atualizar(
+            @PathVariable("id") UUID id,
+            @Valid @RequestBody PeiUpdateRequestDto request
+    ) {
+        return ResponseEntity.ok(peiService.atualizar(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> desativar(@PathVariable("id") UUID id) {
+        peiService.desativar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativar(@PathVariable("id") UUID id) {
+        peiService.ativar(id);
+        return ResponseEntity.noContent().build();
     }
 }
