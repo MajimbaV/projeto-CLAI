@@ -119,7 +119,11 @@ public final class RaiMapper {
         if (tipos == null && outros == null && comentario == null) {
             return null;
         }
-        return new AspectoResponseDto<>(tipos, outros, comentario);
+        return new AspectoResponseDto<>(copyNullableList(tipos), outros, comentario);
+    }
+
+    private static <T> List<T> copyNullableList(List<T> values) {
+        return values == null ? null : new ArrayList<>(values);
     }
 
     public static RaiHabilidadeDesenvolvidaResponseDto toHabilidadeResponse(RaiHabilidadeDesenvolvida habilidade) {
