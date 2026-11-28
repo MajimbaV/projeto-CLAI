@@ -89,8 +89,8 @@ nb-configuration.xml
 ##############################
 *.log
 .env
-/.env.dev
-/.env.prod
+.env.dev.back
+.env.prod.back
 .env.dev.front
 .env.prod.front
 ##############################
