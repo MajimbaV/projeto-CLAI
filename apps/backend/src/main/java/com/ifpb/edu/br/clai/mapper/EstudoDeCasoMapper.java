@@ -74,7 +74,7 @@ public class EstudoDeCasoMapper {
         UUID alunoId = aluno == null ? null : aluno.getId();
         return new IdentificacaoResponseDto(
                 aluno == null ? null : AlunoMapper.entityToResponse(aluno),
-                identificacao.getDatasAnamnese(),
+                copyNullableList(identificacao.getDatasAnamnese()),
                 identificacao.getIde_nome_profissional()
         );
     }
@@ -97,12 +97,12 @@ public class EstudoDeCasoMapper {
         if (necessidades == null) return null;
         return new NecessidadesEspecificasResponseDto(
                 necessidades.getNecessidadeInformada(),
-                necessidades.getDiagnosticos(),
+                copyNullableList(necessidades.getDiagnosticos()),
                 necessidades.getDocumentos() == null ? null : necessidades.getDocumentos().stream()
                         .map(EstudoDeCasoMapper::toDocumentoResponse)
                         .toList(),
-                necessidades.getCondicoesAssociadas(),
-                necessidades.getMedicacoesContinuas(),
+                copyNullableList(necessidades.getCondicoesAssociadas()),
+                copyNullableList(necessidades.getMedicacoesContinuas()),
                 necessidades.getEncaminhamentosAnteriores(),
                 necessidades.getServicosApoioAtuaisAnteriores()
         );
@@ -125,8 +125,8 @@ public class EstudoDeCasoMapper {
                 anamnese.getExperienciasEscolaresNegativas(),
                 anamnese.getAdaptacoesRecursosEResultados(),
                 anamnese.getObjetivosConhecimentosConsolidados(),
-                anamnese.getAreasDisciplinasFacilidade(),
-                anamnese.getAreasDisciplinasDificuldade()
+                copyNullableList(anamnese.getAreasDisciplinasFacilidade()),
+                copyNullableList(anamnese.getAreasDisciplinasDificuldade())
         );
     }
 
@@ -203,17 +203,17 @@ public class EstudoDeCasoMapper {
     private static ChecklistApoiosResponseDto toChecklistApoiosResponse(ChecklistApoios checklist) {
         if (checklist == null) return null;
         return new ChecklistApoiosResponseDto(
-                checklist.getAcessibilidadeAmbiente(),
+                copyNullableList(checklist.getAcessibilidadeAmbiente()),
                 checklist.getAcessibilidadeAmbienteOutro(),
-                checklist.getComunicacaoMateriais(),
+                copyNullableList(checklist.getComunicacaoMateriais()),
                 checklist.getComunicacaoMateriaisOutro(),
-                checklist.getMetodologia(),
+                copyNullableList(checklist.getMetodologia()),
                 checklist.getMetodologiaOutro(),
-                checklist.getAvaliacao(),
+                copyNullableList(checklist.getAvaliacao()),
                 checklist.getAvaliacaoOutro(),
-                checklist.getCurriculo(),
+                copyNullableList(checklist.getCurriculo()),
                 checklist.getCurriculoOutro(),
-                checklist.getApoiosInstitucionais(),
+                copyNullableList(checklist.getApoiosInstitucionais()),
                 checklist.getApoioInstitucionalOutro(),
                 checklist.getApoiosExternosEncaminhamentos(),
                 checklist.getPsicopedagogoResponsavel(),
@@ -368,6 +368,10 @@ public class EstudoDeCasoMapper {
 
     private static <T> ArrayList<T> copyList(List<T> values) {
         return values == null ? new ArrayList<>() : new ArrayList<>(values);
+    }
+
+    private static <T> List<T> copyNullableList(List<T> values) {
+        return values == null ? null : new ArrayList<>(values);
     }
 
     public static void aplicarUpdate(EstudoDeCasoAtualizacaoRequestDTO dto, EstudoDeCaso estudo) {
